@@ -76,7 +76,6 @@ filter_form.addEventListener('submit', function (e) {
     DateInput.value = "";
   }
 
-
   // Create a new URLSearchParams object from the existing query parameters
   const existingParams = new URLSearchParams(window.location.search);
   var newParams = new URLSearchParams(existingParams);
@@ -86,9 +85,26 @@ filter_form.addEventListener('submit', function (e) {
   // Remove 'page' param if it exists
   newParams.delete('page');
 
-  // Update newParams with form data (overwriting or adding)
+  // Collect all form keys that will be updated
+  const formKeys = new Set();
+  for (const [key] of formData.entries()) {
+    formKeys.add(key);
+  }
+
+  // False checkboxes are absent from the FormData
+  // so completely clear any checkbox fields before we start
+  // then we will add back anything that is true
+  formKeys.add('field_group');
+  formKeys.add('extra_fields');
+
+  // Delete existing params that are in the form
+  for (const key of formKeys) {
+    newParams.delete(key);
+  }
+
+  // Now append all form values (preserving duplicates)
   for (const [key, value] of formData.entries()) {
-    newParams.set(key, value);
+    newParams.append(key, value);
   }
 
   // Remove any params with empty values
