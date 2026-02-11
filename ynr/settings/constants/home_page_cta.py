@@ -1,3 +1,4 @@
+import os
 from datetime import date
 
 # This should be one of:
@@ -27,3 +28,13 @@ DATA_DOWNLOAD_INFO = {
 }
 
 SCHEDULED_ELECTION_DATES = ["2025-05-01"]
+
+if os.environ.get("DC_ENVIRONMENT", "local") == "training":
+    FRONT_PAGE_CTA = "SOPN_TRACKER"
+    SOPN_TRACKER_INFO = {
+        "election_name": "2026 local elections",
+        # ynr/apps/elections/uk/management/commands/uk_create_training_elections.py
+        "election_date": "2026-05-08",
+    }
+    SOPN_SHEET_URL = "#"
+    SHOW_DATA_DOWNLOAD = False
