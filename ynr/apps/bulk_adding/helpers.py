@@ -39,6 +39,8 @@ def update_person(
     list_position=None,
     party_description=None,
     previous_party_affiliations=None,
+    sopn_last_name="",
+    sopn_first_names="",
     data=None,
 ):
     election = ballot.election
@@ -51,6 +53,8 @@ def update_person(
         "elected": None,
         "role": election.candidate_membership_role,
         "party_name": party.name,
+        "sopn_last_name": sopn_last_name,
+        "sopn_first_names": sopn_first_names,
     }
 
     if party_description:

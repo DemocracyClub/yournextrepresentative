@@ -185,6 +185,67 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(
             membership.party_description_text, "Green Party Stop Fracking Now"
         )
+        self.assertEqual(membership.sopn_last_name, "")
+        self.assertEqual(membership.sopn_first_names, "")
+
+    def test_submitting_form_with_rawpeople(self):
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            data=[
+                {
+                    "name": "Homer Simpson",
+                    "party_id": "PP63",
+                    "sopn_last_name": "SIMPSON",
+                    "sopn_first_names": "Homer",
+                }
+            ],
+            source="https://www.example.com/",
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
+        )
+
+        form = response.forms["bulk_add_form"]
+
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        response = response.follow()
+        form = response.forms["bulk_add_review_formset"]
+        form["form-0-select_person"].select("_new")
+
+        response = form.submit()
+
+        self.assertEqual(Person.objects.count(), 1)
+        homer = Person.objects.get()
+        self.assertEqual(homer.name, "Homer Simpson")
+        homer_versions = homer.versions
+        self.assertEqual(len(homer_versions), 2)
+        self.assertEqual(
+            homer_versions[0]["information_source"], "http://example.com"
+        )
+        self.assertEqual(
+            homer_versions[1]["information_source"], "http://example.com"
+        )
+
+        self.assertEqual(homer.memberships.count(), 1)
+        membership = homer.memberships.get()
+        self.assertEqual(membership.role, "Candidate")
+        self.assertEqual(membership.party.name, "Green Party")
+        self.assertEqual(
+            membership.post.label,
+            "Member of Parliament for Dulwich and West Norwood",
+        )
+        self.assertEqual(membership.sopn_last_name, "SIMPSON")
+        self.assertEqual(membership.sopn_first_names, "Homer")
 
     def test_submitting_form_when_candidates_locked(self):
         """
@@ -768,6 +829,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "initial": [
                     {
                         "name": "Bart",
+                        "sopn_first_names": "",
+                        "sopn_last_name": "",
                         "party": ["PP52", "PP52"],
                         "previous_party_affiliations": [],
                         "source": "",
@@ -791,6 +854,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 "initial": [
                     {
                         "name": "Lisa",
+                        "sopn_first_names": "",
+                        "sopn_last_name": "",
                         "party": ["PP53", "PP53"],
                         "previous_party_affiliations": [],
                         "source": "",
