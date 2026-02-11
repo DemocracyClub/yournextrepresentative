@@ -66,6 +66,8 @@ DEFAULT_EMBLEMS = {
     "PP2883": 4670,
     # Sovereignty party
     "PP12666": 8481,
+    # Gwlad
+    "PP6851": 7790,
 }
 
 JOINT_DESCRIPTION_REGEX = r"^(.*?) \(joint descriptions? with\s?(.*)\)"
