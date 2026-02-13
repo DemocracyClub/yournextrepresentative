@@ -16,6 +16,8 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
+ENVIRONMENTS_TO_MONITOR = ["production"]
+
 
 def tag_for_environment():
     """Return a string representing a stable image tag based on the env var
@@ -35,6 +37,10 @@ class YnrStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         self.dc_environment = self.node.get_context("dc-environment")
+        if self.dc_environment in ENVIRONMENTS_TO_MONITOR:
+            monitor_this_env = True
+        else:
+            monitor_this_env = False
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
         cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
@@ -434,6 +440,7 @@ class YnrStack(Stack):
             value=self.cloudfront_dist.distribution_id,
             export_name="YnrCloudFrontDistributionId",
         )
+
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
