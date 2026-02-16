@@ -446,11 +446,11 @@ class YnrStack(Stack):
 
         # Alerting / notification
         if monitor_this_env:
-            ALERT_EMAIL_RECIPIENT = (
+            alert_email_recipient = (
                 ssm.StringParameter.from_string_parameter_name(
                     self,
-                    "ALERT_EMAIL_RECIPIENT",
-                    "ALERT_EMAIL_RECIPIENT",
+                    "alert_email_recipient",
+                    "alert_email_recipient",
                 )
             )
             metric_topic = sns.Topic(
@@ -527,7 +527,7 @@ class YnrStack(Stack):
                 self,
                 "MetricSubscription",
                 topic=metric_topic,
-                endpoint=ALERT_EMAIL_RECIPIENT.string_value,
+                endpoint=alert_email_recipient.string_value,
                 protocol=sns.SubscriptionProtocol.EMAIL,
             )
 
