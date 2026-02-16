@@ -10,6 +10,8 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as events_targets
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
@@ -466,6 +468,10 @@ class YnrStack(Stack):
                 display_name="container metric alert",
             )
 
+            container_topic = sns.Topic(
+                self, "containerevent", display_name="container event alert"
+            )
+
             # The symbolic names we give the alerts need to be unique, so we simply append a digit based on the service being monitored
             for service_info in [
                 {"name": web_service.service.service_name, "id": 0},
@@ -536,6 +542,34 @@ class YnrStack(Stack):
                 topic=metric_topic,
                 endpoint=alert_email_recipient.string_value,
                 protocol=sns.SubscriptionProtocol.EMAIL,
+            )
+
+            sns.Subscription(
+                self,
+                "EmailSubscription",
+                topic=container_topic,
+                endpoint=alert_email_recipient.string_value,
+                protocol=sns.SubscriptionProtocol.EMAIL,
+            )
+            default_bus = events.EventBus.from_event_bus_name(
+                self, "EventBus", "default"
+            )
+            container_events_rule = events.Rule(
+                self,
+                "email-notify",
+                rule_name="email-notify",
+                event_bus=default_bus,
+                event_pattern=events.EventPattern(
+                    source=["aws.ecs"],
+                    detail={"clusterArn": [cluster.cluster_arn]},
+                    detail_type=[
+                        "ECS Task State Change",
+                        "ECS Container Instance State Change",
+                    ],
+                ),
+            )
+            container_events_rule.add_target(
+                events_targets.SnsTopic(container_topic)
             )
 
     def create_cloudfront(
