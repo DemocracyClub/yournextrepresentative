@@ -19,7 +19,7 @@ from aws_cdk import aws_sns as sns
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
-ENVIRONMENTS_TO_MONITOR = ["production"]
+ENVIRONMENTS_TO_MONITOR = ["production", "development"]
 
 
 def tag_for_environment():
