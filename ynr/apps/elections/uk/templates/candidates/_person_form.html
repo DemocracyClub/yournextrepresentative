@@ -103,7 +103,7 @@
 </div>
 
   <div class="form-item">
-    <h2>Candidacy:</h2>
+    <h2>Candidacies:</h2>
     {% if current_locked_ballots %}
       <table class="table">
       <caption>Current locked ballots</caption>
@@ -168,6 +168,18 @@
                 {{ membership_form.previous_party_affiliations.label }}
                 {{ membership_form.previous_party_affiliations }}
                 {{ membership_form.previous_party_affiliations.errors }}
+              </div>
+            {% endif %}
+            {% if membership_form.show_sopn_name_fields %}
+              <div class="large-12 columns">
+                {{ membership_form.sopn_last_name.label }}
+                {{ membership_form.sopn_last_name }}
+                {{ membership_form.sopn_last_name.errors }}
+              </div>
+              <div class="large-12 columns">
+                {{ membership_form.sopn_first_names.label }}
+                {{ membership_form.sopn_first_names }}
+                {{ membership_form.sopn_first_names.errors }}
               </div>
             {% endif %}
             <div class="large-12 columns">
