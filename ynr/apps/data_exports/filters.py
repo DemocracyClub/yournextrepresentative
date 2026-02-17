@@ -18,6 +18,7 @@ ELECTED_CHOICES = {
     ("True", "Elected"),
     ("False", "Not elected"),
 }
+
 CANCELLED_CHOICES = {
     ("True", "Cancelled"),
     ("False", "Not cancelled"),
@@ -26,6 +27,11 @@ CANCELLED_CHOICES = {
 LOCKED_CHOICES = {
     ("True", "Locked"),
     ("False", "Unlocked"),
+}
+
+SOPN_NAME_CHOICES = {
+    ("True", "With SOPN Names"),
+    ("False", "Without SOPN Names"),
 }
 
 
@@ -117,6 +123,15 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
         choices=LOCKED_CHOICES,
     )
 
+    has_sopn_names = django_filters.ChoiceFilter(
+        field_name="has_sopn_names",
+        label="Has exact SOPN names",
+        choices=SOPN_NAME_CHOICES,
+        empty_label="All",
+        widget=DSLinkWidget(),
+        method="filter_has_sopn_name",
+    )
+
     class Meta:
         model = MaterializedMemberships
         fields = [
@@ -126,6 +141,7 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
             "ballot_paper_id",
             "election_id",
             "party_id",
+            "has_sopn_names",
         ]
 
     def region_filter(self, queryset, name, value):
@@ -161,6 +177,16 @@ class MaterializedMembershipFilter(django_filters.FilterSet):
             return queryset.filter(~Q(**{f"{name}_filterfield__exact": ""}))
         if value == "no":
             return queryset.filter(Q(**{f"{name}_filterfield__isnull": True}))
+        return queryset
+
+    def filter_has_sopn_name(self, queryset, name, value):
+        condition = Q(membership__sopn_first_names="") | Q(
+            membership__sopn_last_name=""
+        )
+        if value == "True":
+            return queryset.exclude(condition)
+        if value == "False":
+            return queryset.filter(condition)
         return queryset
 
 
