@@ -4,6 +4,8 @@ from aws_cdk import CfnOutput, Duration, Stack, Tags
 from aws_cdk import aws_certificatemanager as acm
 from aws_cdk import aws_cloudfront as cloudfront
 from aws_cdk import aws_cloudfront_origins as origins
+from aws_cdk import aws_cloudwatch as cloudwatch
+from aws_cdk import aws_cloudwatch_actions as cloudwatch_actions
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
@@ -13,8 +15,11 @@ from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
 from aws_cdk import aws_s3 as s3
+from aws_cdk import aws_sns as sns
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
+
+ENVIRONMENTS_TO_MONITOR = ["production"]
 
 
 def tag_for_environment():
@@ -35,6 +40,10 @@ class YnrStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         self.dc_environment = self.node.get_context("dc-environment")
+        if self.dc_environment in ENVIRONMENTS_TO_MONITOR:
+            monitor_this_env = True
+        else:
+            monitor_this_env = False
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
         cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
@@ -434,6 +443,93 @@ class YnrStack(Stack):
             value=self.cloudfront_dist.distribution_id,
             export_name="YnrCloudFrontDistributionId",
         )
+
+        # Alerting / notification
+        if monitor_this_env:
+            alert_email_recipient = (
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "alert_email_recipient",
+                    "alert_email_recipient",
+                )
+            )
+            metric_topic = sns.Topic(
+                self,
+                "metricalert",
+                display_name="container metric alert",
+            )
+
+            # The symbolic names we give the alerts need to be unique, so we simply append a digit based on the service being monitored
+            for service_info in [
+                {"name": web_service.service.service_name, "id": 0},
+                {"name": worker_service.service_name, "id": 1},
+            ]:
+                cpu_alarm = cloudwatch.Alarm(
+                    self,
+                    f"ECSCpuUtilizationAlarm{service_info['id']}",
+                    alarm_name=f"{service_info['name']}-cpu-high",
+                    alarm_description=f"CPU utilization is high for ECS service {service_info['name']}",
+                    metric=cloudwatch.Metric(
+                        namespace="AWS/ECS",
+                        metric_name="CPUUtilization",
+                        dimensions_map={
+                            "ServiceName": service_info["name"],
+                            "ClusterName": cluster.cluster_name,
+                        },
+                        statistic="Average",
+                        period=Duration.seconds(60),
+                    ),
+                    threshold=80.0,  # This is a percentage
+                    comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+                    evaluation_periods=3,
+                    datapoints_to_alarm=2,
+                    treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
+                )
+                cpu_alarm.add_alarm_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                cpu_alarm.add_ok_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                memory_alarm = cloudwatch.Alarm(
+                    self,
+                    f"ECSMemoryUtilizationAlarm{service_info['id']}",
+                    alarm_name=f"{service_info['name']}-memory-high",
+                    alarm_description=f"High memory utilization detected for ECS service {service_info['name']}",
+                    metric=cloudwatch.Metric(
+                        namespace="AWS/ECS",
+                        metric_name="MemoryUtilization",
+                        dimensions_map={
+                            "ServiceName": service_info["name"],
+                            "ClusterName": cluster.cluster_name,
+                        },
+                        statistic="Average",
+                        period=Duration.seconds(60),
+                    ),
+                    threshold=85.0,  # This is a percentage
+                    comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+                    evaluation_periods=3,
+                    datapoints_to_alarm=2,
+                    treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
+                )
+
+                memory_alarm.add_alarm_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+                memory_alarm.add_ok_action(
+                    cloudwatch_actions.SnsAction(metric_topic)
+                )
+
+            sns.Subscription(
+                self,
+                "MetricSubscription",
+                topic=metric_topic,
+                endpoint=alert_email_recipient.string_value,
+                protocol=sns.SubscriptionProtocol.EMAIL,
+            )
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
