@@ -558,6 +558,7 @@ class YnrStack(Stack):
                 self,
                 "email-notify",
                 rule_name="email-notify",
+                description="YNR Task failure",
                 event_bus=default_bus,
                 event_pattern=events.EventPattern(
                     source=["aws.ecs"],
@@ -571,6 +572,32 @@ class YnrStack(Stack):
             container_events_rule.add_target(
                 events_targets.SnsTopic(container_topic)
             )
+
+            filtered_rule = events.Rule(
+                self,
+                "FilteredECSAlertsRule",
+                rule_name="filtered-alerts-rule",
+                description="YNR Task/Container alerts",
+                event_pattern=events.EventPattern(
+                    source=["aws.ecs"],
+                    detail_type=["ECS Task State Change"],
+                    detail={
+                        "clusterArn": [cluster.cluster_arn],
+                        "launchType": ["FARGATE"],
+                        "lastStatus": ["STOPPED"],
+                        "stopCode": [
+                            {
+                                "anything-but": [
+                                    "ServiceSchedulerInitiated",  # Normal deployments
+                                    "UserInitiated",  # Manual stops by an AWS Console user
+                                ]
+                            }
+                        ],
+                    },
+                ),
+            )
+
+            filtered_rule.add_target(events_targets.SnsTopic(container_topic))
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
