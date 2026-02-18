@@ -145,6 +145,15 @@ def guess_previous_party_affiliations_field(data, sopn):
     return field_value
 
 
+def fix_common_textract_errors(name):
+    # Sometimes textract makes systematic errors in parsing the text
+    # we can add explicit overrides here to fix them
+
+    # "Ian" is frequently OCR'd as "lan" or "Lan".
+    # Replace only when standalone
+    return re.sub(r"\b[Ll]an\b", "Ian", name)
+
+
 def base_clean_name(name):
     name = name.replace("\n", " ")
     name = name.replace("`", "'")
@@ -154,8 +163,9 @@ def base_clean_name(name):
     # this can leave extra whitespace after special chars so remove these
     name = name.replace("- ", "-")
     name = name.replace("' ", "'")
+    name = name.strip()
 
-    return name.strip()
+    return fix_common_textract_errors(name)
 
 
 def clean_name(name):
