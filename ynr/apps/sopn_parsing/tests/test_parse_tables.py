@@ -519,9 +519,28 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
             ("LIAM THOMAS O'ROURKE", "Liam Thomas O'Rourke"),
             ("O'CALLAGHAN \nClaire Louise", "Claire Louise O'Callaghan"),
         ]
-        for name in names:
+        for input_, expected in names:
             with self.subTest(name=names[0]):
-                assert parse_tables.clean_name(name[0]) == name[1]
+                assert parse_tables.clean_name(input_) == expected
+
+    def test_fix_common_textract_errors_fixes_errors(self):
+        names = [
+            # input matches output
+            ("Alan", "Alan"),
+            ("Lana", "Lana"),
+            ("O'Flanagan", "O'Flanagan"),
+            ("Stephen Ian Michael", "Stephen Ian Michael"),
+            # changes expceted
+            ("lan", "Ian"),
+            ("Lan", "Ian"),
+            ("Stephen Lan Michael", "Stephen Ian Michael"),
+            ("Stephen lan Michael", "Stephen Ian Michael"),
+        ]
+        for input_, expected in names:
+            with self.subTest(name=names[0]):
+                assert (
+                    parse_tables.fix_common_textract_errors(input_) == expected
+                )
 
     def test_clean_description_removes_newlines(self):
         cleaned_description = parse_tables.clean_description(
