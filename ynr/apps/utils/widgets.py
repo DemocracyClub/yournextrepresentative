@@ -80,7 +80,7 @@ class SelectWithAttrs(Select):
             name, value, label_text, selected, index, subindex=None, attrs=None
         )
         if isinstance(label, ChoiceOptionWithContext):
-            option["attrs"] = label.attrs
+            option["attrs"] = {**option["attrs"], **label.attrs}
 
         return option
 
