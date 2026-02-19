@@ -24,7 +24,11 @@ class Party(TimeStampedModel):
 
        "Labour and Co-operative Party (Joint Description with Labour Party)"
 
-       If we detect "Joint Description with" (or similar) we make a new party
+       If we detect "Joint Description with" (or similar) we make a new party.
+
+       We also create some joint pseudo parties manually, because candidates aren't required
+       to register joint descriptions with EC, and they therefore won't be in the source data.
+
     3. "Speaker seeking re-election". The speaker of the House of Commons doesn't
         stand for a party, rather they are elected directly in to that role
         (sort of). This is given the ID "ynmp-party:12522"
