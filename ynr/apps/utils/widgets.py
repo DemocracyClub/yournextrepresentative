@@ -43,7 +43,10 @@ def choices_to_context_choices(choices):
         value, choice_data = choice
         if isinstance(choice_data, dict):
             context_choices.append(
-                (value, ChoiceOptionWithContext.from_dict(choice_data))
+                (
+                    choice_data["label"],
+                    [(value, ChoiceOptionWithContext.from_dict(choice_data))],
+                )
             )
         if isinstance(choice_data, list):
             sub_choices = []
