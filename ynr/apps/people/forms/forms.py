@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from official_documents.models import BallotSOPN
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -219,6 +218,11 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
                         "ec_id", flat=True
                     )
                 )
+
+            if hasattr(instance.ballot, "sopn"):
+                initial["sopn_first_names"] = instance.sopn_first_names
+                initial["sopn_last_name"] = instance.sopn_last_name
+
             kwargs.update(initial=initial)
 
         super().__init__(*args, **kwargs)
@@ -230,6 +234,16 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
             self.fields[
                 "previous_party_affiliations"
             ] = PreviousPartyAffiliationsField(membership=self.instance)
+
+        if self.show_sopn_name_fields:
+            self.fields["sopn_first_names"] = StrippedCharField(
+                label="The person's first names, exactly as they are printed on the SOPN",
+                required=False,
+            )
+            self.fields["sopn_last_name"] = StrippedCharField(
+                label="The person's last name, exactly as it is printed on the SOPN",
+                required=False,
+            )
 
     @property
     def show_previous_party_affiliations(self):
@@ -248,10 +262,19 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         if ballot.candidates_locked:
             return False
 
+        return hasattr(ballot, "sopn")
+
+    @property
+    def show_sopn_name_fields(self):
+        """
+        It only makes sense to edit sopn names if ballot has a sopn
+        """
         try:
-            return bool(ballot.sopn)
-        except BallotSOPN.DoesNotExist:
+            ballot = self.instance.ballot
+        except Ballot.DoesNotExist:
             return False
+
+        return hasattr(ballot, "sopn")
 
     class Meta:
         model = Membership
@@ -280,7 +303,16 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         self.instance.party_description_text = (
             party_data["description_text"] or ""
         )
+
+        if "sopn_first_names" in self.cleaned_data:
+            self.instance.sopn_first_names = self.cleaned_data[
+                "sopn_first_names"
+            ]
+        if "sopn_last_name" in self.cleaned_data:
+            self.instance.sopn_last_name = self.cleaned_data["sopn_last_name"]
+
         self.instance = super().save(commit)
+
         if "previous_party_affiliations" in self.cleaned_data:
             parties = self.cleaned_data.get("previous_party_affiliations", None)
             if parties:
