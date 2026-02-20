@@ -117,8 +117,8 @@
             {% elif ballot.candidates_locked %}
               {{ ballot.locked_status_html }}
             {% else %}
-              {% if ballot.officialdocument_set.exists and not ballot.suggestedpostlock_set.exists %}
-                <a href="{{ ballot.get_bulk_add_url }}" class="button tiny">Add candidates</a>
+              {% if ballot.sopn and not ballot.suggestedpostlock_set.exists %}
+                SOPN Uploaded <br><a href="{{ ballot.get_bulk_add_url }}">(add candidates)</a>
               {% else %}
                 {% if ballot.suggestedpostlock_set.exists %}
                 {{ ballot.suggested_lock_html }}

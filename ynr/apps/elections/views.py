@@ -95,7 +95,7 @@ class ElectionListView(TemplateView):
             .select_related("election", "post")
             .select_related("resultset")
             .prefetch_related("suggestedpostlock_set")
-            .prefetch_related("officialdocument_set")
+            .prefetch_related("sopn")
             .annotate(memberships_count=Count("membership", distinct=True))
             .annotate(
                 elected_count=Count(
