@@ -440,14 +440,14 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def locked_status_text(self):
         if self.candidates_locked:
-            return mark_safe("🔐")
+            return mark_safe("Locked")
         return None
 
     @property
     def locked_status_html(self):
         if self.candidates_locked:
             return mark_safe(
-                '<abbr title="Candidates verified and post locked">{}</abbr>'.format(
+                '<abbr title="Candidates verified and ballot locked">{}</abbr>'.format(
                     self.locked_status_text
                 )
             )
@@ -458,7 +458,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def suggested_lock_html(self):
         return mark_safe(
-            '<abbr title="Someone suggested locking this post">🔓</abbr>'
+            '<abbr title="Someone suggested locking this post">Lock Suggested</abbr>'
         )
 
     @cached_property
