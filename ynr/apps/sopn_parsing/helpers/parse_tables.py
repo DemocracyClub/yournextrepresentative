@@ -3,6 +3,7 @@ import re
 
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot
+from django.conf import settings
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
@@ -13,6 +14,7 @@ from nameparser import HumanName
 from pandas import DataFrame
 from parties.models import Party, PartyDescription
 from sopn_parsing.helpers.text_helpers import clean_text
+from sopn_parsing.models import AWSTextractParsedSOPN
 from utils.db import Levenshtein
 
 FIRST_NAME_FIELDS = [
@@ -534,17 +536,20 @@ def parse_raw_data(ballot: Ballot, reparse=False):
     Given a Ballot, go and get the Camelot and the AWS Textract dataframes
     and process them
     """
-
-    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
     camelot_data = {}
-    textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
-    textract_data = {}
-    if (
+    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
+    if getattr(settings, "CAMELOT_ENABLED", False) and (
         camelot_model
         and camelot_model.raw_data_type == "pandas"
         and (reparse or not camelot_model.parsed_data)
     ):
         camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
+
+    textract_model: AWSTextractParsedSOPN = getattr(
+        ballot.sopn, "awstextractparsedsopn", None
+    )
+    textract_data = {}
+
     if (
         textract_model
         and textract_model.raw_data
@@ -553,6 +558,9 @@ def parse_raw_data(ballot: Ballot, reparse=False):
     ):
         if not textract_model.parsed_data:
             textract_model.parse_raw_data()
+            if textract_model.withdrawal_rows():
+                ballot.sopn.withdrawal_detected = True
+                ballot.sopn.save()
         textract_data = parse_dataframe(ballot, textract_model.as_pandas)
 
     if camelot_data or textract_data:

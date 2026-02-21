@@ -67,6 +67,7 @@
             {% include "elections/includes/_sopn_debug.html" %}
         {% endif %}
 
+
         <div id="sopn-{{ object.ballot_paper_id }}" class="pdf_container"></div>
 
     {% else %}
@@ -78,13 +79,14 @@
         {% url 'admin:official_documents_ballotsopn_change' object.sopn.id as url %}
         You can <a href="{{ url }}">edit this in the admin interface</a> (e.g. to delete it)
     {% endif %}
-
     {% if object.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
         <script type="module">
-            import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
+            import {SOPN_VIEWER} from '/upload_document/sopn_viewer.js';
+
             SOPN_VIEWER.ShowSOPNInline(
                 '{{ object.sopn.uploaded_file.url }}',
-                '{{ object.ballot_paper_id }}'
+                '{{ object.ballot_paper_id }}',
+                {{ object.sopn.awstextractparsedsopn.get_withdrawals_bboxes|safe }}
             )
         </script>
     {% else %}

@@ -218,6 +218,8 @@ class BaseBallotSOPN(TimeStampedModel):
         blank=True,
     )
 
+    withdrawal_detected = models.BooleanField(default=False)
+
     class Meta:
         get_latest_by = "modified"
         abstract = True
