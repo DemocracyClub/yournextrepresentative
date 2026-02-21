@@ -198,22 +198,21 @@
       {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
         <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
       {% endif %}
-
-      {% if membership_edits_allowed %}
-        <p>
-          <a class="show-new-candidate-form button" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
-            Add a new candidate
-          </a>
-        </p>
-
-
-      {% elif not user.is_authenticated %}
-        <p>
-          <a href="{% url 'wombles:login' %}?next={{ request.path }}" class="button">
-            Sign in to add a new candidate
-          </a>
-        </p>
-      {% endif %}
+        {% if not sopn %}
+          {% if membership_edits_allowed %}
+            <p>
+              <a class="show-new-candidate-form button" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
+                Add a new candidate
+              </a>
+            </p>
+          {% elif not user.is_authenticated %}
+            <p>
+              <a href="{% url 'wombles:login' %}?next={{ request.path }}" class="button">
+                Sign in to add a new candidate
+              </a>
+            </p>
+          {% endif %}
+        {% endif %}
     </div>
     {% if user.is_authenticated and sopn %}
         {% if not ballot.has_lock_suggestion and not ballot.candidates_locked %}

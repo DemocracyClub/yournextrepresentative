@@ -45,7 +45,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
             </optgroup>
             <optgroup label='2015 General Election'>
             <option value='parl.65913.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Camberwell and Peckham (❌ cancelled)</option>
-            <option data-party-register="GB" data-uses-party-lists="False" disabled="True" value="parl.65808.2015-05-07">Member of Parliament for Dulwich and West Norwood 🔐</option>
+            <option data-party-register="GB" data-uses-party-lists="False" disabled="True" value="parl.65808.2015-05-07">Member of Parliament for Dulwich and West Norwood (Locked)</option>
             <option value='parl.14419.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh East</option>
             <option value='parl.14420.2015-05-07' data-party-register='GB' data-uses-party-lists='False'>Member of Parliament for Edinburgh North and Leith</option>
             </optgroup>""",
