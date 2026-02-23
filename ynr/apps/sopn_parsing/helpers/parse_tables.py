@@ -151,7 +151,8 @@ def fix_common_textract_errors(name):
 
     # "Ian" is frequently OCR'd as "lan" or "Lan".
     # Replace only when standalone
-    return re.sub(r"\b[Ll]an\b", "Ian", name)
+    name = re.sub(r"\b[Ll]an\b", "Ian", name)
+    return re.sub(r"\b[Ll]ain\b", "Iain", name)
 
 
 def base_clean_name(name):
