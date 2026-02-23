@@ -202,7 +202,7 @@ class PartyEmblem(TimeStampedModel):
     )
     ec_emblem_id = models.PositiveIntegerField(primary_key=True)
     image = models.ImageField(upload_to=emblem_upload_path, max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.TextField()
     date_approved = models.DateField(null=True)
     default = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
