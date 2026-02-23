@@ -44,3 +44,47 @@ class TestPartiesMakeJointParty(TestCase):
 
         joint_party = Party.objects.get(ec_id="joint-party:1-2")
         self.assertEqual(joint_party.date_registered.isoformat(), "2026-01-01")
+
+    def test_invalid_party_register(self):
+        out = StringIO()
+        sys.stderr = out
+        first_party = Party.objects.get(ec_id="PP01")
+        first_party.register = "NI"
+        first_party.save()
+
+        call_command("parties_make_joint_party", "PP01", "PP02")
+        sys.stderr = sys.__stderr__
+
+        self.assertIn(
+            "Both parties must be registered in the GB register", out.getvalue()
+        )
+        self.assertEqual(Party.objects.count(), 2)
+
+    def test_invalid_party_status(self):
+        out = StringIO()
+        sys.stderr = out
+        first_party = Party.objects.get(ec_id="PP01")
+        first_party.status = "Deregistered"
+        first_party.save()
+
+        call_command("parties_make_joint_party", "PP01", "PP02")
+        sys.stderr = sys.__stderr__
+
+        self.assertIn(
+            "Both parties must be registered in the GB register", out.getvalue()
+        )
+        self.assertEqual(Party.objects.count(), 2)
+
+    def test_invalid_party_ec_id(self):
+        out = StringIO()
+        sys.stderr = out
+
+        call_command("parties_make_joint_party", "PP01", "INVALID_EC_ID")
+        sys.stderr = sys.__stderr__
+
+        self.assertIn(
+            "One or both of the specified parties do not exist.",
+            out.getvalue(),
+        )
+
+        self.assertEqual(Party.objects.count(), 2)

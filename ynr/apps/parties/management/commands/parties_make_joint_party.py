@@ -29,8 +29,15 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        first_party = Party.objects.get(ec_id=options["first_party_ec_id"])
-        second_party = Party.objects.get(ec_id=options["second_party_ec_id"])
+        parties = self.validate_parties(
+            options["first_party_ec_id"], options["second_party_ec_id"]
+        )
+
+        if not parties:
+            return
+
+        first_party, second_party = parties
+
         date_registered = options["date_registered"]
         print(f"Making joint party between {first_party} and {second_party}")
 
@@ -58,3 +65,26 @@ class Command(BaseCommand):
         self.stdout.write(
             f"Created joint party {joint_party_name} with EC ID {joint_party_id}"
         )
+
+    def validate_parties(self, first_party_ec_id, second_party_ec_id):
+        try:
+            first_party = Party.objects.get(ec_id=first_party_ec_id)
+            second_party = Party.objects.get(ec_id=second_party_ec_id)
+        except Party.DoesNotExist:
+            self.stderr.write(
+                "One or both of the specified parties do not exist."
+            )
+            return None
+
+        if (
+            first_party.register != "GB"
+            or second_party.register != "GB"
+            or first_party.status == "Deregistered"
+            or second_party.status == "Deregistered"
+        ):
+            self.stderr.write(
+                "Both parties must be registered in the GB register."
+            )
+            return None
+
+        return first_party, second_party
