@@ -530,11 +530,18 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
             ("Lana", "Lana"),
             ("O'Flanagan", "O'Flanagan"),
             ("Stephen Ian Michael", "Stephen Ian Michael"),
-            # changes expceted
+            ("Elain", "Elain"),
+            ("McLain", "McLain"),
+            # changes expceted - Ian
             ("lan", "Ian"),
             ("Lan", "Ian"),
             ("Stephen Lan Michael", "Stephen Ian Michael"),
             ("Stephen lan Michael", "Stephen Ian Michael"),
+            # changes expceted - Iain
+            ("lain", "Iain"),
+            ("Lain", "Iain"),
+            ("Stephen Lain Michael", "Stephen Iain Michael"),
+            ("Stephen lain Michael", "Stephen Iain Michael"),
         ]
         for input_, expected in names:
             with self.subTest(name=names[0]):
