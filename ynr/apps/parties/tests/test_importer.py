@@ -15,7 +15,7 @@ from moderation_queue.tests.paths import (
     EXAMPLE_IMAGE_FILENAME,
     IMAGE_WITH_ALPHA,
 )
-from parties.importer import ECParty, ECPartyImporter, make_description_text
+from parties.importer import ECParty, ECPartyImporter, clean_description_text
 from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.tests.fixtures import DefaultPartyFixtures
@@ -161,25 +161,11 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         party["FieldingCandidatesInScotland"] = True
         self.assertEqual(party.nation_list, ["ENG", "SCO", "WAL"])
 
-    def test_make_description_text(self):
-        description_only_plus_en_dash = {
-            "Description": "Minuses for all - no en–dashes!",
-            "Translation": None,
-        }
-
-        description_with_translation = {
-            "Description": "Oh Well",
-            "Translation": "Helaas Pindakaas",
-        }
-
+    def test_clean_description_text(self):
         # a little hard to see, but this tests character conversion from en-dash (U2013) to minus (U002D)
         self.assertEqual(
-            make_description_text(description_only_plus_en_dash),
+            clean_description_text("Minuses for all - no en–dashes!"),
             "Minuses for all - no en-dashes!",
-        )
-        self.assertEqual(
-            make_description_text(description_with_translation),
-            "Oh Well | Helaas Pindakaas",
         )
 
     @patch("parties.importer.ECEmblem.download_emblem")
@@ -197,10 +183,12 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         self.assertEqual(party_model.name, "Wombles Alliance")
         self.assertEqual(party_model.register, "GB")
         self.assertEqual(party_model.status, "Registered")
-        self.assertEqual(
-            party_model.descriptions.first().description,
-            "Make Good Use of Bad Rubbish | Gwneud Defnydd Da o Sbwriel Gwael",
+        self.assertEqual(party_model.descriptions.count(), 2)
+        descriptions = party_model.descriptions.values_list(
+            "description", flat=True
         )
+        self.assertIn("Make Good Use of Bad Rubbish", descriptions)
+        self.assertIn("Gwneud Defnydd Da o Sbwriel Gwael", descriptions)
         self.assertEqual(party_model.emblems.count(), 1)
         self.assertEqual(
             party_model.default_emblem.description, "Box containing the word"
@@ -251,13 +239,19 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         )
         party.mark_inactive_descriptions()
 
-        active_descriptions = PartyDescription.objects.filter(
-            active=True, party_id=model.id
-        ).all()
-        self.assertEqual(len(active_descriptions), 1)
-        self.assertEqual(
-            active_descriptions[0].description,
-            make_description_text(FAKE_PARTY_DICT["PartyDescriptions"][0]),
+        active_descriptions = (
+            PartyDescription.objects.filter(active=True, party_id=model.id)
+            .all()
+            .values_list("description", flat=True)
+        )
+        self.assertEqual(len(active_descriptions), 2)
+        self.assertIn(
+            FAKE_PARTY_DICT["PartyDescriptions"][0]["Description"],
+            active_descriptions,
+        )
+        self.assertIn(
+            FAKE_PARTY_DICT["PartyDescriptions"][0]["Translation"],
+            active_descriptions,
         )
 
         inactive_descriptions = PartyDescription.objects.filter(
@@ -265,6 +259,55 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         ).all()
         self.assertEqual(len(inactive_descriptions), 1)
         self.assertEqual(inactive_descriptions[0].description, "Inactive")
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_bilingual_description_marked_inactive(self, FakeEmblemPath):
+        """
+        We used to import these as a single pipe seperated description e.g:
+        "Make Good Use of Bad Rubbish | Gwneud Defnydd Da o Sbwriel Gwael"
+        We now import
+        - "Make Good Use of Bad Rubbish" and
+        - "Gwneud Defnydd Da o Sbwriel Gwael"
+        as 2 different PartyDescription objects.
+        However, there are existing candidacies with FKs out to the old
+        bilingual ones. They should be kept around and marked inactive.
+        """
+        bilingual_description = f'{FAKE_PARTY_DICT["PartyDescriptions"][0]["Description"]} | {FAKE_PARTY_DICT["PartyDescriptions"][0]["Translation"]}'
+
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            EXAMPLE_IMAGE_FILENAME
+        )
+        party = ECParty(FAKE_PARTY_DICT)
+        model, created = party.save()
+        PartyDescriptionFactory(
+            party=model,
+            description=bilingual_description,
+            date_description_approved="2021-11-22",
+        )
+        party.mark_inactive_descriptions()
+
+        active_descriptions = (
+            PartyDescription.objects.filter(active=True, party_id=model.id)
+            .all()
+            .values_list("description", flat=True)
+        )
+        self.assertEqual(len(active_descriptions), 2)
+        self.assertIn(
+            FAKE_PARTY_DICT["PartyDescriptions"][0]["Description"],
+            active_descriptions,
+        )
+        self.assertIn(
+            FAKE_PARTY_DICT["PartyDescriptions"][0]["Translation"],
+            active_descriptions,
+        )
+
+        inactive_descriptions = PartyDescription.objects.filter(
+            active=False, party_id=model.id
+        ).all()
+        self.assertEqual(len(inactive_descriptions), 1)
+        self.assertEqual(
+            inactive_descriptions[0].description, bilingual_description
+        )
 
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_save_with_non_image_emblem(self, FakeEmblemPath):
