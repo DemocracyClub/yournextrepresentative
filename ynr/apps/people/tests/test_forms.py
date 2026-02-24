@@ -4,6 +4,7 @@ from candidates.models.popolo_extra import Ballot
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.test import TestCase
+from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.forms import PersonMembershipForm
 from people.tests.factories import PersonFactory
@@ -61,3 +62,40 @@ class TestPersonMembershipForm(
             mock.return_value = True
             form = PersonMembershipForm(instance=welsh_membership)
             self.assertTrue(form.show_previous_party_affiliations)
+
+    def test_party_identifier_initial_value_selected_with_party_description(
+        self,
+    ):
+        # use independent for this test because it has 2 descriptions
+        # [blank] and [No party listed]
+        independent = Party.objects.get(ec_id="ynmp-party:2")
+
+        membership = MembershipFactory(
+            ballot=self.dulwich_post_ballot,
+            person=PersonFactory(),
+            party=independent,
+            party_description=independent.descriptions.all().get(
+                description="[No party listed]"
+            ),
+        )
+        form = PersonMembershipForm(instance=membership)
+        select_html = str(form["party_identifier"].as_widget())
+        self.assertIn(
+            '<option value="ynmp-party:2__1001" selected register="all">[No party listed]</option>',
+            select_html,
+        )
+
+    def test_party_identifier_initial_value_selected_without_party_description(
+        self,
+    ):
+        membership = MembershipFactory(
+            ballot=self.dulwich_post_ballot,
+            person=PersonFactory(),
+            party=self.labour_party,
+        )
+        form = PersonMembershipForm(instance=membership)
+        select_html = str(form["party_identifier"].as_widget())
+        self.assertIn(
+            '<option value="PP53" selected register="GB">Labour Party</option>',
+            select_html,
+        )
