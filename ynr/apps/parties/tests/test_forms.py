@@ -74,10 +74,15 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             [
                 ("", ""),
                 (
-                    "PP12",
-                    ChoiceOptionWithContext(
-                        label="New party", attrs={"register": "GB"}
-                    ),
+                    "New party",
+                    [
+                        (
+                            "PP12",
+                            ChoiceOptionWithContext(
+                                label="New party", attrs={"register": "GB"}
+                            ),
+                        )
+                    ],
                 ),
             ],
         )
@@ -166,10 +171,15 @@ class TestPartyFields(UK2015ExamplesMixin, DefaultPartyFixtures, TestCase):
             [
                 ("", ""),
                 (
-                    "PP12",
-                    ChoiceOptionWithContext(
-                        label="New party", attrs={"register": "GB"}
-                    ),
+                    "New party",
+                    [
+                        (
+                            "PP12",
+                            ChoiceOptionWithContext(
+                                label="New party", attrs={"register": "GB"}
+                            ),
+                        )
+                    ],
                 ),
             ],
         )
