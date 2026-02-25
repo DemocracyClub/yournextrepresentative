@@ -440,7 +440,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def locked_status_text(self):
         if self.candidates_locked:
-            return mark_safe("Locked")
+            return mark_safe("🔐 Locked")
         return None
 
     @property
@@ -458,7 +458,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def suggested_lock_html(self):
         return mark_safe(
-            '<abbr title="Someone suggested locking this post">Lock Suggested</abbr>'
+            '<abbr title="Someone suggested locking this post">🔑 Lock Suggested</abbr>'
         )
 
     @cached_property
@@ -467,6 +467,16 @@ class Ballot(EEModifiedMixin, models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @cached_property
+    def has_sopn(self):
+        """
+        Return a boolean if the ballot has a related SOPN.
+
+        This is needed because accessing `ballot.sopn` without a SOPN will raise
+        `RelatedObjectDoesNotExist`. This can cause subtle errors in templates.
+        """
+        return hasattr(self, "sopn")
 
     @property
     def uncontested(self):
