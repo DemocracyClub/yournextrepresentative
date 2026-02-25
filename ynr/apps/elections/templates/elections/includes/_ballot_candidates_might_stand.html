@@ -1,7 +1,12 @@
 {% if candidates_might_stand_again %}
     <div class="candidates__previous">
-      <h3>Is a candidate from an earlier election standing again?</h3>
-
+      <h3>Past candidates in {{ ballot.post.label }}</h3>
+      <p>These candidates stood in {{ ballot.post.label }} in
+          {{ previous_ballot.election.election_date }}.
+          Candidates often stand again in the same area,
+          so it's worth researching to see if they are
+          standing in {{ ballot.election.election_date }} and recording what you find.
+      </p>
 
       <table class="table candidates-list">
         <thead>

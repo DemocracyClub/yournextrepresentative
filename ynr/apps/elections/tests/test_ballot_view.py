@@ -202,7 +202,7 @@ class TestBallotView(
         )
 
         self.assertEqual(ballot.is_welsh_run, True)
-        with self.assertNumQueries(10):
+        with self.assertNumQueries(11):
             response = self.app.get(ballot.get_absolute_url())
         self.assertNotContains(response, self.old_party.name)
 
@@ -357,9 +357,7 @@ class TestBallotView(
     def test_constituency_with_may_be_standing(self):
         self.create_memberships(self.past_ballot, self.parties)
         response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
-        response.mustcontain(
-            "Is a candidate from an earlier election standing again?"
-        )
+        response.mustcontain(f"Past candidates in {self.ballot.post.label}")
 
     def test_constituency_with_not_standing(self):
         self.create_memberships(self.past_ballot, self.parties)
