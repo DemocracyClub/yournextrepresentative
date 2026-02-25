@@ -34,19 +34,17 @@
 {% block title %}Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} on {{ ballot.election.election_date|date:"j F Y" }}{% endblock %}
 
 {% block hero %}
-  <h1>Candidates for {{ ballot.post.label }} on <br>{{ ballot.election.election_date|date:"j F Y" }}</h1>
+  <h1>{{ ballot.post.label }}</h1>
+    <p> <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}
+        on {{ ballot.election.election_date|date:"j F Y" }}</a>
+    </p>
 {% endblock %}
 
 
 {% block content %}
 <div class="row">
   <div class="columns large-9">
-    <div class="panel">
-        <h4>
-          This ballot is part of the <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}</a>
-        </h4>
-    </div>
-    {% if ballot.cancelled %}
+      {% if ballot.cancelled %}
       ❌ The poll for this election was cancelled
       {% if ballot.replaced_by %}
       and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>

@@ -150,7 +150,7 @@ class TestBallotView(
         self.assertFalse(future_ballot.candidates_locked)
         self.assertEqual(response.context["candidates"].count(), 9)
         expected_header = """
-        <h1>Candidates for Bar Ward on <br>6 October 2024</h1>
+        <h1>Bar Ward</h1>
         """
         self.assertInHTML(
             expected_header,
