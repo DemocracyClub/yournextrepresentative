@@ -82,7 +82,7 @@
 
     {% include "elections/includes/_ballot_sopn_links.html" %}
 
-
+    {% if candidates.exists %}
       <table class="table candidates-list">
         <thead>
           <tr>
@@ -184,13 +184,14 @@
           {% endfor %}
         </tbody>
       </table>
-
+      {% endif %}
       {% if user_can_record_results and has_any_winners %}
         <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
           {% csrf_token %}
           <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
         </form>
       {% endif %}
+
     <div class="ballot-ctas">
 
       {% include "elections/includes/_ballot_suggest_locking.html" %}
