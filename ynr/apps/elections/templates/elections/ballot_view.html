@@ -55,11 +55,7 @@
       🔄 This ballot replaces a <a href="{{ ballot.replaces.get_absolute_url }}">previously cancelled ballot</a>
     {% endif %}
 
-    {% if not ballot.candidates_locked and candidates.exists %}
-      <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
-      Once nomination papers are published, we will manually verify each candidate.
-      </p>
-    {% endif %}
+
 
     {% if ballot.candidates_locked and candidates.exists %}
       <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official Statement of Persons Nominated
@@ -69,6 +65,15 @@
     {% include "elections/includes/_ballot_sopn_links.html" %}
 
     {% if candidates.exists %}
+        {% if not ballot.candidates_locked and candidates.exists %}
+            {% if ballot.sopn %}
+                <p>These candidates have not yet been double-checked against the official candidate list.</p>
+            {% else %}
+                <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
+                Once nomination papers are published, we will manually verify each candidate.
+                </p>
+            {% endif %}
+        {% endif %}
       <table class="table candidates-list">
         <thead>
           <tr>
@@ -139,7 +144,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-            <td> 
+            <td>
               {% if membership_edits_allowed %}
                 <a class="button tiny js-toggle-source-confirmation not-standing">
                   Not actually standing?
