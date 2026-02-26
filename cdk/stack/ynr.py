@@ -13,6 +13,7 @@ from aws_cdk import aws_elasticloadbalancingv2 as elbv2
 from aws_cdk import aws_events as events
 from aws_cdk import aws_events_targets as events_targets
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
@@ -568,6 +569,19 @@ class YnrStack(Stack):
             )
             container_events_rule.add_target(
                 events_targets.SnsTopic(container_topic)
+            )
+
+            _lambda.Function(
+                self,
+                "ContainerEventFilter",
+                runtime=_lambda.Runtime.PYTHON_3_11,
+                handler="index.lambda_handler",
+                code=_lambda.Code.from_asset(
+                    "cdk/stack/lambdas/format_container_event"
+                ),
+                environment={
+                    "SNS_TOPIC_ARN": metric_topic.topic_arn,
+                },
             )
 
             filtered_rule = events.Rule(
