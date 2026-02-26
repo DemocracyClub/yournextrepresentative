@@ -561,6 +561,14 @@ class YnrStack(Stack):
                     "SNS_TOPIC_ARN": metric_topic.topic_arn,
                 },
             )
+
+            logs.LogGroup(
+                self,
+                "ContainerEventFilterLogGroup",
+                log_group_name=f"/aws/lambda/{lambda_func.function_name}",
+                retention=logs.RetentionDays.ONE_WEEK
+            )
+
             sns.Subscription(
                 self,
                 "LambdaSubscription",
