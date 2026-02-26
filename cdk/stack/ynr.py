@@ -571,7 +571,7 @@ class YnrStack(Stack):
                 events_targets.SnsTopic(container_topic)
             )
 
-            _lambda.Function(
+            lambda_func = _lambda.Function(
                 self,
                 "ContainerEventFilter",
                 runtime=_lambda.Runtime.PYTHON_3_11,
@@ -582,6 +582,13 @@ class YnrStack(Stack):
                 environment={
                     "SNS_TOPIC_ARN": metric_topic.topic_arn,
                 },
+            )
+            sns.Subscription(
+                self,
+                "LambdaSubscription",
+                topic=container_topic,
+                endpoint=lambda_func.function_arn,
+                protocol=sns.SubscriptionProtocol.LAMBDA,
             )
 
             filtered_rule = events.Rule(
