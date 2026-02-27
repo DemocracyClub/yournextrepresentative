@@ -37,17 +37,17 @@
                     <td>
                         <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
                            title="Edit person" target="_blank">
-                            ✏️
-                        </a>
+                            ✏️ Edit
+                        </a><br>
                         <a href="{% url 'person-other-name-create' membership.person.pk %}"
                            class="radius secondary label known-person-alternate-name" title="Add alternative names">
-                            🏷️
-                        </a>
+                            🏷️ Add name
+                        </a><br>
 
                         <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
                            href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}"
                            class="radius secondary label known-person-not-standing" title="Mark as not standing">
-                            ❌
+                            ❌ Not standing
                         </a>
                     </td>
                     <td>
