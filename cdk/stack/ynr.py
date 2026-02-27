@@ -563,12 +563,21 @@ class YnrStack(Stack):
                 },
             )
 
+            lambda_func.add_permission(
+                "SNSInvokePermission",
+                principal=iam.ServicePrincipal("sns.amazonaws.com"),
+                action="lambda:InvokeFunction",
+                source_arn=container_topic.topic_arn,
+            )
+
             logs.LogGroup(
                 self,
                 "ContainerEventFilterLogGroup",
                 log_group_name=f"/aws/lambda/{lambda_func.function_name}",
                 retention=logs.RetentionDays.ONE_MONTH,
             )
+
+            metric_topic.grant_publish(lambda_func)
 
             sns.Subscription(
                 self,
