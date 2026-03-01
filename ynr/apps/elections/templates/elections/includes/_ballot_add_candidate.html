@@ -1,0 +1,24 @@
+{% if not user.is_authenticated and not ballot.has_sopn %}
+    <a href="{% url 'wombles:login' %}?next={{ request.path }}" class="button small right" style="margin:0">
+        Sign in to add a new candidate
+    </a>
+{% endif %}
+
+{% if membership_edits_allowed %}
+    <a class="show-new-candidate-form button small {% if not position %}right{% endif %} {% if ballot.has_sopn %}secondary{% else %}success{% endif %}"
+       style="margin:0" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
+        Add a new candidate
+    </a>
+
+    {% if add_candidate_form %}
+        <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
+            <h4>Add a new candidate</h4>
+            <form id="new-candidate-form" name="new-candidate-form"
+                  action="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
+                {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
+                    {% include 'candidates/_person_form.html' %}
+                {% endwith %}
+            </form>
+        </div>
+    {% endif %}
+{% endif %}
