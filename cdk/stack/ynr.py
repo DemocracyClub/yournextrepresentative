@@ -545,30 +545,8 @@ class YnrStack(Stack):
                 protocol=sns.SubscriptionProtocol.EMAIL,
             )
 
-            sns.Subscription(
-                self,
-                "EmailSubscription",
-                topic=container_topic,
-                endpoint=alert_email_recipient.string_value,
-                protocol=sns.SubscriptionProtocol.EMAIL,
-            )
             default_bus = events.EventBus.from_event_bus_name(
                 self, "EventBus", "default"
-            )
-            container_events_rule = events.Rule(
-                self,
-                "email-notify",
-                rule_name="email-notify",
-                description="YNR Task failure",
-                event_bus=default_bus,
-                event_pattern=events.EventPattern(
-                    source=["aws.ecs"],
-                    detail={"clusterArn": [cluster.cluster_arn]},
-                    detail_type=["ECS Task State Change"],
-                ),
-            )
-            container_events_rule.add_target(
-                events_targets.SnsTopic(container_topic)
             )
 
             lambda_func = _lambda.Function(
@@ -591,11 +569,12 @@ class YnrStack(Stack):
                 protocol=sns.SubscriptionProtocol.LAMBDA,
             )
 
-            filtered_rule = events.Rule(
+            container_events_rule = events.Rule(
                 self,
                 "FilteredECSAlertsRule",
                 rule_name="filtered-alerts-rule",
                 description="YNR Task/Container alerts",
+                event_bus=default_bus,
                 event_pattern=events.EventPattern(
                     source=["aws.ecs"],
                     detail_type=["ECS Task State Change"],
@@ -603,19 +582,15 @@ class YnrStack(Stack):
                         "clusterArn": [cluster.cluster_arn],
                         "launchType": ["FARGATE"],
                         "lastStatus": ["STOPPED"],
-                        "stopCode": [
-                            {
-                                "anything-but": [
-                                    "ServiceSchedulerInitiated",  # Normal deployments
-                                    "UserInitiated",  # Manual stops by an AWS Console user
-                                ]
-                            }
-                        ],
+                        # Rather than doing filtering here via the CDK, we instead filter the events in our lambda
+                        # See cdk/stack/lambdas/format_container_event for the lambda itself
                     },
                 ),
             )
 
-            filtered_rule.add_target(events_targets.SnsTopic(container_topic))
+            container_events_rule.add_target(
+                events_targets.SnsTopic(container_topic)
+            )
 
     def create_cloudfront(
         self, service: ecs_patterns.ApplicationLoadBalancedFargateService
