@@ -103,7 +103,7 @@
             <th>Rank</th>
             {% endif %}
             {% if user.is_authenticated %}
-            <th>Actions</th>
+            <th class="text-right">Actions</th>
             {% endif %}
           </tr>
         </thead>
@@ -155,7 +155,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-            <td>
+            <td class="text-right">
               {% if membership_edits_allowed %}
                 <a class="button tiny js-toggle-source-confirmation not-standing">
                   Not actually standing?
