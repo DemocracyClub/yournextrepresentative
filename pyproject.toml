@@ -152,6 +152,7 @@ addopts =[
     "--ignore=cdk",
     "--ignore=node_modules",
     "--ruff",
+    "--ruff-format",
     "--ds=ynr.settings.testing"
 ]
 
