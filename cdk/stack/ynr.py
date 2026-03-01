@@ -558,6 +558,7 @@ class YnrStack(Stack):
                     "cdk/stack/lambdas/format_container_event"
                 ),
                 environment={
+                    "LOG_LEVEL": "INFO",
                     "SNS_TOPIC_ARN": metric_topic.topic_arn,
                 },
             )
@@ -566,7 +567,7 @@ class YnrStack(Stack):
                 self,
                 "ContainerEventFilterLogGroup",
                 log_group_name=f"/aws/lambda/{lambda_func.function_name}",
-                retention=logs.RetentionDays.ONE_WEEK
+                retention=logs.RetentionDays.ONE_MONTH,
             )
 
             sns.Subscription(
