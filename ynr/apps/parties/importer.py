@@ -3,7 +3,6 @@ import os
 import re
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import Dict
 
 import dateutil.parser
 import httpx
@@ -46,22 +45,7 @@ def make_joint_party_id(id1, id2):
     return "joint-party:{}-{}".format(*numbers)
 
 
-def make_description_text(ec_description: Dict) -> str:
-    """
-    Create text for `PartyDescription.description` field from EC-shaped description object
-    :return: string
-    """
-    text = " | ".join(
-        [
-            d
-            for d in (
-                ec_description["Description"],
-                ec_description.get("Translation"),
-            )
-            if d
-        ]
-    )
-
+def clean_description_text(text: str) -> str:
     # replace en-dash with minus
     return text.replace("\u2013", "\u002d")
 
@@ -233,7 +217,6 @@ class ECPartyImporter:
 class ECParty(dict):
     """
     A python representation of the party JSON from the EC API
-
     """
 
     def __init__(self, party_dict):
@@ -265,16 +248,33 @@ class ECParty(dict):
             self.mark_inactive_descriptions()
             self.mark_inactive_emblems()
 
+        descriptions = []
         for description in self.get("PartyDescriptions", []):
-            text = make_description_text(description)
-            PartyDescription.objects.update_or_create(
-                description=text,
-                party=self.model,
-                defaults={
-                    "date_description_approved": self.parse_date(
+            descriptions.append(
+                {
+                    "text": clean_description_text(description["Description"]),
+                    "date": self.parse_date(
                         description["DateDescriptionFirstApproved"]
-                    )
-                },
+                    ),
+                }
+            )
+            if description.get("Translation"):
+                descriptions.append(
+                    {
+                        "text": clean_description_text(
+                            description["Translation"]
+                        ),
+                        "date": self.parse_date(
+                            description["DateDescriptionFirstApproved"]
+                        ),
+                    }
+                )
+
+        for description in descriptions:
+            PartyDescription.objects.update_or_create(
+                description=description["text"],
+                party=self.model,
+                defaults={"date_description_approved": description["date"]},
             )
 
         for emblem_dict in self.get("PartyEmblems", []):
@@ -397,7 +397,13 @@ class ECParty(dict):
         ec_description_list = []
 
         for description in self.get("PartyDescriptions", []):
-            ec_description_list.append(make_description_text(description))
+            ec_description_list.append(
+                clean_description_text(description["Description"])
+            )
+            if description.get("Translation"):
+                ec_description_list.append(
+                    clean_description_text(description["Translation"])
+                )
 
         inactive_descriptions = (
             PartyDescription.objects.exclude(
