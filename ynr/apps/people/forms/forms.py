@@ -209,9 +209,15 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         instance: Membership = kwargs.get("instance", None)
         person: Person = kwargs.pop("person", None)
         if instance:
+            if instance.party_description:
+                party_id = (
+                    f"{instance.party.ec_id}__{instance.party_description.id}"
+                )
+            else:
+                party_id = instance.party.ec_id
             initial = {
                 "ballot_paper_id": kwargs["instance"].ballot.ballot_paper_id,
-                "party_identifier": ["", instance.party.ec_id],
+                "party_identifier": ["", party_id],
             }
             if instance.ballot.is_welsh_run:
                 initial["previous_party_affiliations"] = list(
