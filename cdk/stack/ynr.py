@@ -601,6 +601,7 @@ class YnrStack(Stack):
                     header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
                         "x-csrfmiddlewaretoken",
                         "X-CSRFToken",
+                        "x-requested-with",
                         "Accept",
                         "Accept-Language",
                         "Authorization",
@@ -631,6 +632,7 @@ class YnrStack(Stack):
             header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
                 "x-csrfmiddlewaretoken",
                 "X-CSRFToken",
+                "x-requested-with",
                 "Accept",
                 "Authorization",
                 "Cache-Control",
@@ -654,6 +656,7 @@ class YnrStack(Stack):
             header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
                 "x-csrfmiddlewaretoken",
                 "X-CSRFToken",
+                "x-requested-with",
                 "Accept",
                 "Authorization",
                 "Cache-Control",
