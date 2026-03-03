@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 from django.db.models import JSONField
 from model_utils.models import TimeStampedModel
@@ -55,27 +54,14 @@ class RawPeople(TimeStampedModel):
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source)
 
-    def as_form_kwargs(self, parser=settings.DEFAULT_PARSING_BACKEND):
+    def as_form_kwargs(self):
         """
         Returns a list of dicts designed for populating the BulkAddFormSet's
         initial values
 
         """
-        data_attr = self.textract_data
-        if (
-            parser != settings.SOPN_PARSING_BACKENDS.TEXTRACT
-            or self.source_type != self.SOURCE_PARSED_PDF
-        ):
-            data_attr = self.data
-
-        if not data_attr:
-            if parser == settings.SOPN_PARSING_BACKENDS.TEXTRACT and self.data:
-                data_attr = self.data
-            else:
-                return {}
         initial = []
-
-        for candidacy in data_attr:
+        for candidacy in self.textract_data:
             party_id = candidacy["party_id"]
             description_id = candidacy.get("description_id")
             if description_id:

@@ -62,7 +62,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Bart", "party_id": "PP52"}],
             source_type=RawPeople.SOURCE_PARSED_PDF,
         )
         response = self.app.get(
@@ -197,7 +197,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[
+            textract_data=[
                 {
                     "name": "Homer Simpson",
                     "party_id": "PP63",
@@ -737,7 +737,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Bart", "party_id": "PP52"}],
             source_type=RawPeople.SOURCE_PARSED_PDF,
         )
         raw_people = RawPeople.objects.filter(ballot=self.dulwich_post_ballot)
@@ -773,7 +773,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Bart", "party_id": "PP52"}],
             source_type=RawPeople.SOURCE_BULK_ADD_FORM,
         )
         raw_people = RawPeople.objects.filter(ballot=self.dulwich_post_ballot)
@@ -792,7 +792,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         # create a party that isnt included in the default_party_choices as it
-        # doesnt have any current candidates
+        # doesn't have any current candidates
         PartyFactory(
             ec_id="PP530",
             name="Barnsley Independent Group",
