@@ -312,7 +312,8 @@ class EE_ImporterTest(WebTest):
         )
 
         self.assertEqual(every_election.Ballot.objects.all().count(), 0)
-        with self.assertNumQueries(258):
+
+        with self.assertNumQueries(243):
             call_command("uk_create_elections_from_every_election")
         self.assertEqual(every_election.Ballot.objects.all().count(), 15)
         self.assertEqual(
@@ -699,8 +700,8 @@ class TestEEElection:
         the data that is stored from EE response when we create a
         ballot. If we begin to capture a new field, or remove one,
         then this test will fail. This is mainly to act as a safety
-        net so that a field that we rely on elsewhere is not removed
-        that might otherwise go unnoticed e.g. the 'ee_modifoed' field
+        net so that we will notice if a field that we rely on elsewhere
+        is removed e.g. the 'ee_modified' field
         """
         modified = timezone.datetime(
             2021, 10, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
@@ -719,9 +720,9 @@ class TestEEElection:
         parent = every_election.EEElection({"election_id": "local.2021-10-21"})
         parent.election_object = mock.MagicMock()
 
-        result = ("ballot_obj", "created")
+        result = (mock.MagicMock(cancelled=False), True)
         with patch.object(
-            Ballot.objects, "update_or_create", return_value=result
+            Ballot.objects, "get_or_create", return_value=result
         ) as mock_update_or_create:
             ee_election.get_or_create_ballot(parent=parent)
             mock_update_or_create.assert_called_once_with(
@@ -788,3 +789,75 @@ class TestEEElection:
                 },
             )
             mock_get_or_create_org.assert_called_once()
+
+    @patch("elections.uk.every_election.EEElection.get_or_create_election")
+    @patch("elections.uk.every_election.EEElection.get_or_create_post")
+    @pytest.mark.django_db
+    def test_uncancelling_ballot_also_unlocks_it(
+        self, mock_get_or_create_post, mock_get_or_create_election
+    ):
+        """
+        When a ballot is cancelled and locked, and EE reports it as
+        no longer cancelled, it should also be unlocked.
+        """
+        existing_ballot = BallotPaperFactory(
+            cancelled=True, candidates_locked=True
+        )
+
+        data = {
+            "group": existing_ballot.election.slug,
+            "seats_contested": 1,
+            "election_id": existing_ballot.ballot_paper_id,
+            "cancelled": False,
+            "replaces": None,
+            "modified": None,
+            "voting_system": {"slug": "FPTP"},
+        }
+        ee_election = every_election.EEElection(data)
+        ee_election.post_object = existing_ballot.post
+        parent = every_election.EEElection(
+            {"election_id": existing_ballot.election.slug}
+        )
+        parent.election_object = existing_ballot.election
+
+        ee_election.get_or_create_ballot(parent=parent)
+
+        existing_ballot.refresh_from_db()
+        assert existing_ballot.cancelled is False
+        assert existing_ballot.candidates_locked is False
+
+    @patch("elections.uk.every_election.EEElection.get_or_create_election")
+    @patch("elections.uk.every_election.EEElection.get_or_create_post")
+    @pytest.mark.django_db
+    def test_non_cancelled_locked_ballot_stays_locked(
+        self, mock_get_or_create_post, mock_get_or_create_election
+    ):
+        """
+        When a ballot is not cancelled but is locked, and EE still reports
+        it as not cancelled, the lock should be preserved.
+        """
+        existing_ballot = BallotPaperFactory(
+            cancelled=False, candidates_locked=True
+        )
+
+        data = {
+            "group": existing_ballot.election.slug,
+            "seats_contested": 1,
+            "election_id": existing_ballot.ballot_paper_id,
+            "cancelled": False,
+            "replaces": None,
+            "modified": None,
+            "voting_system": {"slug": "FPTP"},
+        }
+        ee_election = every_election.EEElection(data)
+        ee_election.post_object = existing_ballot.post
+        parent = every_election.EEElection(
+            {"election_id": existing_ballot.election.slug}
+        )
+        parent.election_object = existing_ballot.election
+
+        ee_election.get_or_create_ballot(parent=parent)
+
+        existing_ballot.refresh_from_db()
+        assert existing_ballot.cancelled is False
+        assert existing_ballot.candidates_locked is True
