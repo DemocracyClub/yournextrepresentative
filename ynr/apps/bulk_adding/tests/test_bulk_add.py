@@ -522,7 +522,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_redirect_to_review_form(self):
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
-            data=[{"name": "Bart", "party_id": "PP52"}],
+            textract_data=[{"name": "Bart", "party_id": "PP52"}],
         )
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user

@@ -70,7 +70,7 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(False, ballot.candidates_locked)
 
         # Create a RawInput model
-        RawPeople.objects.create(ballot=ballot, data={})
+        RawPeople.objects.create(ballot=ballot, textract_data={})
 
         self.app.get(
             self.dulwich_post_ballot.get_absolute_url(),
@@ -142,7 +142,7 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
         ballot = update_lock(post, self.election, False)
         self.assertEqual(False, ballot.candidates_locked)
 
-        RawPeople.objects.create(ballot=ballot, data={})
+        RawPeople.objects.create(ballot=ballot, textract_data={})
 
         self.app.get(
             self.dulwich_post_ballot.get_absolute_url(),
