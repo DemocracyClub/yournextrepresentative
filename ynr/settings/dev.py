@@ -15,6 +15,7 @@ DC_ENVIRONMENT = "local"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 SOPN_UPDATE_NOTIFICATION_EMAILS = ["developers@democracyclub.org.uk"]
+USE_DUMMY_PDF_EXTRACTOR = True
 
 SECRET_KEY = "django-insecure-fake"
 
