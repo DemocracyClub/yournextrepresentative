@@ -72,6 +72,19 @@ $(function() {
     confirmation.hide();
   });
 
+
+  // Generic show/hide when pressing a button
+  document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-toggle]");
+  if (!btn) return;
+
+  const panel = document.getElementById(btn.getAttribute("aria-controls"));
+  const isOpen = !panel.hasAttribute("hidden");
+
+  panel.toggleAttribute("hidden", isOpen);
+  btn.setAttribute("aria-expanded", String(!isOpen));
+});
+
   $('.winner-confirm').submit(function(e) {
     var enclosingDiv = $(e.target).parent(),
       candidateName=enclosingDiv.find('.candidate-name').text(),

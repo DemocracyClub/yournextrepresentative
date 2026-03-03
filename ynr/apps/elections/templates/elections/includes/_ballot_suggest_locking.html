@@ -2,21 +2,16 @@
 {% if user.is_authenticated and sopn and not ballot.candidates_locked %}
   {# If there's a SOPN and no lock, we want to show info about lock suggestions #}
   {% if ballot.has_lock_suggestion %}
-    <h3>Suggest locking</h3>
-    {% if current_user_suggested_lock %}
-      <p>Thanks, you've suggested we lock this ballot – we'll review it soon.</p>
-    {% else %}
-      <p>Someone has suggested locking this ballot.</p>
+    {% if not current_user_suggested_lock %}
       <form method=post action="{% url 'remove-lock-suggestion-ajax' %}">
       {% csrf_token %}
       <input type="hidden" name="ballot" value="{{ ballot.ballot_paper_id }}">
       <button type="submit" class="button small alert">Remove suggested lock</button>
       </form>
-
     {% endif %}
   {% elif candidates.exists %}
-    <h3>Suggest locking</h3>
-    <form method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}">
+    <button class="button small" aria-expanded="false" aria-controls="suggest_lock_form" data-toggle>Suggest locking</button>
+    <form class="source-confirmation" method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}" hidden>
     {% csrf_token %}
     <p>
       If you think the candidates for this ballot is complete,

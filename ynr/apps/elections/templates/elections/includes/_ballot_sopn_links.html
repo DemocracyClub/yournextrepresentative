@@ -1,13 +1,7 @@
 {% if sopn %}
 
           <a href="{{ sopn.get_absolute_url }}" class="button">View SOPN</a>
-            {% if user.is_authenticated %}
-        {% if not ballot.has_lock_suggestion and not ballot.candidates_locked %}
-          <a href="{{ ballot.get_bulk_add_url }}" class="button">
-            Add candidates from SOPN
-          </a>
-        {% endif %}
-    {% endif %}
+
 
 
 {% else %}
