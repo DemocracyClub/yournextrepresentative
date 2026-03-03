@@ -80,7 +80,9 @@ class Command(BaseSOPNParsingCommand):
                     f"Starting analysis for {ballot.ballot_paper_id}"
                 )
                 ballot_sopn: BallotSOPN = ballot.sopn
-                TEXTRACT_BACKOFF_TIME = getattr(settings, "TEXTRACT_BACKOFF_TIME", 60)
+                TEXTRACT_BACKOFF_TIME = getattr(
+                    settings, "TEXTRACT_BACKOFF_TIME", 60
+                )
                 if self.queue_full():
                     self.stdout.write(
                         f"Queue full, sleeping {TEXTRACT_BACKOFF_TIME}"
@@ -93,7 +95,9 @@ class Command(BaseSOPNParsingCommand):
                 # TO DO: add logging here
                 if getattr(ballot_sopn, "textract_result", None):
                     continue
-                sleep(getattr(settings, "TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA", 1))
+                sleep(
+                    getattr(settings, "TEXTRACT_STAT_JOBS_PER_SECOND_QUOTA", 1)
+                )
                 textract_helper.start_detection(ballot_sopn)
         if options["get_results"]:
             qs = qs.filter(sopn__awstextractparsedsopn__isnull=False)

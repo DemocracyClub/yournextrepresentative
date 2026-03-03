@@ -13,7 +13,7 @@ from parties.models import Party, PartyDescription
 from parties.tests.factories import PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.helpers import parse_tables
-from sopn_parsing.models import CamelotParsedSOPN
+from sopn_parsing.models import AWSTextractParsedSOPN
 from sopn_parsing.tests.data.welsh_sopn_data import welsh_sopn_data
 
 from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import (
@@ -22,10 +22,19 @@ from ynr.apps.sopn_parsing.management.commands.sopn_parsing_parse_tables import 
 
 
 class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
+    maxDiff = 0
+
     def setUp(self):
         PartyFactory(ec_id="PP85", name="UK Independence Party (UKIP)")
         with connection.cursor() as cursor:
+            cursor.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
             cursor.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;")
+
+        self.textract_response_path = (
+            Path(__file__).parent.parent
+            / "tests/data/textract_responses/"
+            / "local.rushmoor.aldershot-park.2023-05-04.json"
+        )
 
     def test_basic_parsing(self):
         self.assertFalse(RawPeople.objects.exists())
@@ -33,84 +42,42 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
             ballot=self.dulwich_post_ballot,
             source_url="example.com",
         )
-        dataframe = json.dumps(
-            {
-                "0": {
-                    "0": "Name of \nCandidate",
-                    "1": "BRADBURY \nAndrew John",
-                    "2": "COLLINS \nDave",
-                    "3": "HARVEY \nPeter John",
-                    "4": "JENNER \nMelanie",
-                },
-                "1": {
-                    "0": "Home Address",
-                    "1": "10 Fowey Close, \nShoreham by Sea, \nWest Sussex, \nBN43 5HE",
-                    "2": "51 Old Fort Road, \nShoreham by Sea, \nBN43 5RL",
-                    "3": "76 Harbour Way, \nShoreham by Sea, \nSussex, \nBN43 5HH",
-                    "4": "9 Flag Square, \nShoreham by Sea, \nWest Sussex, \nBN43 5RZ",
-                },
-                "2": {
-                    "0": "Description (if \nany)",
-                    "1": "Green Party",
-                    "2": "Independent",
-                    "3": "UK Independence \nParty (UKIP)",
-                    "4": "Labour Party",
-                },
-                "3": {
-                    "0": "Name of \nProposer",
-                    "1": "Tiffin Susan J",
-                    "2": "Loader Jocelyn C",
-                    "3": "Hearne James H",
-                    "4": "O`Connor Lavinia",
-                },
-                "4": {
-                    "0": "Reason \nwhy no \nlonger \nnominated\n*",
-                    "1": "",
-                    "2": "",
-                    "3": "",
-                    "4": "",
-                },
-            }
-        )
-        CamelotParsedSOPN.objects.create(
-            sopn=doc, raw_data=dataframe, status="unparsed"
+
+        AWSTextractParsedSOPN.objects.create(
+            sopn=doc,
+            raw_data=self.textract_response_path.open().read(),
+            status="unparsed",
         )
         call_command("sopn_parsing_parse_tables")
         self.assertEqual(RawPeople.objects.count(), 1)
         raw_people = RawPeople.objects.get()
         self.assertEqual(
-            raw_people.data,
+            raw_people.textract_data,
             [
                 {
-                    "name": "Andrew John Bradbury",
-                    "party_id": "PP63",
-                    "sopn_last_name": "BRADBURY",
-                    "sopn_first_names": "Andrew John",
+                    "name": "David Anthony Armitage",
+                    "party_id": "PP52",
+                    "sopn_last_name": "ARMITAGE",
+                    "sopn_first_names": "David Anthony",
                 },
                 {
-                    "name": "Dave Collins",
-                    "party_id": "ynmp-party:2",
-                    "sopn_last_name": "COLLINS",
-                    "sopn_first_names": "Dave",
+                    "name": "Sam Morrell",
+                    "party_id": "PP90",
+                    "sopn_last_name": "MORRELL",
+                    "sopn_first_names": "Sam",
                 },
                 {
-                    "name": "Peter John Harvey",
-                    "party_id": "PP85",
-                    "sopn_last_name": "HARVEY",
-                    "sopn_first_names": "Peter John",
-                },
-                {
-                    "name": "Melanie Jenner",
+                    "name": "Sophie Lee 'Ann Porter",
                     "party_id": "PP53",
-                    "sopn_last_name": "JENNER",
-                    "sopn_first_names": "Melanie",
+                    "sopn_last_name": "PORTER",
+                    "sopn_first_names": "Sophie Lee 'Ann",
                 },
             ],
         )
 
     def test_welsh_run_sopn(self):
         """
-        Test that if the ballot is welsh run and previous party affiliations
+        Test that if the ballot is Welsh run and previous party affiliations
         are included they are parsed
         """
         self.assertFalse(RawPeople.objects.exists())
@@ -127,56 +94,104 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                 "date_registered": "1999-01-14",
             },
         )
+        welsh_labour, _ = Party.objects.update_or_create(
+            ec_id="TEMP-WELSH-LABOUR",
+            legacy_slug="temp:welsh-labour",
+            defaults={
+                "name": "Welsh Labour",
+                "date_registered": "1999-01-14",
+            },
+        )
+
+        welsh_liberal_democrats, _ = Party.objects.update_or_create(
+            ec_id="TEMP-WELSH-LIBDEM",
+            legacy_slug="temp:welsh-liberal-democrats",
+            defaults={
+                "name": "Welsh Liberal Democrats",
+                "date_registered": "1999-01-14",
+            },
+        )
+
+        welsh_conservative, _ = Party.objects.update_or_create(
+            ec_id="TEMP-WELSH-CONS",
+            legacy_slug="temp:welsh-conservative-party-candidate",
+            defaults={
+                "name": "Welsh Conservative Party Candidate",
+                "date_registered": "1999-01-14",
+            },
+        )
+
+        reform_uk, _ = Party.objects.update_or_create(
+            ec_id="TEMP-REFORM-UK",
+            legacy_slug="temp:reform-uk",
+            defaults={
+                "name": "Reform Party",
+                "date_registered": "2018-11-23",  # Brexit Party registration date
+            },
+        )
+
+        propel, _ = Party.objects.update_or_create(
+            ec_id="TEMP-PROPEL",
+            legacy_slug="temp:propel-stand-up-for-cardiff",
+            defaults={
+                "name": "Propel: Stand Up for Cardiff",
+                "date_registered": "2021-01-01",
+            },
+        )
 
         dataframe = json.dumps(welsh_sopn_data)
-        CamelotParsedSOPN.objects.create(
+        AWSTextractParsedSOPN.objects.create(
             sopn=doc, raw_data=dataframe, status="unparsed"
         )
         call_command("sopn_parsing_parse_tables")
         self.assertEqual(RawPeople.objects.count(), 1)
         raw_people = RawPeople.objects.get()
+        self.maxDiff = 0
         self.assertEqual(
-            raw_people.data,
+            raw_people.textract_data,
             [
                 {
-                    "name": "John Smith",
-                    "party_id": self.conservative_party.ec_id,
-                    "previous_party_affiliations": [self.ld_party.ec_id],
-                    "sopn_last_name": "SMITH",
-                    "sopn_first_names": "John",
+                    "name": "Gary Bowen-Thomson",
+                    "party_id": "TEMP-WELSH-LABOUR",
+                    "sopn_last_name": "BOWEN-THOMSON",
+                    "sopn_first_names": "Gary",
                 },
                 {
-                    "name": "Joe Bloggs",
-                    "party_id": self.labour_party.ec_id,
-                    "previous_party_affiliations": ["ynmp-party:2"],
-                    "sopn_last_name": "BLOGGS",
+                    "name": "Chris Cogger",
+                    "party_id": "TEMP-WELSH-LIBDEM",
+                    "sopn_last_name": "COGGER",
+                    "sopn_first_names": "Chris",
+                },
+                {
+                    "name": "Carol Ann Falcon",
+                    "party_id": "PP77",
+                    "sopn_last_name": "FALCON",
+                    "sopn_first_names": "Carol Ann",
+                    "previous_party_affiliations": ["TEMP-REFORM-UK"],
+                },
+                {
+                    "name": "Leanne Lennox",
+                    "party_id": "TEMP-PROPEL",
+                    "sopn_last_name": "LENNOX",
+                    "sopn_first_names": "Leanne",
+                },
+                {
+                    "name": "Joe Roberts",
+                    "party_id": "TEMP-WELSH-CONS",
+                    "sopn_last_name": "ROBERTS",
                     "sopn_first_names": "Joe",
                 },
                 {
-                    "name": "Jon Doe",
-                    "party_id": self.ld_party.ec_id,
-                    "sopn_last_name": "DOE",
-                    "sopn_first_names": "Jon",
+                    "name": "Jess Ryan",
+                    "party_id": "PP77",
+                    "sopn_last_name": "RYAN",
+                    "sopn_first_names": "Jess",
                 },
                 {
-                    "name": "Jane Brown",
-                    "party_id": "ynmp-party:2",
-                    "previous_party_affiliations": [plaid_cymru.ec_id],
-                    "sopn_last_name": "BROWN",
-                    "sopn_first_names": "Jane",
-                },
-                {
-                    "name": "Judy Johnson",
-                    "party_id": plaid_cymru.ec_id,
-                    "previous_party_affiliations": [self.labour_party.ec_id],
-                    "sopn_last_name": "JOHNSON",
-                    "sopn_first_names": "Judy",
-                },
-                {
-                    "name": "Julie Williams",
-                    "party_id": "ynmp-party:2",
-                    "sopn_last_name": "WILLIAMS",
-                    "sopn_first_names": "Julie",
+                    "name": "Edward Topham",
+                    "party_id": "TEMP-REFORM-UK",
+                    "sopn_last_name": "TOPHAM",
+                    "sopn_first_names": "Edward",
                 },
             ],
         )
@@ -225,17 +240,18 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
         )
 
         data_path = (
-            Path(__file__).parent / "data/edge_case_description_data.json"
+            Path(__file__).parent
+            / "data/textract_responses/edge_case_description_data.json"
         )
         with data_path.open() as f:
-            CamelotParsedSOPN.objects.create(
+            AWSTextractParsedSOPN.objects.create(
                 sopn=doc, raw_data=f.read(), status="unparsed"
             )
         call_command("sopn_parsing_parse_tables")
         self.assertEqual(RawPeople.objects.count(), 1)
         raw_people = RawPeople.objects.get()
         self.assertEqual(
-            sorted(raw_people.data, key=lambda x: x["name"]),
+            sorted(raw_people.textract_data, key=lambda x: x["name"]),
             sorted(
                 [
                     {
@@ -560,13 +576,17 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
         assert cleaned_description == "All People's Party"
 
     def test_guess_previous_party_affiliations_field(self):
-        sopn = CamelotParsedSOPN(raw_data=json.dumps(welsh_sopn_data))
+        sopn = AWSTextractParsedSOPN(raw_data=json.dumps(welsh_sopn_data))
+        sopn.parse_raw_data()
         data = sopn.as_pandas
         data.columns = data.iloc[0]
 
         cases = [
             (self.dulwich_post_ballot, None),
-            (self.senedd_ballot, "statement of party membership"),
+            (
+                self.senedd_ballot,
+                "statement of previous political party membership",
+            ),
         ]
         for case in cases:
             with self.subTest(msg=case[0]):
@@ -589,11 +609,14 @@ class TestParseTablesUnitTests(UK2015ExamplesMixin, TestCase):
             },
         ]
         for case in cases:
-            with self.subTest(msg=case["party_str"]), patch.object(
-                parse_tables, "get_party", return_value=case["party"]
+            with (
+                self.subTest(msg=case["party_str"]),
+                patch.object(
+                    parse_tables, "get_party", return_value=case["party"]
+                ),
             ):
                 raw_data = {}
-                sopn = CamelotParsedSOPN()
+                sopn = AWSTextractParsedSOPN()
                 result = parse_tables.add_previous_party_affiliations(
                     party_str=case["party_str"],
                     raw_data=raw_data,

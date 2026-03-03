@@ -131,6 +131,7 @@ def guess_description_field(row):
 
 
 def guess_previous_party_affiliations_field(data, sopn):
+    field_words = ("statement of party membership", "statement of previous")
     data = clean_row(data)
     if not sopn.sopn.ballot.is_welsh_run:
         return None
@@ -138,10 +139,9 @@ def guess_previous_party_affiliations_field(data, sopn):
     field_value = None
 
     for cell in data:
-        if cell in ["statement of party membership"]:  # this could become more
+        if cell.startswith(field_words):  # this could become more
             field_value = cell
             break
-
     return field_value
 
 
