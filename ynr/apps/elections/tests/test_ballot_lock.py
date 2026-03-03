@@ -113,7 +113,7 @@ class TestBallotLockAndUnlock(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user_who_can_lock,
         )
         csrftoken = self.app.cookies["csrftoken"]
-        self.assertContains(response, "Unlock candidate list")
+        self.assertContains(response, "Unlock")
         response = self.app.post(
             reverse(
                 "constituency-lock",

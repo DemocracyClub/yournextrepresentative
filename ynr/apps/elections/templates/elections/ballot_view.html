@@ -55,7 +55,14 @@
             {% endif %}
 
             {% if ballot.has_lock_suggestion %}
-                    <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+                {% if current_user_suggested_lock %}
+                 <p>
+                  <strong>{{ ballot.suggested_lock_html }}</strong> You suggested locking this ballot. Someone else needs to double-check and lock it.
+                </p>
+              {% else %}
+                <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+              {% endif %}
+
             {% endif %}
 
             {% if not ballot.candidates_locked %}
@@ -199,21 +206,34 @@
       </table>
       {% endif %}
 
-    <div class="ballot-ctas">
-      {% if user_can_record_results and has_any_winners %}
-        <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
-          {% csrf_token %}
-          <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
-        </form>
-      {% endif %}
-      {% include "elections/includes/_ballot_suggest_locking.html" %}
-      {% include "elections/includes/_ballot_lock_form.html" %}
+    {% if user.is_authenticated %}
+      {#  You basically can't do anything unless you're logged in #}
+      <div class="ballot-ctas">
+        {# Everything you can _do to change_ the ballot or related objects #}
 
-      {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
-        <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
-      {% endif %}
-    </div>
+        {# Bulk adding #}
+        {% if ballot.has_sopn and not ballot.has_lock_suggestion and not ballot.candidates_locked and not ballot.cancelled %}
+          <a href="{{ ballot.get_bulk_add_url }}" class="button small">
+            Add candidates from SOPN
+          </a>
+        {% endif %}
 
+
+        {% include "elections/includes/_ballot_lock_form.html" %}
+
+        {% if user_can_record_results and has_any_winners %}
+          <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
+          </form>
+        {% endif %}
+        {% include "elections/includes/_ballot_suggest_locking.html" %}
+
+        {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
+          <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
+        {% endif %}
+      </div>
+    {% endif %}
 
   {% if ballot.has_results and ballot.resultset %}
     {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
