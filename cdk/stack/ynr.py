@@ -10,7 +10,10 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as events_targets
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_logs as logs
 from aws_cdk import aws_route53 as route_53
 from aws_cdk import aws_route53_targets as route_53_target
@@ -46,7 +49,14 @@ class YnrStack(Stack):
             monitor_this_env = False
 
         default_vpc = ec2.Vpc.from_lookup(self, "YnrVpc", is_default=True)
-        cluster = ecs.Cluster(self, "YnrCluster", vpc=default_vpc)
+        cluster = ecs.Cluster(
+            self,
+            "YnrCluster",
+            vpc=default_vpc,
+            container_insights_v2=ecs.ContainerInsights.ENABLED
+            if monitor_this_env
+            else ecs.ContainerInsights.DISABLED,
+        )
 
         image_ref = (
             f"public.ecr.aws/h3q9h5r7/dc-test/ynr:{tag_for_environment()}"
@@ -459,6 +469,10 @@ class YnrStack(Stack):
                 display_name="container metric alert",
             )
 
+            container_topic = sns.Topic(
+                self, "containerevent", display_name="container event alert"
+            )
+
             # The symbolic names we give the alerts need to be unique, so we simply append a digit based on the service being monitored
             for service_info in [
                 {"name": web_service.service.service_name, "id": 0},
@@ -529,6 +543,75 @@ class YnrStack(Stack):
                 topic=metric_topic,
                 endpoint=alert_email_recipient.string_value,
                 protocol=sns.SubscriptionProtocol.EMAIL,
+            )
+
+            default_bus = events.EventBus.from_event_bus_name(
+                self, "EventBus", "default"
+            )
+
+            lambda_func = _lambda.Function(
+                self,
+                "ContainerEventFilter",
+                runtime=_lambda.Runtime.PYTHON_3_11,
+                handler="index.lambda_handler",
+                code=_lambda.Code.from_asset(
+                    "cdk/stack/lambdas/format_container_event"
+                ),
+                environment={
+                    "LOG_LEVEL": "INFO",
+                    "SNS_TOPIC_ARN": metric_topic.topic_arn,
+                    "DC_ENVIRONMENT": ssm.StringParameter.value_from_lookup(
+                        self,
+                        "DC_ENVIRONMENT",
+                    ),
+                },
+            )
+
+            lambda_func.add_permission(
+                "SNSInvokePermission",
+                principal=iam.ServicePrincipal("sns.amazonaws.com"),
+                action="lambda:InvokeFunction",
+                source_arn=container_topic.topic_arn,
+            )
+
+            logs.LogGroup(
+                self,
+                "ContainerEventFilterLogGroup",
+                log_group_name=f"/aws/lambda/{lambda_func.function_name}",
+                retention=logs.RetentionDays.ONE_MONTH,
+            )
+
+            metric_topic.grant_publish(lambda_func)
+
+            sns.Subscription(
+                self,
+                "LambdaSubscription",
+                topic=container_topic,
+                endpoint=lambda_func.function_arn,
+                protocol=sns.SubscriptionProtocol.LAMBDA,
+            )
+
+            container_events_rule = events.Rule(
+                self,
+                "FilteredECSAlertsRule",
+                rule_name="filtered-alerts-rule",
+                description="YNR Task/Container alerts",
+                event_bus=default_bus,
+                event_pattern=events.EventPattern(
+                    source=["aws.ecs"],
+                    detail_type=["ECS Task State Change"],
+                    detail={
+                        "clusterArn": [cluster.cluster_arn],
+                        "launchType": ["FARGATE"],
+                        "lastStatus": ["STOPPED"],
+                        # Rather than doing filtering here via the CDK, we instead filter the events in our lambda
+                        # See cdk/stack/lambdas/format_container_event for the lambda itself
+                    },
+                ),
+            )
+
+            container_events_rule.add_target(
+                events_targets.SnsTopic(container_topic)
             )
 
     def create_cloudfront(
