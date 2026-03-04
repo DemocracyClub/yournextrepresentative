@@ -3,7 +3,6 @@ import json
 import os
 from os.path import abspath, dirname, join
 from pathlib import Path
-from unittest import skipIf
 from unittest.mock import PropertyMock
 
 import pytest
@@ -20,10 +19,9 @@ from mock import Mock
 from official_documents.models import BallotSOPN, ElectionSOPN
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError, clean_text
 from sopn_parsing.helpers.textract_helpers import (
-    TextractSOPNHelper,
+    get_extractor_class,
 )
 from sopn_parsing.models import AWSTextractParsedSOPN
-from sopn_parsing.tests import should_skip_pdf_tests
 from textractor.entities.lazy_document import LazyDocument
 
 with contextlib.suppress(ImportError):
@@ -63,7 +61,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         self.assertEqual(doc.blank_doc, False)
         self.assertRaises(NoTextInDocumentError)
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_sopn_document(self):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
@@ -126,7 +123,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
 
         self.assertEqual(len(doc.pages), 1)
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_single_page_sopn(self):
         example_doc_path = abspath(
             join(dirname(__file__), "data/sopn-berkeley-vale.pdf")
@@ -149,7 +145,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
             ballot.refresh_from_db()
             self.assertEqual(ballot.sopn.relevant_pages, "all")
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_multipage_doc(self):
         """
         Uses the example of a multipage PDF which contains SOPN's for two
@@ -192,7 +187,6 @@ class TestSOPNHelpers(UK2015ExamplesMixin, TestCase):
         self.assertEqual(mid_ulster.sopn.relevant_pages, "0,1,2,3")
         self.assertEqual(north_antrim.sopn.relevant_pages, "4,5,6,7,8")
 
-    @skipIf(should_skip_pdf_tests(), "Required PDF libs not installed")
     def test_document_with_identical_headers(self):
         """
         Uses an example PDF where the two headers are identical to check that
@@ -242,7 +236,7 @@ def textract_sopn_helper(db):
             ),
             uploaded_file=SimpleUploadedFile("sopn.pdf", sopn_file.read()),
         )
-    yield TextractSOPNHelper(
+    yield get_extractor_class()(
         ballot_sopn=ballot_sopn, upload_path="s3://fake_bucket/"
     )
 

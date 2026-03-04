@@ -179,6 +179,7 @@ MEDIA_URL = "/media/"
 SOPN__MATCHER_PATH = (
     Path(str(PROJECT_ROOT)) / "apps/official_documents/SOPNMatcherInterface"
 )
+USE_DUMMY_PDF_EXTRACTOR = os.environ.get("USE_DUMMY_PDF_EXTRACTOR", False)
 STATIC_URL = "/static/"
 STATIC_ROOT = root("static")
 STATICFILES_DIRS = (
@@ -449,7 +450,6 @@ BASE_URL = f"http://{os.environ.get('FQDN', 'localhost:8080')}"
 from .constants.needs_review import *  # noqa
 from .constants.csv_fields import *  # noqa
 from .constants.nuts import *  # noqa
-from .constants.sopn_parsing import *  # noqa
 from .constants.home_page_cta import *  # noqa
 
 from ynr_refactoring.settings import *  # noqa

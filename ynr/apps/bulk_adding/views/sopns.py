@@ -1,12 +1,9 @@
-from typing import Optional
-
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -20,8 +17,6 @@ from official_documents.models import BallotSOPN
 from official_documents.views import get_add_from_document_cta_flash_message
 from parties.models import Party
 from people.models import Person
-
-SOPNParsingBackends = settings.SOPN_PARSING_BACKENDS
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -122,28 +117,13 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 )
         return super().get(request, *args, **kwargs)
 
-    def get_active_parser(self) -> Optional[SOPNParsingBackends]:
-        if self.request.GET.get("v1_parser"):
-            return SOPNParsingBackends.CAMELOT
-        if self.ballot.rawpeople.textract_data:
-            return SOPNParsingBackends.TEXTRACT
-        if self.ballot.rawpeople.data:
-            return SOPNParsingBackends.CAMELOT
-        return None
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         form_kwargs = {"ballot": context["ballot"]}
 
         if hasattr(context["ballot"], "rawpeople"):
-            context["active_parser"] = self.get_active_parser()
-
-            form_kwargs.update(
-                context["ballot"].rawpeople.as_form_kwargs(
-                    parser=self.get_active_parser()
-                )
-            )
+            form_kwargs.update(context["ballot"].rawpeople.as_form_kwargs())
             context["has_parsed_people"] = (
                 context["ballot"].rawpeople.source_type == "parsed_pdf"
             )
@@ -201,7 +181,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         RawPeople.objects.update_or_create(
             ballot=context["ballot"],
             defaults={
-                "data": raw_ballot_data,
+                "textract_data": raw_ballot_data,
                 "source": context["ballot_sopn"].source_url[:512],
                 "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
             },
@@ -221,7 +201,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         initial = []
         if hasattr(context["ballot"], "rawpeople"):
-            raw_ballot_data = context["ballot"].rawpeople.data
+            raw_ballot_data = context["ballot"].rawpeople.textract_data
         else:
             # Race condition! Someone else has processes this area
             # between page views. Best just show the data we have.

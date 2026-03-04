@@ -131,6 +131,7 @@ def guess_description_field(row):
 
 
 def guess_previous_party_affiliations_field(data, sopn):
+    field_words = ("statement of party membership", "statement of previous")
     data = clean_row(data)
     if not sopn.sopn.ballot.is_welsh_run:
         return None
@@ -138,10 +139,9 @@ def guess_previous_party_affiliations_field(data, sopn):
     field_value = None
 
     for cell in data:
-        if cell in ["statement of party membership"]:  # this could become more
+        if cell.startswith(field_words):  # this could become more
             field_value = cell
             break
-
     return field_value
 
 
@@ -532,20 +532,12 @@ def parse_dataframe(ballot: Ballot, df: DataFrame):
 
 def parse_raw_data(ballot: Ballot, reparse=False):
     """
-    Given a Ballot, go and get the Camelot and the AWS Textract dataframes
+    Given a Ballot, go and get the AWS Textract dataframes
     and process them
     """
 
-    camelot_model = getattr(ballot.sopn, "camelotparsedsopn", None)
-    camelot_data = {}
     textract_model = getattr(ballot.sopn, "awstextractparsedsopn", None)
     textract_data = {}
-    if (
-        camelot_model
-        and camelot_model.raw_data_type == "pandas"
-        and (reparse or not camelot_model.parsed_data)
-    ):
-        camelot_data = parse_dataframe(ballot, camelot_model.as_pandas)
     if (
         textract_model
         and textract_model.raw_data
@@ -556,7 +548,7 @@ def parse_raw_data(ballot: Ballot, reparse=False):
             textract_model.parse_raw_data()
         textract_data = parse_dataframe(ballot, textract_model.as_pandas)
 
-    if camelot_data or textract_data:
+    if textract_data:
         # Check there isn't a rawpeople object from another (better) source
         rawpeople_qs = RawPeople.objects.filter(ballot=ballot).exclude(
             source_type=RawPeople.SOURCE_PARSED_PDF
@@ -566,7 +558,6 @@ def parse_raw_data(ballot: Ballot, reparse=False):
                 RawPeople.objects.update_or_create(
                     ballot=ballot,
                     defaults={
-                        "data": camelot_data or "",
                         "textract_data": textract_data or "",
                         "source": "Parsed from {}".format(
                             ballot.sopn.source_url
@@ -582,16 +573,9 @@ def parse_raw_data(ballot: Ballot, reparse=False):
         # We've done the parsing, so let's still save the result
         storage = DefaultStorage()
         storage.save(
-            f"raw_people/camelot_{ballot.ballot_paper_id}.json",
-            ContentFile(json.dumps(camelot_data, indent=4).encode("utf8")),
-        )
-        storage.save(
             f"raw_people/textract_{ballot.ballot_paper_id}.json",
             ContentFile(json.dumps(textract_data, indent=4).encode("utf8")),
         )
-        if camelot_model:
-            ballot.sopn.camelotparsedsopn.status = "parsed"
-            ballot.sopn.camelotparsedsopn.save()
         if textract_model:
             ballot.sopn.awstextractparsedsopn.status = "parsed"
             ballot.sopn.awstextractparsedsopn.save()
