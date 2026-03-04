@@ -1,3 +1,4 @@
+# See the README in the textract_responses folder for how this was made.
 welsh_sopn_data = {
     "Bucket": "textract-console-eu-west-2-ac9203e1-d233-4a30-845e-74ae66b387c8",
     "UploadedFileName": "90a68ac4_94f1_41e9_9413_b48b910eec81_trowbridge.pdf",
