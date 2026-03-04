@@ -73,6 +73,11 @@ def lambda_handler(event, context):
             f"Failed to parse JSON. Event message started with: {event_json[0:50]}"
         )
         return {"statusCode": 200}
+    except (KeyError, IndexError):
+        logger.info(
+            f"JSON schema changed? Event message started with: {event_json[0:50]}"
+        )
+        return {"statusCode": 200}
 
     logger.info("Parsed SNS json")
 
