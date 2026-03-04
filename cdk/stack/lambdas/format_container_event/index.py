@@ -5,6 +5,7 @@ import os
 import boto3
 
 SNS_TOPIC_ARN = os.environ["SNS_TOPIC_ARN"]
+DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -125,7 +126,7 @@ Original JSON below:
     sns.publish(
         TopicArn=SNS_TOPIC_ARN,
         Message=custom_message,
-        Subject="YNR Container event",
+        Subject=f"YNR Container event on {DC_ENVIRONMENT}",
     )
     logger.info("Message sent. We assume success")
 

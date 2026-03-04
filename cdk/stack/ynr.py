@@ -560,6 +560,10 @@ class YnrStack(Stack):
                 environment={
                     "LOG_LEVEL": "INFO",
                     "SNS_TOPIC_ARN": metric_topic.topic_arn,
+                    "DC_ENVIRONMENT": ssm.StringParameter.value_from_lookup(
+                        self,
+                        "DC_ENVIRONMENT",
+                    ),
                 },
             )
 
