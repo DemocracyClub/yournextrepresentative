@@ -53,7 +53,7 @@ def is_health_related_stop(event):
     containers = detail.get("containers", [])
     for container in containers:
         exit_code = container.get("exitCode")
-        if exit_code and exit_code != 0:
+        if exit_code is not None and exit_code != 0:
             logger.info(f"Detected non-zero exit status: {exit_code}")
             return True  # Non-zero exit code suggests failure
     logger.info(
