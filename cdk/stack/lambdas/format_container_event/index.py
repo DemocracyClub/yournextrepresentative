@@ -4,7 +4,7 @@ import os
 
 import boto3
 
-SNS_TOPIC_ARN = os.environ["SNS_TOPIC_ARN"]
+SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
 DC_ENVIRONMENT = os.environ.get("DC_ENVIRONMENT")
 
 logger = logging.getLogger()
@@ -125,6 +125,12 @@ Original JSON below:
 {event_json}
     """
     logger.info("Custom message composed. Now sending the message")
+
+    if SNS_TOPIC_ARN is None:
+        logger.info(
+            "Can't send email; Destination topic not set in environment (SNS_TOPIC_ARN)"
+        )
+        return {"statusCode": 200}
 
     # Send custom formatted message
     sns = boto3.client("sns")
