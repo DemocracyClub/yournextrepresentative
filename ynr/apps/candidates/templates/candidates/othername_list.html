@@ -11,6 +11,11 @@
 
   <h1>Other names for <a href="{{ person.get_absolute_url }}">{{ person.name }}</a></h1>
 
+  <p>
+    We can store other names by which a person is known.
+    For example, a candidate whose given name is Michael might also be known as Mike.
+  </p>
+
   {% if othername_list %}
     <table class="table">
     <thead>
@@ -53,5 +58,55 @@
   {% endif %}
 
   <a class="button" href="{% url 'person-other-name-create' person_id=person.id %}">Add another name</a>
+
+  <h2>Candidacies</h2>
+  <p>
+    Each time a candidate is nominated to stand in an election,
+    that candidate's name is printed on a SOPN (Statement of Persons Nominated)
+    document, and the ultimately on a ballot paper.
+    For each candidacy we can also store the person's name exactly
+    as it appears on the SOPN document.
+  </p>
+
+  {% if memberships %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Election</th>
+          <th>Date</th>
+          <th>First Names</th>
+          <th>Last Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in memberships %}
+        <tr>
+          <td>
+            <a href="{{ membership.ballot.get_absolute_url }}">
+              {{ membership.ballot.election.name }} - {{ membership.ballot.post.label }}
+            </a>
+          </td>
+          <td>{{ membership.ballot.election.election_date }}</td>
+          <td>{{ membership.sopn_first_names }}</td>
+          <td>{{ membership.sopn_last_name }}</td>
+          <td>
+            {% if membership.ballot.sopn %}
+              <a
+                class="button tiny secondary"
+                href="{% url 'person-sopn-names-edit' person_id=person.id membership_id=membership.id %}">
+                Edit
+              </a>
+            {% else%}
+              No SOPN yet
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No candidacies known at the moment.</p>
+  {% endif %}
 
 {% endblock %}

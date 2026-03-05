@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Edit SOPN names{% endblock %}
+
+{% block content %}
+
+<h1>Edit SOPN names for candidacy</h1>
+
+<p>
+{{ person.name }}
+Standing in
+{{ object.ballot.election.name }}
+-
+{{ object.ballot.post.label }}
+on
+{{ object.ballot.election.election_date }}
+</p>
+
+  <div>
+    <form action="" method="post" id="person_edit_sopn_names">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input class="button" type="submit" value="Save">
+    </form>
+  </div>
+
+  <h2>Statement of Persons Nominated</h2>
+
+  <p>
+    <a
+      href="{{ object.ballot.sopn.uploaded_file.url }}"
+      target="_blank"
+      class="button secondary tiny"
+    >
+      View the SOPN in a new window
+    </a>
+  </p>
+
+  <div
+    id="sopn-{{ object.ballot.ballot_paper_id }}"
+    class="pdf_container"
+  ></div>
+
+  {% if object.ballot.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
+    <script type="module">
+      import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
+      SOPN_VIEWER.ShowSOPNInline(
+        '{{ object.ballot.sopn.uploaded_file.url }}',
+        '{{ object.ballot.ballot_paper_id }}'
+      )
+    </script>
+  {% else %}
+    <div>
+      <img
+        src="{{ object.ballot.sopn.uploaded_file.url }}"
+        alt="Image of the candidate nomination data for {{ object.post.label }}"
+      >
+    </div>
+  {% endif %}
+
+{% endblock %}
