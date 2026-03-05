@@ -28,6 +28,11 @@ urlpatterns = [
         name="person-other-names",
     ),
     re_path(
+        r"^person/(?P<person_id>\d+)/sopn-names/(?P<membership_id>\d+)$",
+        views.PersonSopnNamesEditView.as_view(),
+        name="person-sopn-names-edit",
+    ),
+    re_path(
         r"^person/(?P<person_id>\d+)/other-names/create$",
         views.PersonOtherNameCreateView.as_view(),
         name="person-other-name-create",

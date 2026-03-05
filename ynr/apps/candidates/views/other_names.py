@@ -3,13 +3,13 @@ from candidates.models.db import ActionType
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
-from people.forms.forms import OtherNameForm
+from people.forms.forms import OtherNameForm, SopnNameForm
 from people.models import Person
-from popolo.models import OtherName
+from popolo.models import Membership, OtherName
 
 from .version_data import get_change_metadata, get_client_ip
 
@@ -40,6 +40,61 @@ class PersonOtherNamesView(PersonMixin, ListView):
         return qs.filter(
             content_type=ct, object_id=self.kwargs["person_id"]
         ).order_by("name", "start_date", "end_date")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["memberships"] = (
+            Person.objects.get(pk=self.kwargs["person_id"])
+            .memberships.select_related("ballot__sopn")
+            .select_related("ballot__election")
+            .select_related("ballot__post")
+            .order_by("-ballot__election__election_date")
+        )
+
+        return context
+
+
+class PersonSopnNamesEditView(LoginRequiredMixin, PersonMixin, UpdateView):
+    model = Membership
+    form_class = SopnNameForm
+    template_name = "candidates/sopnnames_edit.html"
+    raise_exception = True
+
+    def get_object(self, queryset=None):
+        membership = Membership.objects.select_related(
+            "ballot__sopn",
+            "ballot__election",
+            "ballot__post",
+        ).get(
+            pk=self.kwargs["membership_id"],
+            person=self.person,
+        )
+
+        # only allow editing the SOPN names if the ballot has a SOPN
+        if not hasattr(membership.ballot, "sopn"):
+            raise Http404("No SOPN exists for this ballot")
+
+        return membership
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            result = super().form_valid(form)
+            LoggedAction.objects.create(
+                user=self.request.user,
+                person=self.person,
+                action_type=ActionType.CANDIDACY_SOPN_NAMES_UPDATE,
+                ip_address=get_client_ip(self.request),
+                ballot=self.object.ballot,
+                source="SOPN",
+            )
+
+        return result
 
 
 class PersonOtherNameCreateView(LoginRequiredMixin, PersonMixin, CreateView):

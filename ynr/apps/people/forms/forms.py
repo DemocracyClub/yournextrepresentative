@@ -496,6 +496,39 @@ class OtherNameForm(forms.ModelForm):
         return name
 
 
+class SopnNameForm(forms.ModelForm):
+    class Meta:
+        model = Membership
+        fields = ("sopn_first_names", "sopn_last_name")
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        instance: Membership = kwargs.get("instance", None)
+        if instance:
+            initial = {}
+            if hasattr(instance.ballot, "sopn"):
+                initial["sopn_first_names"] = instance.sopn_first_names
+                initial["sopn_last_name"] = instance.sopn_last_name
+            kwargs.update(initial=initial)
+
+        super().__init__(*args, **kwargs)
+
+    sopn_first_names = StrippedCharField(
+        label="The person's first names, exactly as they are printed on the SOPN",
+        required=False,
+    )
+    sopn_last_name = StrippedCharField(
+        label="The person's last name, exactly as it is printed on the SOPN",
+        required=False,
+    )
+
+    def save(self, commit=True):
+        self.instance.sopn_first_names = self.cleaned_data["sopn_first_names"]
+        self.instance.sopn_last_name = self.cleaned_data["sopn_last_name"]
+        self.instance = super().save(commit)
+        return self.instance
+
+
 class AddElectionFieldsMixin(object):
     @cached_property
     def party_sets_and_party_choices(self):

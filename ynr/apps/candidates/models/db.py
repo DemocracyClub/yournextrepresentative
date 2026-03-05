@@ -60,6 +60,10 @@ class ActionType(models.TextChoices):
     CONSTITUENCY_UNLOCK = "constituency-unlock", "Constituency unlocked"
     CANDIDACY_CREATE = "candidacy-create", "Candidacy created"
     CANDIDACY_DELETE = "candidacy-delete", "Candidacy deleted"
+    CANDIDACY_SOPN_NAMES_UPDATE = (
+        "candidacy-sopn-names-update",
+        "Candidacy SOPN names updated",
+    )
     PHOTO_APPROVE = "photo-approve", "Photo approved"
     PHOTO_UPLOAD = "photo-upload", "Photo uploaded"
     PHOTO_REJECT = "photo-reject", "Photo rejected"
@@ -243,6 +247,8 @@ class LoggedAction(models.Model):
                 desc = f"""confirmed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.CANDIDACY_DELETE:
                 desc = f"""removed candidacy for <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.CANDIDACY_SOPN_NAMES_UPDATE:
+                desc = f"""changed SOPN names for <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.DUPLICATE_SUGGEST:
                 desc = f"""Suggested a duplicate of <a href="{url}">{self.person.name}</a>"""
             if self.action_type == ActionType.DUPLICATE_SUGGEST:
