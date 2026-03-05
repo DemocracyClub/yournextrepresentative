@@ -1,7 +1,9 @@
 {% if sopn %}
-  <p>
-    <a href="{{ sopn.get_absolute_url }}">View the Statement of Persons Nominated (SOPN) for this ballot</a>
-  </p>
+
+          <a href="{{ sopn.get_absolute_url }}" class="button">View SOPN</a>
+
+
+
 {% else %}
     {% if user_can_upload_documents and ballot.officialdocument_set.exists  %}
         Legacy SOPNs that need to be migrated:
@@ -20,6 +22,8 @@
     {% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id as url %}
     <a href="{{ url }}" class="button">Upload Statement of Persons Nominated (SOPN)</a>
   {% endif %}
+
+
 
 
 {% endif %}

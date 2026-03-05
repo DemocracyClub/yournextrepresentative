@@ -18,14 +18,19 @@ $(function() {
   }
 
   /* Set up the hide / reveal for the add new candidate form */
-  $('.show-new-candidate-form').on('click', function(e){
+  $(document).on('click', '.show-new-candidate-form', function(e){
     e.preventDefault();
+    e.target.classList.add('hide-new-candidate-form')
+    e.target.classList.remove('show-new-candidate-form')
     var newCandidate = getNewCandidateDiv(e.target);
     newCandidate.slideDown(function(){
       newCandidate.find('input:text').eq(0).focus();
     });
   });
-  $('.hide-new-candidate-form').on('click', function(e){
+  $(document).on('click', '.hide-new-candidate-form', function(e){
+    e.preventDefault();
+    e.target.classList.add('show-new-candidate-form')
+    e.target.classList.remove('hide-new-candidate-form')
     var newCandidate = getNewCandidateDiv(e.target);
     newCandidate.slideUp();
   });
@@ -66,6 +71,19 @@ $(function() {
     confirmation = $('.delete-parsed-people-confirm')
     confirmation.hide();
   });
+
+
+  // Generic show/hide when pressing a button
+  document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-toggle]");
+  if (!btn) return;
+
+  const panel = document.getElementById(btn.getAttribute("aria-controls"));
+  const isOpen = !panel.hasAttribute("hidden");
+
+  panel.toggleAttribute("hidden", isOpen);
+  btn.setAttribute("aria-expanded", String(!isOpen));
+});
 
   $('.winner-confirm').submit(function(e) {
     var enclosingDiv = $(e.target).parent(),

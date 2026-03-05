@@ -95,7 +95,7 @@ class ElectionListView(TemplateView):
             .select_related("election", "post")
             .select_related("resultset")
             .prefetch_related("suggestedpostlock_set")
-            .prefetch_related("officialdocument_set")
+            .prefetch_related("sopn")
             .annotate(memberships_count=Count("membership", distinct=True))
             .annotate(
                 elected_count=Count(
@@ -434,7 +434,7 @@ class BallotsForSelectAjaxView(View):
             if ballot.cancelled:
                 ballot_label = f"{ballot_label} {ballot.cancelled_status_text}"
             if ballot.candidates_locked:
-                ballot_label = f"{ballot_label} {ballot.locked_status_text}"
+                ballot_label = f"{ballot_label} ({ballot.locked_status_text})"
                 option_attrs["disabled"] = True
 
             attrs_str = " ".join(

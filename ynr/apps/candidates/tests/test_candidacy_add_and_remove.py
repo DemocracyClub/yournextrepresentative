@@ -1,3 +1,5 @@
+import re
+
 from django_webtest import WebTest
 from official_documents.models import BallotSOPN
 from people.tests.factories import PersonFactory
@@ -63,9 +65,14 @@ class TestEditButtonsShown(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user,
         )
         self.assertContains(response, "Add a new candidate")
+
+        # We allow adding candidates when there is a SOPN
+        # but we mark the button as 'secondary'
         BallotSOPN.objects.create(ballot=ballot)
         response = self.app.get(
             ballot.get_absolute_url(),
             user=self.user,
         )
-        self.assertNotContains(response, "Add a new candidate")
+        button = response.html.find("a", text=re.compile("Add a new candidate"))
+        self.assertIsNotNone(button)
+        self.assertIn("secondary", button["class"])
