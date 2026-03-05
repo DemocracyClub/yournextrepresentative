@@ -18,7 +18,7 @@ def get_name_change_notification_message(
         f"""\
         {prefix}Hello,
         
-        The user {username} changed the name of {person_url} from {prev_name} to {new_name}.
+        The user {username} changed the name of {person_url} from "{prev_name}" to "{new_name}".
         
         This candidate is currently standing in the following ballots:
         """
@@ -43,6 +43,43 @@ def send_name_change_notification(
         subject,
         get_name_change_notification_message(
             person, prev_name, new_name, ballots, username
+        ),
+        settings.SOPN_UPDATE_NOTIFICATION_EMAILS,
+    )
+
+
+def get_sopn_name_change_notification_message(
+    person, prev_name, new_name, ballot, username
+):
+    person_url = urljoin(settings.BASE_URL, person.get_absolute_url())
+
+    prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        prefix = f"This email was sent from the {settings.DC_ENVIRONMENT.upper()} environment.\n\n"
+
+    return textwrap.dedent(
+        f"""\
+        {prefix}Hello,
+        
+        The user {username} changed the SOPN name of {person_url} from "{prev_name}" to "{new_name}".
+        
+        for ballot {urljoin(settings.BASE_URL, ballot.get_absolute_url())}
+        """
+    )
+
+
+def send_sopn_name_change_notification(
+    person, prev_name, new_name, ballot, username
+):
+    prefix = ""
+    if settings.DC_ENVIRONMENT not in ["production", "testing"]:
+        prefix = f"[{settings.DC_ENVIRONMENT.upper()}] "
+    subject = f"{prefix}Name for candidate updated"
+
+    return send_mail(
+        subject,
+        get_sopn_name_change_notification_message(
+            person, prev_name, new_name, ballot, username
         ),
         settings.SOPN_UPDATE_NOTIFICATION_EMAILS,
     )

@@ -201,7 +201,7 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
             """\
             Hello,
 
-            The user george changed the name of https://candidates.example.com/person/2009/tessa-palmer from Tessa Jowell to Tessa Palmer.
+            The user george changed the name of https://candidates.example.com/person/2009/tessa-palmer from "Tessa Jowell" to "Tessa Palmer".
 
             This candidate is currently standing in the following ballots:
             - https://candidates.example.com/elections/parl.foo.2023-05-05/
