@@ -16,7 +16,6 @@ services:
         - ./ynr/:/dc/ynr/code/ynr/
         - ./data/:/dc/ynr/code/data/
         - ./manage.py:/dc/ynr/code/manage.py
-        - ./Makefile:/dc/ynr/code/Makefile
         - ./scripts/:/dc/ynr/code/scripts/
         - ./gulpfile.js:/dc/ynr/code/gulpfile.js
         - ./package.json:/dc/ynr/code/package.json
