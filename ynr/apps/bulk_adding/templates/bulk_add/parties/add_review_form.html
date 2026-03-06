@@ -31,7 +31,7 @@
           <tbody>
             {% for choice in form.select_person %}
 
-              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
+              <tr>
                 <td class="multiple-choice" style="margin-left:1em">
                   {{ choice.tag }}
                     <label>{{ choice.choice_label }}</label>
@@ -65,14 +65,5 @@
 
   <button type=submit>Next</button>
 </form>
-
-  <script>
-  $('.sopn_adding_suggestions_table tr').click(function() {
-    var row = $(this);
-    $("tr").removeClass("selected_action");
-    row.addClass("selected_action");
-    row.find('td input[type=radio]').prop('checked', true);
-  });
-  </script>
 
 {% endblock content %}
