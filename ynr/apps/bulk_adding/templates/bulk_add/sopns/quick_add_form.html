@@ -7,7 +7,7 @@
         <thead>
         <tr>
             <th colspan="2" {% if form.has_error %}class="form-error-summary"{% endif %}>
-                Person {{ forloop.counter }}
+                Person <span class="person_number">{{ counter }}</span>
             </th>
             <th>
                 Actions
