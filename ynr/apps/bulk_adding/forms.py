@@ -77,6 +77,20 @@ class BulkAddFormSet(BaseBulkAddFormSet):
             self.get_previous_party_affiliations_choices()
         )
 
+    def total_form_count(self) -> int:
+        """
+        Base the additional fields on the seats contested multiplied
+        by a sensible default.
+
+        This is to prevent adding loads of additional fields if not needed.
+        """
+
+        seats_contested = self.ballot.winner_count
+        # 3.5 is the average number of candidates per seat, historically, but
+        # let's round that up to 4. Then multiply by the seats contested for
+        # this ballot
+        return int(seats_contested * 4)
+
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
@@ -354,7 +368,7 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
 
 
 BulkAddFormSetFactory = forms.formset_factory(
-    QuickAddSinglePersonForm, extra=15, formset=BulkAddFormSet, can_delete=True
+    QuickAddSinglePersonForm, extra=0, formset=BulkAddFormSet, can_delete=True
 )
 
 
