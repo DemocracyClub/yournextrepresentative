@@ -32,8 +32,6 @@
   just select "create a new person".</p>
 <p>Alternatively you can <a href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a>.</p>
 
-{% include "bulk_add/sopns/_known-people.html" %}
-
 
 <form method=POST id="bulk_add_review_formset">
   {% csrf_token %}

@@ -44,12 +44,6 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         """
         queryset = Ballot.objects.select_related(
             "post", "election", "rawpeople", "post__party_set", "sopn"
-        ).prefetch_related(
-            "membership_set",
-            "membership_set__person",
-            "membership_set__person__other_names",
-            "membership_set__party",
-            "membership_set__party__descriptions",
         )
         return get_object_or_404(
             queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
@@ -71,20 +65,6 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
-
-        people_set = set()
-        for membership in context["ballot"].membership_set.all():
-            person = membership.person
-            person.party = membership.party
-            person.previous_party_affiliations = (
-                membership.previous_party_affiliations.all()
-            )
-
-            people_set.add(person)
-
-        known_people = list(people_set)
-        known_people.sort(key=lambda i: i.last_name_guess)
-        context["known_people"] = known_people
         return context
 
     def remaining_posts_for_sopn(self):
@@ -138,7 +118,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         else:
             context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
 
-        tables = list(context["formset"]) + context["known_people"]
+        tables = context["formset"]
         sorted_tables = sorted(tables, key=sort_tables, reverse=False)
         sorted_with_type = []
         for table in sorted_tables:
