@@ -81,8 +81,8 @@
                 </div>
             {% endif %}
 
-            {% for table in sorted_with_type %}
-                {% include table.template_name with data=table.data %}
+            {% for form in formset %}
+                {% include 'bulk_add/sopns/quick_add_form.html' with data=form %}
             {% endfor %}
             <button type=submit>Review</button>
         </form>
