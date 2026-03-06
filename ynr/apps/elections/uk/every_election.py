@@ -292,12 +292,20 @@ class EEElection(dict):
             parent.get_or_create_election()
             ballot_data["election"] = parent.election_object
 
-        (
-            self.ballot_object,
-            self.ballot_created,
-        ) = Ballot.objects.update_or_create(
-            ballot_paper_id=self["election_id"], defaults=ballot_data
+        self.ballot_object, self.ballot_created = Ballot.objects.get_or_create(
+            ballot_paper_id=self["election_id"],
+            defaults=ballot_data,
         )
+
+        # Only un-lock the ballot if we're un-cancelling the election on this sync
+        # i.e: we don't want to un-lock every non-cancelled ballot every time we import
+        if self.ballot_object.cancelled and not ballot_data["cancelled"]:
+            ballot_data["candidates_locked"] = False
+
+        for field, value in ballot_data.items():
+            setattr(self.ballot_object, field, value)
+
+        self.ballot_object.save()
 
         return (self.ballot_object, self.ballot_created)
 
