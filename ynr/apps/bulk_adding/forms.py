@@ -1,6 +1,6 @@
 from bulk_adding.fields import (
     PersonIdentifierFieldSet,
-    PersonSuggestionModelChoiceField,
+    PersonSuggestionField,
     PersonSuggestionRadioSelect,
 )
 from django import forms
@@ -174,18 +174,12 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             new_election=self.ballot.election,
             new_name=form.initial.get("name"),
         )
-        form.fields["select_person"] = PersonSuggestionModelChoiceField(
-            queryset=suggestions,
+
+        form.fields["select_person"] = PersonSuggestionField(
+            suggestions=suggestions,
+            new_name=form.initial.get("name"),
             widget=PersonSuggestionRadioSelect,
         )
-
-        form.fields["select_person"].choices = [
-            (
-                "_new",
-                SafeText(f'Add a new profile "{form.initial.get("name")}"'),
-            )
-        ] + list(form.fields["select_person"].choices)
-        form.fields["select_person"].initial = "_new"
 
         form.fields["party"] = forms.CharField(
             widget=forms.HiddenInput(

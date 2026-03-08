@@ -3,8 +3,9 @@ import json
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
+from django.forms.models import ModelChoiceIteratorValue
 from django.template.loader import render_to_string
-from django.utils.safestring import SafeText, mark_safe
+from django.utils.safestring import mark_safe
 from people.helpers import (
     clean_instagram_url,
     clean_linkedin_url,
@@ -174,6 +175,7 @@ class PersonSuggestionRadioSelect(forms.RadioSelect):
         )
         if value == "_new":
             return option
+
         option["instance"] = value.instance
         option["other_names"] = value.instance.other_names.all()
         option["previous_candidacies"] = self.get_previous_candidacies(
@@ -212,27 +214,64 @@ class PersonSuggestionRadioSelect(forms.RadioSelect):
                 text += ' (<a href="{0}">SOPN</a>)'.format(
                     sopn.get_absolute_url()
                 )
-            previous.append(SafeText(text))
+
+            previous.append(mark_safe(text))
         return previous
 
 
-class PersonSuggestionModelChoiceField(forms.ModelChoiceField):
+class PersonSuggestionChoiceIterator:
+    def __init__(self, field):
+        self.field = field
+
+    def __iter__(self):
+        field = self.field
+        yield (
+            "_new",
+            mark_safe(f'Add a new profile "{field.new_name}"'),
+        )
+
+        for person in field.suggestions:
+            value = ModelChoiceIteratorValue(person.pk, person)
+            label = render_to_string(
+                "bulk_add/widgets/person_suggestion_choice_label.html",
+                {"object": person},
+            )
+            yield (value, mark_safe(label))
+
+
+class PersonSuggestionField(forms.ChoiceField):
     """
     For use on the review page to show each suggested person as a radio field.
     """
 
-    def label_from_instance(self, obj):
-        # Render using a template fragment per object
-        html = render_to_string(
-            "bulk_add/widgets/person_suggestion_choice_label.html",
-            {"object": obj},
-        )
-        return mark_safe(html)
+    widget = None  # set when instantiating if you want
 
-    def to_python(self, value):
+    def __init__(self, *args, suggestions, new_name=None, **kwargs):
+        self.suggestions = list(suggestions)
+        self.new_name = new_name
+        self._person_map = {
+            str(person.pk): person for person in self.suggestions
+        }
+
+        kwargs["choices"] = PersonSuggestionChoiceIterator(self)
+        super().__init__(*args, **kwargs)
+
+        self.initial = "_new"
+        if self.suggestions:
+            top = self.suggestions[0]
+            if getattr(top, "on_ballot", False) and getattr(
+                top, "same_party", False
+            ):
+                self.initial = str(top.pk)
+
+    def valid_value(self, value):
+        return value == "_new" or str(value) in self._person_map
+
+    def clean(self, value):
+        value = super().clean(value)
         if value == "_new":
             return value
-        for model in self.queryset:
-            if str(model.pk) == value:
-                return model.pk
-        return super().to_python(value)
+        try:
+            return self._person_map[str(value)].pk
+        except KeyError:
+            raise forms.ValidationError("Select a valid choice.")
