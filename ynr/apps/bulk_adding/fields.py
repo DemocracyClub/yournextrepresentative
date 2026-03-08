@@ -184,33 +184,7 @@ class PersonSuggestionRadioSelect(forms.RadioSelect):
         return option
 
     def get_previous_candidacies(self, person):
-        previous = []
-        candidacies = person.memberships.all()[:3]
-
-        for candidacy in candidacies:
-            party = candidacy.party
-            party_str = f"{party.name}"
-            if person.new_party == party.ec_id:
-                party_str = f"<strong>{party.name}</strong>"
-
-            election = candidacy.ballot.election
-            election_str = f"{election.name}"
-            if person.new_organisation == election.organization.pk:
-                election_str = f"<strong>{election.name}</strong>"
-
-            text = """{election}: {post} – {party}""".format(
-                post=candidacy.ballot.post.short_label,
-                election=election_str,
-                party=party_str,
-            )
-            sopn = candidacy.ballot.officialdocument_set.first()
-            if sopn:
-                text += ' (<a href="{0}">SOPN</a>)'.format(
-                    sopn.get_absolute_url()
-                )
-
-            previous.append(mark_safe(text))
-        return previous
+        return person.memberships.all()[:3]
 
 
 class PersonSuggestionChoiceIterator:
