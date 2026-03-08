@@ -13,7 +13,6 @@ from django.db.models import (
     Prefetch,
     Value,
 )
-from django.utils.safestring import SafeText
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
