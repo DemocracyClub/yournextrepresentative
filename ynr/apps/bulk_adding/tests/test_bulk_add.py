@@ -161,7 +161,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(49, 54)):
+        with self.assertNumQueries(FuzzyInt(49, 52)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -330,7 +330,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("_new")
 
         # this is a smaller increase but may be unavoidable
-        with self.assertNumQueries(FuzzyInt(53, 58)):
+        with self.assertNumQueries(FuzzyInt(53, 56)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)

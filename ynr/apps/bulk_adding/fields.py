@@ -185,13 +185,7 @@ class PersonSuggestionRadioSelect(forms.RadioSelect):
 
     def get_previous_candidacies(self, person):
         previous = []
-        candidacies = (
-            person.memberships.select_related(
-                "ballot__post", "ballot__election", "party"
-            )
-            .select_related("ballot__sopn")
-            .order_by("-ballot__election__election_date")[:3]
-        )
+        candidacies = person.memberships.all()[:3]
 
         for candidacy in candidacies:
             party = candidacy.party

@@ -183,7 +183,8 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
                         "ballot",
                         "ballot__election",
                         "ballot__election__organization",
-                    ),
+                        "ballot__post",
+                    ).order_by("-ballot__election__election_date"),
                 ),
             )
             .annotate(**annotations)
