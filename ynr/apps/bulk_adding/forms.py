@@ -5,7 +5,14 @@ from bulk_adding.fields import (
 )
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import CharField, IntegerField, Prefetch, Value
+from django.db.models import (
+    CharField,
+    Exists,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Value,
+)
 from django.utils.safestring import SafeText
 from parties.forms import (
     PartyIdentifierField,
@@ -130,39 +137,85 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         new_party,
         new_election,
         new_name,
+        ballot=None,
     ):
-        if person_name:
-            org_id = (
-                new_election.organization.pk
-                if new_election and new_election.organization
-                else None
-            )
-            annotations = {
-                "new_party": Value(new_party, output_field=CharField()),
-                "new_organisation": Value(
-                    org_id,
-                    output_field=IntegerField(),
-                ),
-                "new_name": Value(new_name, output_field=CharField()),
-            }
+        """
+        At a basic level, use the person search system to find existing people
+        who might be the same as the values submitted via bulk adding.
 
-            qs = (
-                search_person_by_name(person_name, synonym=True)
-                .prefetch_related(
-                    Prefetch(
-                        "memberships",
-                        queryset=Membership.objects.select_related(
-                            "party",
-                            "ballot",
-                            "ballot__election",
-                            "ballot__election__organization",
-                        ),
+        Normal weightings apply, with two additional weights:
+
+        1. If there's a match for a person that's already listed on the ballot
+           then that gets pulled to the top of the list.
+        2. People with the same party as the new person are weighted higher.
+           Party matching like this isn't going to be right in all cases
+           (people switch party) but it will be more useful than name alone
+           more of the time
+
+        These two additional weights combined should catch the 'this candidate
+        is already listed on the ballot' case, or at least it's a simpler
+        UX than simply asking users to de-duplicate existing people on the
+        previous form.
+        """
+        if not person_name:
+            return None
+
+        org_id = (
+            new_election.organization.pk
+            if new_election and new_election.organization
+            else None
+        )
+        annotations = {
+            "new_party": Value(new_party, output_field=CharField()),
+            "new_organisation": Value(
+                org_id,
+                output_field=IntegerField(),
+            ),
+            "new_name": Value(new_name, output_field=CharField()),
+        }
+
+        qs = (
+            search_person_by_name(person_name, synonym=True)
+            .prefetch_related(
+                Prefetch(
+                    "memberships",
+                    queryset=Membership.objects.select_related(
+                        "party",
+                        "ballot",
+                        "ballot__election",
+                        "ballot__election__organization",
                     ),
-                )
-                .annotate(**annotations)
+                ),
             )
-            return qs[:5]
-        return None
+            .annotate(**annotations)
+        )
+
+        order_by = []
+
+        if ballot:
+            # Annotate the QS with on_ballot: True if the matched person
+            # exists on a given ballot.
+            on_ballot = Exists(
+                Membership.objects.filter(person=OuterRef("pk"), ballot=ballot)
+            )
+            qs = qs.annotate(on_ballot=on_ballot)
+            order_by.append("-on_ballot")
+
+        if new_party:
+            # Annotate the QS with same_party: True if the person has a
+            # candidacy with the same party as the given one
+            same_party = Exists(
+                Membership.objects.filter(
+                    person=OuterRef("pk"), party__ec_id=new_party
+                )
+            )
+            qs = qs.annotate(same_party=same_party)
+            order_by.append("-same_party")
+
+        if order_by:
+            qs = qs.order_by(*order_by, "-rank", "membership_count")
+
+        return qs[:5]
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
@@ -173,6 +226,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             new_party=form.initial.get("party"),
             new_election=self.ballot.election,
             new_name=form.initial.get("name"),
+            ballot=self.ballot,
         )
 
         form.fields["select_person"] = PersonSuggestionField(
