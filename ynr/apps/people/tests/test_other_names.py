@@ -1,10 +1,17 @@
+import textwrap
+from unittest.mock import patch
+
 import pytest
 from candidates.models import LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test.utils import override_settings
 from django_webtest import WebTest
+from official_documents.models import BallotSOPN
 from people.helpers import person_names_equal
 from people.tests.factories import PersonFactory
+from people.tests.test_person_view import PersonViewSharedTestsMixin
 from popolo.models import OtherName
 
 
@@ -271,6 +278,99 @@ class TestOtherNamesViews(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.person_other_names.other_names.count(), 2)
+
+
+class TestSopnNamesViews(PersonViewSharedTestsMixin):
+    def test_edit_sopn_names_form_ballot_has_no_sopn(self):
+        response = self.app.get(
+            "/person/2009/sopn-names/{membership_id}".format(
+                membership_id=self.person.memberships.first().id
+            ),
+            user=self.user,
+            expect_errors=True,
+        )
+        self.assertEqual(response.status_code, 404)
+
+    @patch("candidates.views.other_names.send_sopn_name_change_notification")
+    def test_edit_sopn_names_form_ballot_with_sopn_no_notification(
+        self, mock_send_sopn_name_change_notification
+    ):
+        BallotSOPN.objects.create(
+            ballot=self.dulwich_post_ballot,
+            uploaded_file=SimpleUploadedFile("sopn.pdf", b"fake SOPN content"),
+            source_url="example.com",
+        )
+        resp1 = self.app.get(
+            "/person/2009/sopn-names/{membership_id}".format(
+                membership_id=self.person.memberships.first().id
+            ),
+            user=self.user,
+        )
+
+        form = resp1.forms["person_edit_sopn_names"]
+        form["sopn_last_name"] = "Jowell"
+        form["sopn_first_names"] = "Tessa Jane Helen Douglas"
+        resp2 = form.submit()
+
+        self.assertEqual(resp2.status_code, 302)
+        membership = self.person.memberships.first()
+        self.assertEqual(membership.sopn_last_name, "Jowell")
+        self.assertEqual(
+            membership.sopn_first_names, "Tessa Jane Helen Douglas"
+        )
+
+        mock_send_sopn_name_change_notification.assert_not_called()
+
+    @patch("people.notifications.send_mail")
+    @override_settings(SOPN_UPDATE_NOTIFICATION_EMAILS=["fred@example.com"])
+    @override_settings(BASE_URL="https://candidates.example.com")
+    def test_edit_sopn_names_form_ballot_with_sopn_with_notification(
+        self, mock_send_mail
+    ):
+        self.dulwich_post_ballot.candidates_locked = True
+        self.dulwich_post_ballot.save()
+
+        BallotSOPN.objects.create(
+            ballot=self.dulwich_post_ballot,
+            uploaded_file=SimpleUploadedFile("sopn.pdf", b"fake SOPN content"),
+            source_url="example.com",
+        )
+
+        expected_mail_body = textwrap.dedent(
+            """\
+            Hello,
+
+            The user john changed the SOPN name of https://candidates.example.com/person/2009/tessa-jowell from "" to "Tessa Jane Helen Douglas Jowell".
+
+            for ballot https://candidates.example.com/elections/parl.65808.2015-05-07/
+            """
+        )
+
+        resp1 = self.app.get(
+            "/person/2009/sopn-names/{membership_id}".format(
+                membership_id=self.person.memberships.first().id
+            ),
+            user=self.user,
+        )
+
+        form = resp1.forms["person_edit_sopn_names"]
+        form["sopn_last_name"] = "Jowell"
+        form["sopn_first_names"] = "Tessa Jane Helen Douglas"
+        resp2 = form.submit()
+
+        self.assertEqual(resp2.status_code, 302)
+
+        membership = self.person.memberships.first()
+        self.assertEqual(membership.sopn_last_name, "Jowell")
+        self.assertEqual(
+            membership.sopn_first_names, "Tessa Jane Helen Douglas"
+        )
+
+        mock_send_mail.assert_called_once_with(
+            "Name for candidate updated",
+            expected_mail_body,
+            ["fred@example.com"],
+        )
 
 
 @pytest.mark.parametrize(
