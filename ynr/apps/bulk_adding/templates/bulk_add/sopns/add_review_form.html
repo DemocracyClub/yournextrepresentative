@@ -32,8 +32,6 @@
   just select "create a new person".</p>
 <p>Alternatively you can <a href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a>.</p>
 
-{% include "bulk_add/sopns/_known-people.html" %}
-
 
 <form method=POST id="bulk_add_review_formset">
   {% csrf_token %}
@@ -61,7 +59,7 @@
           <tbody>
             {% for choice in form.select_person %}
 
-              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
+              <tr>
                 <td class="multiple-choice" style="margin-left:1em">
                   {{ choice.tag }}
                     <label>{{ choice.choice_label }}</label>
@@ -75,9 +73,15 @@
                     {% endif %}
                 </td>
                 <td>
-                  {% for candidacy in choice.data.previous_candidacies %}
-                    <li>{{ candidacy }}</li>
-                  {% endfor %}
+                {% if choice.data.instance.on_ballot %}
+                  (Already listed on this ballot)
+                {% else %}
+                  <ul>
+                    {% for candidacy in choice.data.previous_candidacies %}
+                    <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
                 </td>
               </tr>
             {% endfor %}
@@ -95,13 +99,5 @@
   <button type=submit>Submit lock suggestion</button>
 </form>
 
-  <script>
-  $('.sopn_adding_suggestions_table tr').click(function() {
-    var row = $(this);
-    $("tr").removeClass("selected_action");
-    row.addClass("selected_action");
-    row.find('td input[type=radio]').prop('checked', true);
-  });
-  </script>
 
 {% endblock content %}

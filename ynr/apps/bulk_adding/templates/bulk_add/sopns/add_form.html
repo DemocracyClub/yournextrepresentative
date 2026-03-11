@@ -71,6 +71,9 @@
 
 
         <form method=POST id="bulk_add_form">
+            <template id="empty_quick_add_form">
+                {% include 'bulk_add/sopns/quick_add_form.html' with data=formset.empty_form counter="__prefix_display__"%}
+            </template>
             <button type=submit>Review</button>
             <a href="{{ ballot_sopn.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
             {% csrf_token %}
@@ -80,10 +83,11 @@
                     {{ formset.non_form_errors }}
                 </div>
             {% endif %}
-
-            {% for table in sorted_with_type %}
-                {% include table.template_name with data=table.data %}
+            <div id="formset-rows">
+            {% for form in formset %}
+                {% include 'bulk_add/sopns/quick_add_form.html' with data=form counter=forloop.counter %}
             {% endfor %}
+            </div>
             <button type=submit>Review</button>
         </form>
 

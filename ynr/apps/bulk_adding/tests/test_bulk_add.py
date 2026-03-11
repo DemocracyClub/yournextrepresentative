@@ -1,10 +1,14 @@
 from unittest.mock import patch
 
-from bulk_adding.forms import BulkAddFormSet
+from bulk_adding.forms import BulkAddFormSet, BulkAddReviewFormSet
 from bulk_adding.models import RawPeople
 from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
-from candidates.tests.factories import MembershipFactory
+from candidates.tests.factories import (
+    BallotPaperFactory,
+    ElectionFactory,
+    MembershipFactory,
+)
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django_webtest import WebTest
@@ -129,7 +133,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(22):
+        with self.assertNumQueries(21):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -157,7 +161,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # make it lower and at least make sure it's not getting bigger.
         #
         # [1]: https://github.com/DemocracyClub/yournextrepresentative/pull/467#discussion_r179186705
-        with self.assertNumQueries(FuzzyInt(49, 54)):
+        with self.assertNumQueries(FuzzyInt(49, 52)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -301,7 +305,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(23):
+        with self.assertNumQueries(22):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -326,7 +330,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select("_new")
 
         # this is a smaller increase but may be unavoidable
-        with self.assertNumQueries(FuzzyInt(53, 58)):
+        with self.assertNumQueries(FuzzyInt(53, 56)):
             response = form.submit()
 
         self.assertEqual(Person.objects.count(), 1)
@@ -813,3 +817,364 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertContains(resp, "Review candidates")
         resp = form.submit()
         self.assertContains(resp, "Bart Simpson")
+
+    def test_existing_ballot_member_is_top_suggestion_on_review_form(self):
+        """
+        When reviewing candidates, a person already on the ballot should
+        appear as the first suggestion, even if another person with the
+        same name exists elsewhere.
+        """
+        # Create a person already on this ballot
+        ballot_person = PersonFactory.create(name="Bart Simpson")
+        MembershipFactory.create(
+            person=ballot_person,
+            post=self.dulwich_post,
+            party=self.labour_party,
+            ballot=self.dulwich_post_ballot,
+        )
+
+        # Create another person with the same name on a different ballot
+        other_person = PersonFactory.create(name="Bart Simpson")
+        MembershipFactory.create(
+            person=other_person,
+            post=self.local_post,
+            party=self.conservative_party,
+            ballot=self.local_ballot,
+        )
+
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            textract_data=[
+                {
+                    "name": "Bart Simpson",
+                    "party_id": self.labour_party.ec_id,
+                    "sopn_last_name": "Simpson",
+                    "sopn_first_names": "Bart",
+                }
+            ],
+            source="http://example.com",
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        response = self.app.get(
+            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            user=self.user,
+        )
+
+        form = response.forms["bulk_add_review_formset"]
+        choices = form["form-0-select_person"].options
+
+        # First option is always "_new"
+        self.assertEqual(len(choices), 3)
+        self.assertEqual(str(choices[1][0]), str(ballot_person.pk))
+
+    def test_existing_ballot_member_selected_by_default_in_formset(self):
+        """
+        Test that suggested_people returns ballot members first when a ballot
+        is provided, regardless of overall search ranking.
+
+        As noted in the PR, we might want to re-consider this and combine with
+        an exact party match as well.
+        """
+
+        # Create two people with the same name
+        ballot_person = PersonFactory.create(name="Jane Smith")
+        MembershipFactory.create(
+            person=ballot_person,
+            post=self.dulwich_post,
+            party=self.labour_party,
+            ballot=self.dulwich_post_ballot,
+        )
+
+        other_person = PersonFactory.create(name="Jane Smith")
+        MembershipFactory.create(
+            person=other_person,
+            post=self.local_post,
+            party=self.conservative_party,
+            ballot=self.local_ballot,
+        )
+
+        formset = BulkAddReviewFormSet(
+            initial=[],
+            ballot=self.dulwich_post_ballot,
+        )
+        suggestions = formset.suggested_people(
+            "Jane Smith",
+            new_party=self.labour_party.ec_id,
+            new_election=self.dulwich_post_ballot.election,
+            new_name="Jane Smith",
+            ballot=self.dulwich_post_ballot,
+        )
+
+        self.assertIsNotNone(suggestions)
+        suggestion_list = list(suggestions)
+        self.assertEqual(len(suggestion_list), 2)
+        self.assertEqual(suggestion_list[0].pk, ballot_person.pk)
+
+    def test_existing_ballot_member_same_party_is_selected_by_default(self):
+        """
+        When a person is already on the ballot AND has previously stood for
+        the same party, their radio button on the review form should be
+        pre-selected rather than defaulting to 'Add a new profile'.
+        """
+        existing_person = PersonFactory.create(name="Homer Simpson")
+        MembershipFactory.create(
+            person=existing_person,
+            post=self.dulwich_post,
+            party=self.green_party,
+            ballot=self.dulwich_post_ballot,
+        )
+
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            textract_data=[
+                {
+                    "name": "Homer Simpson",
+                    "party_id": self.green_party.ec_id,
+                    "sopn_last_name": "Simpson",
+                    "sopn_first_names": "Homer",
+                }
+            ],
+            source="http://example.com",
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        response = self.app.get(
+            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            user=self.user,
+        )
+
+        form = response.forms["bulk_add_review_formset"]
+        self.assertEqual(
+            form["form-0-select_person"].value,
+            str(existing_person.pk),
+        )
+
+    def test_existing_ballot_member_different_party_not_selected_by_default(
+        self,
+    ):
+        """
+        When a person is on the ballot but the party on the SOPN differs,
+        the review form should still default to 'Add a new profile' rather
+        than pre-selecting that person.
+        """
+        existing_person = PersonFactory.create(name="Homer Simpson")
+        MembershipFactory.create(
+            person=existing_person,
+            post=self.dulwich_post,
+            party=self.green_party,
+            ballot=self.dulwich_post_ballot,
+        )
+
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # SOPN lists Homer under Labour, not Green
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            textract_data=[
+                {
+                    "name": "Homer Simpson",
+                    "party_id": self.labour_party.ec_id,
+                    "sopn_last_name": "Simpson",
+                    "sopn_first_names": "Homer",
+                }
+            ],
+            source="http://example.com",
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        response = self.app.get(
+            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            user=self.user,
+        )
+
+        form = response.forms["bulk_add_review_formset"]
+        self.assertEqual(form["form-0-select_person"].value, "_new")
+
+    def test_ballot_member_included_in_suggestions_for_name_variants(self):
+        cases = [
+            (
+                "John Smith",
+                "John Smith",
+                ["John Smith"] * 6
+                + ["John Jones", "John Brown", "Robert Smith"],
+            ),
+            (
+                "Johnathan Smith",
+                "John Smith",
+                ["John Smith"] * 6
+                + ["John Jones", "John Brown", "Robert Smith"],
+            ),
+            (
+                "John Smith",
+                "Johnathan Smith",
+                ["Johnathan Smith"] * 6
+                + ["Johnathan Jones", "Johnathan Brown"],
+            ),
+            (
+                "John William Smith",
+                "John Smith",
+                ["John Smith"] * 6
+                + ["John Jones", "John Brown", "Robert Smith"],
+            ),
+            (
+                "John Smith",
+                "John William Smith",
+                ["John William Smith"] * 6
+                + ["John William Jones", "John William Brown"],
+            ),
+            (
+                "Jonathan William Henry Smith",
+                "Jonathan Smith",
+                ["Jonathan Smith"] * 6 + ["Jonathan Jones", "Jonathan Brown"],
+            ),
+            (
+                "John William Smith",
+                "John W Smith",
+                ["John W Smith"] * 6 + ["John W Jones", "John W Brown"],
+            ),
+            (
+                "John W Smith",
+                "John William Smith",
+                ["John William Smith"] * 6 + ["John William Jones"],
+            ),
+            (
+                "Mary Anne Jones",
+                "Mary Jones",
+                ["Mary Jones"] * 6
+                + ["Mary Brown", "Mary Smith", "Mary Taylor"],
+            ),
+            (
+                "Alice Brown-Taylor",
+                "Alice Brown Taylor",
+                ["Alice Brown Taylor"] * 6 + ["Alice Brown", "Alice Taylor"],
+            ),
+        ]
+
+        ballot = BallotPaperFactory()
+
+        for ballot_name, search_name, noise_names in cases:
+            with self.subTest(
+                ballot_name=ballot_name,
+                search_name=search_name,
+                noise_count=len(noise_names),
+            ):
+                party = PartyFactory(register="GB")
+
+                for name in noise_names:
+                    PersonFactory.create(name=name)
+                    Person.objects.update_name_search()
+
+                ballot_person = PersonFactory.create(name=ballot_name)
+                MembershipFactory.create(
+                    person=ballot_person,
+                    post=ballot.post,
+                    party=party,
+                    ballot=ballot,
+                )
+                Person.objects.update_name_search()
+
+                formset = BulkAddReviewFormSet(initial=[], ballot=ballot)
+                suggestions = formset.suggested_people(
+                    search_name,
+                    new_party=party.ec_id,
+                    new_election=ballot.election,
+                    new_name=search_name,
+                    ballot=ballot,
+                )
+
+                self.assertIsNotNone(suggestions)
+                suggestion_pks = {p.pk for p in suggestions}
+                self.assertIn(
+                    ballot_person.pk,
+                    suggestion_pks,
+                )
+
+    def test_same_party_person_included_in_suggestions(self):
+        cases = [
+            (
+                "John Smith",
+                "John Smith",
+                ["John Smith"] * 6,
+            ),
+            (
+                "Johnathan Smith",
+                "John Smith",
+                ["John Smith"] * 6,
+            ),
+            (
+                "John William Smith",
+                "John Smith",
+                ["John Smith"] * 6,
+            ),
+            (
+                "Jonathan William Henry Smith",
+                "Jonathan Smith",
+                ["Jonathan Smith"] * 6,
+            ),
+        ]
+
+        ballot = BallotPaperFactory()
+        previous_election = ElectionFactory(slug="previous-election")
+
+        for stored_name, search_name, noise_names in cases:
+            with self.subTest(
+                stored_name=stored_name,
+                search_name=search_name,
+                noise_count=len(noise_names),
+            ):
+                party = PartyFactory(register="GB")
+                other_party = PartyFactory(register="GB")
+
+                other_ballot = BallotPaperFactory(
+                    election=previous_election,
+                    post=ballot.post,
+                )
+
+                for name in noise_names:
+                    noise = PersonFactory.create(name=name)
+                    MembershipFactory.create(
+                        person=noise,
+                        post=other_ballot.post,
+                        party=other_party,
+                        ballot=other_ballot,
+                    )
+                    Person.objects.update_name_search()
+
+                same_party_person = PersonFactory.create(name=stored_name)
+                MembershipFactory.create(
+                    person=same_party_person,
+                    post=other_ballot.post,
+                    party=party,
+                    ballot=other_ballot,
+                )
+                Person.objects.update_name_search()
+
+                formset = BulkAddReviewFormSet(initial=[], ballot=ballot)
+                suggestions = formset.suggested_people(
+                    search_name,
+                    new_party=party.ec_id,
+                    new_election=ballot.election,
+                    new_name=search_name,
+                    ballot=ballot,
+                )
+
+                self.assertIsNotNone(suggestions)
+                suggestion_pks = {p.pk for p in suggestions}
+                self.assertIn(
+                    same_party_person.pk,
+                    suggestion_pks,
+                )
