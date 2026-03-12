@@ -356,9 +356,6 @@ def clean_matcher_data(ballot_to_pages):
 
     :return:
     """
-    # It's not valid to have no matched all page
-    if not all(ballot_data["matched_page"] for ballot_data in ballot_to_pages):
-        raise ValueError("Not all ballots matched")
 
     # First, convert the matched_page to a list of pages
     for ballot_data in ballot_to_pages:
@@ -372,8 +369,10 @@ def clean_matcher_data(ballot_to_pages):
         for ballot_data in ballot_to_pages
     }
 
+    # Exclude any ballots that are not matches to any page
+    matched_ballots = [item for item in cleaned_data.items() if item[1]]
     # Now, sort the list by the first matched page
-    sorted_data = sorted(cleaned_data.items(), key=lambda x: x[1][0])
+    sorted_data = sorted(matched_ballots, key=lambda x: x[1][0])
 
     for i in range(len(sorted_data) - 1):
         this_ballot, this_value = sorted_data[i]
