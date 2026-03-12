@@ -83,7 +83,9 @@
             We expect the official list of candidates to be published on or after
                 <strong>{{ ballot.expected_sopn_date }}</strong>.</p>
             <p class="clearfix">
-            {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+            {% if not ballot.has_sopn %}
+              {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+            {% endif %}
             </p>
         {% endif %}
     </div>
@@ -218,6 +220,9 @@
           </a>
         {% endif %}
 
+        {% if ballot.has_sopn %}
+          {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+        {% endif %}
 
         {% include "elections/includes/_ballot_lock_form.html" %}
 
