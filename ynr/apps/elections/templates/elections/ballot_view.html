@@ -221,10 +221,13 @@
         {% endif %}
 
         {% if ballot.has_sopn %}
-          {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+        <p>
+            {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+        </p>
         {% endif %}
-
+        <div class="panel callout radius">
         {% include "elections/includes/_ballot_lock_form.html" %}
+        </div>
 
         {% if user_can_record_results and has_any_winners %}
           <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
