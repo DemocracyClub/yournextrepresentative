@@ -1,6 +1,9 @@
 {# Locking #}
 {% load humanize %}
 {% if candidates.exists and user_can_lock %}
+    <p><strong>{{ ballot.suggested_lock_html }}</strong>: Someone else has suggested that this ballot should be locked.
+        Please check the candidates listed above against
+    the SOPN and lock the ballot if everything matches.</p>
   <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
     {% csrf_token %}
 
