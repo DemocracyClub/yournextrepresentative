@@ -1,3 +1,5 @@
+import re
+
 from django_webtest import WebTest
 
 
@@ -72,13 +74,13 @@ class DataTimelineHTMLAssertions(WebTest):
 
     def assertDataTimelineShowAddCandidateCTA(self, response):
         if not response.context["user"].is_authenticated:
-            self.assertInHTML(
-                """
-                <a href="/accounts/login/?next=/elections/local.foo.bar.2019-08-03/" class="button">
-                    Sign in to add a new candidate
-                </a>
-                """,
-                response.text,
+            button = response.html.find(
+                "a", text=re.compile("Sign in to add a new candidate")
+            )
+            self.assertIsNotNone(button)
+            self.assertEqual(
+                button["href"],
+                "/accounts/login/?next=/elections/local.foo.bar.2019-08-03/",
             )
 
     def assertDataTimelineCandidateAddingInProgress(self, response):

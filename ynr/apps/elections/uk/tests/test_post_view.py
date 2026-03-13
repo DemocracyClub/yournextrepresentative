@@ -72,7 +72,7 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = response.follow()
         self.assertContains(
             response,
-            "Thanks, you've suggested we lock this ballot – we'll review it soon.",
+            "You suggested locking this ballot",
         )
         suggested_locks = SuggestedPostLock.objects.all()
         self.assertEqual(suggested_locks.count(), 1)
@@ -155,7 +155,7 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertContains(
             response,
-            "Locking disabled because you suggested locking this ballot",
+            "Someone else needs to double-check and lock it",
         )
 
     def test_post_lock_offered_when_suggested_lock_exists(self):
@@ -183,7 +183,7 @@ class TestBallotView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = self.app.get(
             self.edinburgh_east_post_ballot.get_absolute_url(), user=self.user
         )
-        self.assertContains(response, "Lock candidate list")
+        self.assertContains(response, "Lock")
 
     def test_no_lock_button_if_no_sopn(self):
         group = Group.objects.get(name=TRUSTED_TO_LOCK_GROUP_NAME)

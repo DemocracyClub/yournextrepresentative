@@ -49,7 +49,7 @@ class TestPostsView(UK2015ExamplesMixin, WebTest):
         )
         response = self.app.get("/elections/?review_required=suggestion")
 
-        self.assertContains(response, "🔓")
+        self.assertContains(response, "Lock Suggested")
 
     def test_elections_filters(self):
         # Unfiltered

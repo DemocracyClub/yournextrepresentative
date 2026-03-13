@@ -440,14 +440,14 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def locked_status_text(self):
         if self.candidates_locked:
-            return mark_safe("🔐")
+            return mark_safe("🔐 Locked")
         return None
 
     @property
     def locked_status_html(self):
         if self.candidates_locked:
             return mark_safe(
-                '<abbr title="Candidates verified and post locked">{}</abbr>'.format(
+                '<abbr title="Candidates verified and ballot locked">{}</abbr>'.format(
                     self.locked_status_text
                 )
             )
@@ -458,7 +458,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def suggested_lock_html(self):
         return mark_safe(
-            '<abbr title="Someone suggested locking this post">🔓</abbr>'
+            '<abbr title="Someone suggested locking this post">🔑 Lock Suggested</abbr>'
         )
 
     @cached_property
@@ -467,6 +467,16 @@ class Ballot(EEModifiedMixin, models.Model):
         if self.membership_set.filter(elected=True).exists():
             return True
         return False
+
+    @cached_property
+    def has_sopn(self):
+        """
+        Return a boolean if the ballot has a related SOPN.
+
+        This is needed because accessing `ballot.sopn` without a SOPN will raise
+        `RelatedObjectDoesNotExist`. This can cause subtle errors in templates.
+        """
+        return hasattr(self, "sopn")
 
     @property
     def uncontested(self):
@@ -602,11 +612,7 @@ class Ballot(EEModifiedMixin, models.Model):
         # can edit the memberships. Also prevent adding via the ballot
         # forms when we have a SOPN for this ballot, as the bulk adding forms
         # should be used instead.
-        if (
-            not self.candidates_locked
-            and not self.cancelled
-            and not hasattr(self, "sopn")
-        ):
+        if not self.candidates_locked and not self.cancelled:
             return True
 
         # Special case where elections are cancelled before they are locked
