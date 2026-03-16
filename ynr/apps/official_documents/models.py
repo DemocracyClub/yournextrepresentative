@@ -192,6 +192,13 @@ class BaseBallotSOPN(TimeStampedModel):
     ballot = models.OneToOneField(
         "candidates.Ballot", on_delete=models.CASCADE, related_name="sopn"
     )
+    election_sopn = models.ForeignKey(
+        "official_documents.ElectionSOPN",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text="If this BallotSOPN was created by splitting an ElectionSOPN, the ElectionSOPN from whence it came",
+    )
 
     # Don't add `ballot` here as we want different related names for each model
     uploaded_file = models.FileField(
@@ -291,6 +298,7 @@ def add_ballot_sopn(
     source_url: str,
     relevant_pages: str = "all",
     replacement_reason=None,
+    election_sopn=None,
     parse=True,
 ):
     """
@@ -314,6 +322,7 @@ def add_ballot_sopn(
         uploaded_file=pdf_content,
         source_url=source_url,
         replacement_reason=replacement_reason,
+        election_sopn=election_sopn,
     )
     if parse:
         ballot_sopn.parse()
