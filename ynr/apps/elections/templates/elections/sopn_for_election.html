@@ -7,7 +7,10 @@
 
 {% block content %}
 
-    <p>Statement of Persons Nominated for {{ object.election.name }}.</p>
+    <p>
+      Statement of Persons Nominated for
+      <a href="{% url 'election_view' object.election.slug %}">{{ object.election.name }}</a>.
+    </p>
 
     {% if object.pages_matched %}
         <p>The pages in this document have been matched to ballots in this election:</p>
