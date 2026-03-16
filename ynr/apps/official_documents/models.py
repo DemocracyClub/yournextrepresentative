@@ -156,8 +156,12 @@ class ElectionSOPN(TimeStampedModel):
     def get_absolute_url(self):
         return reverse(
             "election_sopn",
-            kwargs={"election_id": self.election.slug},
+            kwargs={"election_id": self.election.slug, "pk": self.id},
         )
+
+    @property
+    def friendly_name(self):
+        return Path(self.uploaded_file.name).name
 
     @property
     def pages_matched(self):

@@ -260,7 +260,3 @@ class Election(EEModifiedMixin, models.Model):
         params["election_id"] = self.slug
         url = reverse("download_reason")
         return f"{url}?{params.urlencode()}"
-
-    @property
-    def has_electionsopn(self) -> bool:
-        return getattr(self, "electionsopn", False)

@@ -24,6 +24,7 @@ from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,
     BallotSOPN,
+    ElectionSOPN,
     PageMatchingMethods,
     add_ballot_sopn,
 )
@@ -146,24 +147,31 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
     template_name = "official_documents/election_sopn_matcher.html"
     queryset = (
-        Election.objects.all()
-        .select_related("electionsopn")
-        .prefetch_related("ballot_set")
+        ElectionSOPN.objects.all()
+        .select_related("election")
+        .prefetch_related("election__ballot_set")
     )
-    slug_url_kwarg = "election_id"
-    slug_field = "slug"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(election__slug=self.kwargs["election_id"])
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         ballot_data = []
-        for ballot in self.object.ballot_set.all().order_by("post__label"):
+        for ballot in self.object.election.ballot_set.all().order_by(
+            "post__label"
+        ):
             ballot_for_matcher = {
                 "ballot_paper_id": ballot.ballot_paper_id,
                 "label": ballot.post.label,
             }
             if (
-                self.object.electionsopn.pages_matched
+                self.object.pages_matched
                 and ballot.sopn.relevant_pages != "all"
             ):
                 ballot_for_matcher["matched"] = bool(ballot.sopn.relevant_pages)
@@ -173,28 +181,28 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
             ballot_data.append(ballot_for_matcher)
 
         context["matcher_props"] = {
-            "election_id": self.object.name,
-            "sopn_pdf": self.object.electionsopn.uploaded_file.url,
+            "election_id": self.object.election.name,
+            "sopn_pdf": self.object.uploaded_file.url,
             "ballots": ballot_data,
         }
         return context
 
-    def post(self, request, election_id):
-        election = self.get_object()
+    def post(self, request, **kwargs):
+        sopn = self.get_object()
         splitter = ElectionSOPNPageSplitter(
-            election.electionsopn,
+            sopn,
             clean_matcher_data(json.loads(request.POST.get("matched_pages"))),
         )
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
         LoggedAction.objects.create(
             user=request.user,
-            election=election,
+            election=sopn.election,
             action_type=ActionType.SOPN_SPLIT_BALLOTS,
             ip_address=get_client_ip(request),
             source="Manual matching",
             edit_type=EditType.USER,
         )
-        return HttpResponseRedirect(election.electionsopn.get_absolute_url())
+        return HttpResponseRedirect(sopn.get_absolute_url())
 
 
 class PostsForDocumentView(DetailView):

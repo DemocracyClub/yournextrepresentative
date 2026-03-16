@@ -23,7 +23,7 @@ from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.notifications import send_ballot_lock_notification
 from moderation_queue.forms import SuggestedPostLockForm
-from official_documents.models import BallotSOPN
+from official_documents.models import BallotSOPN, ElectionSOPN
 from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
@@ -33,7 +33,7 @@ from utils.db import LastWord, NullIfBlank
 
 class ElectionView(DetailView):
     template_name = "elections/election_detail.html"
-    model = Election
+    queryset = Election.objects.all().prefetch_related("electionsopn_set")
     slug_url_kwarg = "election"
 
     def get_context_data(self, **kwargs):
@@ -374,14 +374,21 @@ class SOPNForBallotView(DetailView):
 
 
 class SOPNForElectionView(DetailView):
-    queryset = Election.objects.all().select_related("electionsopn")
-    slug_url_kwarg = "election_id"
-    slug_field = "slug"
+    queryset = ElectionSOPN.objects.all().select_related("election")
     template_name = "elections/sopn_for_election.html"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(election__slug=self.kwargs["election_id"])
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = self.object.ballot_set.order_by("post__label")
+        context["ballots"] = self.object.election.ballot_set.order_by(
+            "post__label"
+        )
         return context
 
 

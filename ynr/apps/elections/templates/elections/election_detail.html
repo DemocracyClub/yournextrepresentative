@@ -17,7 +17,18 @@
 
     <div class="row">
         <div class="columns large-9">
+            {% if object.electionsopn_set.all.count > 0 %}
+              <h2>SOPNs</h2>
+                <ul>
+                  {% for sopn in object.electionsopn_set.all %}
+                    <li>
+                      <a href="{{ sopn.get_absolute_url}}">{{ sopn.friendly_name }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+            {% endif %}
 
+            <h2>Ballots</h2>
             {% for ballot in ballots %}
                 <h3>
                     <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}
@@ -111,20 +122,13 @@
                             Review photos</a>
                     </li>
                 {% endif %}
-                {% if object.has_electionsopn %}
+
+                {% if user_can_upload_documents %}
                     <li>
-                        <a href="{{ object.electionsopn.get_absolute_url }}" class="button small">View SOPN</a>
+                        <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
+                            class="button small">
+                            Upload SOPN</a>
                     </li>
-                {% else %}
-
-                    {% if user_can_upload_documents %}
-                        <li>
-                            <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
-                               class="button small">
-                                Upload SOPN</a>
-                        </li>
-                    {% endif %}
-
                 {% endif %}
 
             </ul>
