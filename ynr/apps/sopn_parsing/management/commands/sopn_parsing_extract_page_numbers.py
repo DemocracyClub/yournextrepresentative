@@ -16,7 +16,7 @@ class Command(BaseSOPNParsingCommand):
     """
 
     def handle(self, *args, **options):
-        qs = Election.objects.all().exclude(electionsopn=None)
+        qs = Election.objects.filter(electionsopn__isnull=False).distinct()
 
         filter_kwargs = {}
         if options.get("election_slugs"):
@@ -31,15 +31,16 @@ class Command(BaseSOPNParsingCommand):
         qs = qs.filter(**filter_kwargs)
 
         for election in qs:
-            try:
-                extract_pages_for_election_sopn(election.electionsopn)
-            except (
-                ValueError,
-                NoTextInDocumentError,
-                PDFException,
-                FileNotFoundError,
-            ) as e:
+            for sopn in election.electionsopn_set.all():
                 try:
-                    self.stderr.write(e.args[0])
-                except AttributeError:
-                    self.stderr.write(str(e))
+                    extract_pages_for_election_sopn(sopn)
+                except (
+                    ValueError,
+                    NoTextInDocumentError,
+                    PDFException,
+                    FileNotFoundError,
+                ) as e:
+                    try:
+                        self.stderr.write(e.args[0])
+                    except AttributeError:
+                        self.stderr.write(str(e))

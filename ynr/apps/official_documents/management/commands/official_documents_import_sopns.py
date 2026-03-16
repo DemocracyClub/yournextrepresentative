@@ -118,9 +118,9 @@ class Command(BaseCommand):
         election = Election.objects.get(
             ballot__ballot_paper_id=ballot_data[0]["ballot_paper_id"]
         )
-        if hasattr(election, "electionsopn"):
+        if election.electionsopn_set.all().count():
             if delete_existing:
-                election.electionsopn.delete()
+                election.electionsopn_set.all().delete()
             else:
                 return None
         upload_filename = f"{election.slug}-sopn{extension}"
