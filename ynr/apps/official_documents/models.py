@@ -122,7 +122,7 @@ class ElectionSOPN(TimeStampedModel):
 
     """
 
-    election = models.OneToOneField(
+    election = models.ForeignKey(
         "elections.Election", on_delete=models.CASCADE, blank=True
     )
 
