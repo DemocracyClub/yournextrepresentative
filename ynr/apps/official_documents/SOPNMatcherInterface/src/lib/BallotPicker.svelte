@@ -1,7 +1,29 @@
 <script>
     import {BallotStore} from './Store.js';
+    import {onMount, afterUpdate} from 'svelte';
 
     export let page_number;
+
+    function updateDisabledStates() {
+        const checkboxes = document.querySelectorAll(`input[name="ballot_for_page_${page_number}"]`);
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+        checkboxes.forEach(checkbox => {
+            if (anyChecked) {
+                checkbox.disabled = !checkbox.checked;
+            } else {
+                checkbox.disabled = false;
+            }
+        });
+    }
+
+    onMount(() => {
+        updateDisabledStates();
+    });
+
+    afterUpdate(() => {
+        updateDisabledStates();
+    });
 
     function mark_ballot_for_page(event) {
         let ballot_id = event.target.dataset["ballot"];
