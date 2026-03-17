@@ -33,7 +33,11 @@ from utils.db import LastWord, NullIfBlank
 
 class ElectionView(DetailView):
     template_name = "elections/election_detail.html"
-    queryset = Election.objects.all().prefetch_related("electionsopn_set")
+    queryset = Election.objects.all().prefetch_related(
+        Prefetch(
+            "electionsopn_set", queryset=ElectionSOPN.objects.order_by("id")
+        )
+    )
     slug_url_kwarg = "election"
 
     def get_context_data(self, **kwargs):
