@@ -170,16 +170,16 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
                 "ballot_paper_id": ballot.ballot_paper_id,
                 "label": ballot.post.label,
             }
-            if (
-                self.object.any_pages_matched
-                and hasattr(ballot, "sopn")
-                and ballot.sopn.relevant_pages != "all"
-                and ballot.sopn.election_sopn_id == self.object.id
-            ):
-                ballot_for_matcher["matched"] = bool(ballot.sopn.relevant_pages)
-                ballot_for_matcher["matched_page"] = str(
-                    ballot.sopn.first_page_int
-                )
+            if hasattr(ballot, "sopn") and ballot.sopn.relevant_pages != "all":
+                if ballot.sopn.election_sopn_id == self.object.id:
+                    ballot_for_matcher["matched"] = bool(
+                        ballot.sopn.relevant_pages
+                    )
+                    ballot_for_matcher["matched_page"] = str(
+                        ballot.sopn.first_page_int
+                    )
+                elif ballot.sopn.election_sopn_id is not None:
+                    ballot_for_matcher["disabled"] = True
             ballot_data.append(ballot_for_matcher)
 
         context["matcher_props"] = {

@@ -9,7 +9,13 @@
         const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
 
         checkboxes.forEach(checkbox => {
-            if (anyChecked) {
+            const ballot_id = checkbox.dataset["ballot"];
+            const ballot = $BallotStore.find(b => b.ballot_paper_id === ballot_id);
+            
+            // Never enable if the ballot has disabled property set to true
+            if (ballot?.disabled) {
+                checkbox.disabled = true;
+            } else if (anyChecked) {
                 checkbox.disabled = !checkbox.checked;
             } else {
                 checkbox.disabled = false;
@@ -44,7 +50,12 @@
                 } else {
                     ballots[index].matched_page = undefined;
                     other_checkboxes.forEach(el => {
-                        el.disabled = false;
+                        const el_ballot_id = el.dataset["ballot"];
+                        const el_ballot = ballots.find(b => b.ballot_paper_id === el_ballot_id);
+                        // Don't enable if the ballot has disabled property
+                        if (!el_ballot?.disabled) {
+                            el.disabled = false;
+                        }
                     })
                 }
             }
@@ -58,9 +69,13 @@
     <fieldset>
         <legend>Related ballot</legend>
         <div class="ds-stack-smallest">
-            {#each $BallotStore as {ballot_paper_id, label, matched_page, matched} (ballot_paper_id)}
+            {#each $BallotStore as {ballot_paper_id, label, matched_page, matched, disabled} (ballot_paper_id)}
                 {#if !matched_page || (matched_page && matched_page == page_number)}
-                    <label class="ds-field-checkbox">
+                    <label
+                            class="ds-field-checkbox"
+                            title={disabled ? "This ballot is matched to a page on another SOPN" : ""}
+                    >
+
                         <input
                                 type="checkbox"
                                 data-ballot="{ballot_paper_id}"
@@ -69,7 +84,7 @@
                                 on:change={mark_ballot_for_page}
                                 bind:checked={matched}
                         >
-                        <span>{label}</span>
+                        <span style={disabled ? "text-decoration: line-through;" : ""}>{label}</span>
                     </label>
                 {/if}
             {/each}
