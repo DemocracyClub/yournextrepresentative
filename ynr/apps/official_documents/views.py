@@ -171,8 +171,10 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
                 "label": ballot.post.label,
             }
             if (
-                self.object.pages_matched
+                self.object.any_pages_matched
+                and hasattr(ballot, "sopn")
                 and ballot.sopn.relevant_pages != "all"
+                and ballot.sopn.election_sopn_id == self.object.id
             ):
                 ballot_for_matcher["matched"] = bool(ballot.sopn.relevant_pages)
                 ballot_for_matcher["matched_page"] = str(

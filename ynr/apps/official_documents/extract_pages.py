@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models.functions import Length
 from official_documents.models import (
+    BallotSOPN,
     ElectionSOPN,
     PageMatchingMethods,
     add_ballot_sopn,
@@ -401,7 +402,15 @@ class ElectionSOPNPageSplitter:
     def split(
         self, method=PageMatchingMethods.AUTO_MATCHED, parse_ballots=True
     ):
+        if self.election_sopn.pk is not None:
+            BallotSOPN.objects.filter(
+                election_sopn_id=self.election_sopn.pk
+            ).delete()
+
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
+            if not matched_pages:
+                continue
+
             pdf_pages = io.BytesIO()
             writer = PdfWriter()
             try:
@@ -419,8 +428,6 @@ class ElectionSOPNPageSplitter:
             relevant_pages = ",".join([str(num) for num in matched_pages])
             if len(matched_pages) == len(self.reader.pages):
                 relevant_pages = "all"
-            if not relevant_pages:
-                relevant_pages = "all"
             if len(relevant_pages) >= 20:
                 # chances are this is an error, so raise
                 raise PDFProcessingError(
@@ -434,6 +441,7 @@ class ElectionSOPNPageSplitter:
                 pdf_content,
                 self.election_sopn.source_url,
                 relevant_pages,
+                election_sopn=self.election_sopn,
                 parse=parse_ballots,
             )
 

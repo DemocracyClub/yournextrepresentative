@@ -164,11 +164,20 @@ class ElectionSOPN(TimeStampedModel):
         return Path(self.uploaded_file.name).name
 
     @property
-    def pages_matched(self):
+    def all_pages_matched(self):
         return (
             bool(self.page_matching_method)
             and not self.election.ballot_set.filter(
                 sopn__relevant_pages__isnull=True
+            ).exists()
+        )
+
+    @property
+    def any_pages_matched(self):
+        return (
+            bool(self.page_matching_method)
+            and self.election.ballot_set.filter(
+                sopn__relevant_pages__isnull=False
             ).exists()
         )
 
@@ -316,6 +325,7 @@ def add_ballot_sopn(
     )
 
     BallotSOPN.objects.filter(ballot=ballot).delete()
+
     ballot_sopn: BallotSOPN = BallotSOPN.objects.create(
         ballot=ballot,
         relevant_pages=relevant_pages,

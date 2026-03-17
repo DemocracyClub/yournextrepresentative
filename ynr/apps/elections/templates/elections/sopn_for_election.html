@@ -12,12 +12,15 @@
       <a href="{% url 'election_view' object.election.slug %}">{{ object.election.name }}</a>.
     </p>
 
-    {% if object.pages_matched %}
+    {% if object.any_pages_matched %}
         <p>The pages in this document have been matched to ballots in this election:</p>
         <ul>
             {% for ballot in ballots %}
                 <li>
-                    <a href="{{ ballot.get_sopn_url }}">{{ ballot.post.label }}</a>: {{ ballot.sopn.one_based_relevant_pages }}
+                    <a href="{{ ballot.get_sopn_url }}">{{ ballot.post.label }}</a>
+                    {% if ballot.sopn.election_sopn_id == object.id %}
+                      : {{ ballot.sopn.one_based_relevant_pages }}
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
