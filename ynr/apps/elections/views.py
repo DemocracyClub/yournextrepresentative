@@ -377,6 +377,39 @@ class SOPNForBallotView(DetailView):
         return context
 
 
+class SOPNsForElectionSummary(TemplateView):
+    template_name = "elections/sopns_for_election_summary.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["election"] = get_object_or_404(
+            Election, slug=kwargs["election_id"]
+        )
+
+        context["election_sopns"] = (
+            ElectionSOPN.objects.filter(election__slug=kwargs["election_id"])
+            .prefetch_related(
+                Prefetch(
+                    "ballotsopn_set",
+                    queryset=BallotSOPN.objects.select_related(
+                        "ballot", "ballot__post"
+                    ).order_by("ballot__post__label"),
+                )
+            )
+            .order_by("id")
+        )
+
+        context["ballots_without_sopn"] = (
+            Ballot.objects.filter(election__slug=kwargs["election_id"])
+            .filter(sopn__isnull=True)
+            .select_related("post")
+            .order_by("post__label")
+        )
+
+        return context
+
+
 class SOPNForElectionView(DetailView):
     queryset = ElectionSOPN.objects.all().select_related("election")
     template_name = "elections/sopn_for_election.html"
@@ -390,9 +423,9 @@ class SOPNForElectionView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = self.object.election.ballot_set.order_by(
-            "post__label"
-        )
+        context["ballots"] = self.object.election.ballot_set.filter(
+            sopn__election_sopn_id=context["object"].id
+        ).order_by("post__label")
         return context
 
 
