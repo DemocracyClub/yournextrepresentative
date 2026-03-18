@@ -217,6 +217,7 @@ class BallotPaperView(TemplateView):
             LoggedAction.objects.all()
             .select_related("user")
             .filter(ballot=ballot)
+            .exclude(action_type=ActionType.CANDIDACY_SOPN_NAMES_UPDATE)
             .order_by("-created")
         )
 
