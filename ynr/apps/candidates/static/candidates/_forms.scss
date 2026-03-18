@@ -73,6 +73,10 @@ form.signup {
 .form-item {
   margin-bottom: 1.5em;
 
+  .row {
+    margin: 0;
+  }
+
   input,
   select,
   p {

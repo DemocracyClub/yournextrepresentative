@@ -1,36 +1,34 @@
 {# Locking #}
+{% load humanize %}
 {% if candidates.exists and user_can_lock %}
-  <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
-    {% csrf_token %}
 
-    {% if ballot.candidates_locked %}
-      <input type="submit" class="button small" value="Unlock candidate list">
-    {% elif ballot.has_lock_suggestion and sopn %}
-      {% if current_user_suggested_lock %}
-         <p>
-          Locking disabled because you suggested locking this ballot.
-          Someone else will double check it soon.
-        </p>
-      {% else %}
-        <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
-        <input type="hidden" name="lock" value="lock">
-        <input type="submit" class="button small" value="Lock candidate list">
-      {% endif %}
+    <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
+        {% csrf_token %}
+        {% if ballot.candidates_locked %}
+            <input type="submit" class="button small" value="Unlock">
+        {% elif ballot.has_lock_suggestion and sopn %}
 
-    {% endif %}
+            {% if not current_user_suggested_lock %}
+                <div class="panel callout radius">
+                    <p><strong>{{ ballot.suggested_lock_html }}</strong>: Someone else has suggested that this ballot
+                        should be
+                        locked.
+                        Please check the candidates listed above against
+                        the SOPN and lock the ballot if everything matches.</p>
+                    <p>
+                        {{ ballot.suggestedpostlock_set.count|apnumber|title }}
+                        {{ ballot.suggestedpostlock_set.count|pluralize:"person,people" }}
+                        has checked this ballot, saying:
+                        {% for suggestedpostlock in ballot.suggestedpostlock_set.all %}
+                            <q>{{ suggestedpostlock.justification }}</q>
+                        {% endfor %}
+                    </p>
+                    <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
+                    <input type="hidden" name="lock" value="lock">
+                    <input type="submit" class="button small" value="Lock">
+                </div>
+            {% endif %}
 
-    {% if ballot.candidates_locked %}
-      This list of candidates is currently <strong>locked</strong>.
-    {% else %}
-      This list of candidates is currently <strong>unlocked</strong>.
-    {% endif %}
-  </form>
-{% else %}
-  {% if candidates_locked %}
-    <p>
-      This list of candidates is now <strong>locked</strong>;
-      you can still update contact details of candidates, but
-      can't change the people standing in this constituency.
-    </p>
-  {% endif %}
+        {% endif %}
+    </form>
 {% endif %}

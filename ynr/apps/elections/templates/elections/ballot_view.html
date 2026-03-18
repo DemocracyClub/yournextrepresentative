@@ -34,39 +34,62 @@
 {% block title %}Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} on {{ ballot.election.election_date|date:"j F Y" }}{% endblock %}
 
 {% block hero %}
-  <h1>Candidates for {{ ballot.post.label }} on <br>{{ ballot.election.election_date|date:"j F Y" }}</h1>
+  <h1>{{ ballot.post.label }}</h1>
+    <p> <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}
+        on {{ ballot.election.election_date|date:"j F Y" }}</a>
+    </p>
 {% endblock %}
 
 
 {% block content %}
 <div class="row">
   <div class="columns large-9">
-    <div class="panel">
-        <h4>
-          This ballot is part of the <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}</a>
-        </h4>
+    <div class="ballot_status">
+        {% if candidates.exists %}
+            {% if ballot.candidates_locked %}
+                <p>
+                    <strong>{{ ballot.locked_status_html }}</strong>: These {{ ballot.num_candidates }} candidates have been double-checked against the
+                    <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>
+                    from the council. The ballot is ‘locked’, which means that no new candidates may be added.
+                </p>
+            {% endif %}
+
+            {% if ballot.has_lock_suggestion %}
+                {% if current_user_suggested_lock %}
+                 <p>
+                  <strong>{{ ballot.suggested_lock_html }}</strong> You suggested locking this ballot. Someone else needs to double-check and lock it.
+                </p>
+              {% else %}
+                <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+              {% endif %}
+
+            {% endif %}
+
+            {% if not ballot.candidates_locked %}
+                {% if ballot.has_sopn %}
+                    <p>These candidates need to be double-checked against the <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>.</p>
+                {% else %}
+                    <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
+                    Once nomination papers are published, we will manually verify each candidate.
+                    </p>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {# In this case we show a heading as it needs to indicate that this is the main section of the page #}
+            {# without the heading the 'previous candidates' section looks like the main section  #}
+            <h2>Candidates</h2>
+            <p>
+                We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
+            We expect the official list of candidates to be published on or after
+                <strong>{{ ballot.expected_sopn_date }}</strong>.</p>
+            <p class="clearfix">
+            {% if not ballot.has_sopn %}
+              {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+            {% endif %}
+            </p>
+        {% endif %}
     </div>
-    {% if ballot.cancelled %}
-      ❌ The poll for this election was cancelled
-      {% if ballot.replaced_by %}
-      and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
-      {% endif %}
-    {% endif %}
 
-    {% if ballot.replaces %}
-      🔄 This ballot replaces a <a href="{{ ballot.replaces.get_absolute_url }}">previously cancelled ballot</a>
-    {% endif %}
-
-    {% if not ballot.candidates_locked and candidates.exists %}
-      <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
-      Once nomination papers are published, we will manually verify each candidate.
-      </p>
-    {% endif %}
-
-    {% if ballot.candidates_locked and candidates.exists %}
-      <p>These {{ ballot.num_candidates }} candidates have been confirmed by the official Statement of Persons Nominated
-          from the council. The ballot is ‘locked’, which means that no new candidates may be added.</p>
-    {% endif %}
 
     {% include "elections/includes/_ballot_sopn_links.html" %}
 
@@ -89,7 +112,7 @@
             <th>Rank</th>
             {% endif %}
             {% if user.is_authenticated %}
-            <th>Actions</th>
+            <th class="text-right">Actions</th>
             {% endif %}
           </tr>
         </thead>
@@ -141,7 +164,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-            <td> 
+            <td class="text-right">
               {% if membership_edits_allowed %}
                 <a class="button tiny js-toggle-source-confirmation not-standing">
                   Not actually standing?
@@ -170,77 +193,63 @@
             {% endif %}
           </tr>
           {% endfor %}
-        </tbody>
-      </table>
 
-      {% if user_can_record_results and has_any_winners %}
-        <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
-          {% csrf_token %}
-          <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
-        </form>
+          {% if not ballot.has_sopn and membership_edits_allowed or not user.is_authenticated  %}
+        <tr>
+        <td colspan="{% if ballot.is_welsh_run %}5{% else %}4{% endif %}">
+          {% include "elections/includes/_ballot_add_candidate.html" %}
+        </td>
+        </tr>
+
       {% endif %}
 
-    {% else %}
-      <div class="no-candidates">
+
+        </tbody>
+      </table>
+      {% endif %}
+
+    {% if user.is_authenticated %}
+      {#  You basically can't do anything unless you're logged in #}
+      <div class="ballot-ctas">
+        {# Everything you can _do to change_ the ballot or related objects #}
+
+        {# Bulk adding #}
+        {% if ballot.has_sopn and not ballot.has_lock_suggestion and not ballot.candidates_locked and not ballot.cancelled %}
+          <a href="{{ ballot.get_bulk_add_url }}" class="button small">
+            Add candidates from SOPN
+          </a>
+        {% endif %}
+
+        {% if ballot.has_sopn %}
         <p>
-          <strong>Oh no!</strong>
-          We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
-          We expect the official list of candidates to be published on or after {{ ballot.expected_sopn_date }}.
+            {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
         </p>
+        {% endif %}
+
+        {% include "elections/includes/_ballot_lock_form.html" %}
+
+        {% if user_can_record_results and has_any_winners %}
+          <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
+          </form>
+        {% endif %}
+        {% include "elections/includes/_ballot_suggest_locking.html" %}
+
+        {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
+          <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
+        {% endif %}
       </div>
     {% endif %}
 
-    <div class="ballot-ctas">
-
-      {% include "elections/includes/_ballot_suggest_locking.html" %}
-      {% include "elections/includes/_ballot_lock_form.html" %}
-
-      {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
-        <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
-      {% endif %}
-
-      {% if membership_edits_allowed %}
-        <p>
-          <a class="show-new-candidate-form button" href="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}">
-            Add a new candidate
-          </a>
-        </p>
-
-
-      {% elif not user.is_authenticated %}
-        <p>
-          <a href="{% url 'wombles:login' %}?next={{ request.path }}" class="button">
-            Sign in to add a new candidate
-          </a>
-        </p>
-      {% endif %}
-    </div>
-    {% if user.is_authenticated and sopn %}
-        {% if not ballot.has_lock_suggestion and not ballot.candidates_locked %}
-          <a href="{{ ballot.get_bulk_add_url }}" class="button">
-            Add candidates from nomination paper in {{ballot.post.label}}
-          </a>
-        {% endif %}
-    {% endif %}
-    {% if membership_edits_allowed %}
-      {% if add_candidate_form %}
-        <div class="candidates__new" {% if add_candidate_form.errors %}style="display: block"{% endif %}>
-          <h4>Add a new candidate</h4>
-          <form id="new-candidate-form" name="new-candidate-form" action="{% url 'person-create' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
-          {% with form=add_candidate_form identifiers_formset=identifiers_formset %}
-            {% include 'candidates/_person_form.html' %}
-          {% endwith %}
-          </form>
-        </div>
-      {% endif %}
-
-      {# Only include these if the user can alter memberships #}
-      {% include "elections/includes/_ballot_candidates_might_stand.html" %}
-      {% include "elections/includes/_ballot_candidates_not_standing.html" %}
-    {% endif %}
   {% if ballot.has_results and ballot.resultset %}
     {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
   {% endif %}
+
+   {# Only include these if the user can alter memberships #}
+      {% include "elections/includes/_ballot_candidates_might_stand.html" %}
+      {% include "elections/includes/_ballot_candidates_not_standing.html" %}
+
 
   {% if user.is_authenticated and logged_actions %}
     <h2 id="history">History for this ballot</h2>

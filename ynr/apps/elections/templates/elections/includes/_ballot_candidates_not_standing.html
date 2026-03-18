@@ -6,7 +6,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Actions</th>
+        <th class="text-right">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -18,7 +18,7 @@
             {{ person.name }}
           </a>
         </td>
-        <td>
+        <td class="text-right">
           <a class="button tiny js-toggle-source-confirmation standing">Actually, they are standing!</a>
           {% include 'candidates/_source_confirmation.html' with standing='standing' action='candidacy-create' person_id=person.pk %}
           <a href="{% url 'person-update' person_id=person.pk %}" class="button tiny secondary">
