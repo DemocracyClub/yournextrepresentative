@@ -194,9 +194,9 @@
           </tr>
           {% endfor %}
 
-          {% if membership_edits_allowed or not user.is_authenticated and not ballot.has_sopn%}
+          {% if not ballot.has_sopn and membership_edits_allowed or not user.is_authenticated  %}
         <tr>
-        <td colspan="3">
+        <td colspan="{% if ballot.is_welsh_run %}5{% else %}4{% endif %}">
           {% include "elections/includes/_ballot_add_candidate.html" %}
         </td>
         </tr>
