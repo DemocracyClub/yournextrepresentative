@@ -19,9 +19,9 @@ urlpatterns = [
         name="bulk_add_from_sopn",
     ),
     re_path(
-        r"^sopn/(?P<ballot_paper_id>[^/]+)/review/$",
-        views.BulkAddSOPNReviewView.as_view(),
-        name="bulk_add_sopn_review",
+        r"^sopn/(?P<ballot_paper_id>[^/]+)/reconcile/$",
+        views.BulkAddSOPNReconcileView.as_view(),
+        name="bulk_add_sopn_reconcile",
     ),
     re_path(
         r"^sopn/(?P<ballot_paper_id>[^/]+)/confirm/$",

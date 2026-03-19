@@ -364,8 +364,8 @@ class Ballot(EEModifiedMixin, models.Model):
     def get_bulk_add_url(self):
         return self.get_absolute_url("bulk_add_from_sopn")
 
-    def get_bulk_add_review_url(self):
-        return self.get_absolute_url("bulk_add_sopn_review")
+    def get_bulk_add_reconcile_url(self):
+        return self.get_absolute_url("bulk_add_sopn_reconcile")
 
     def get_sopn_url(self):
         return self.get_absolute_url("ballot_paper_sopn")

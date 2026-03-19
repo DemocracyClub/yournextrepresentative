@@ -129,7 +129,7 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         return parties.values_list("ec_id", "name")
 
 
-class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
+class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
     def suggested_people(
         self,
         person_name,
@@ -381,7 +381,7 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
         return super().clean()
 
 
-class ReviewSinglePersonNameOnlyForm(forms.Form):
+class ReconcileSinglePersonNameOnlyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         kwargs.pop("party_choices", None)
         super().__init__(*args, **kwargs)
@@ -391,7 +391,7 @@ class ReviewSinglePersonNameOnlyForm(forms.Form):
     )
 
 
-class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
+class ReviewBulkAddByPartyForm(ReconcileSinglePersonNameOnlyForm):
     biography = StrippedCharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
@@ -409,7 +409,7 @@ class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
     )
 
 
-class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
+class ReconcileSinglePersonForm(ReconcileSinglePersonNameOnlyForm):
     source = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
@@ -431,12 +431,12 @@ BulkAddFormSetFactory = forms.formset_factory(
 )
 
 
-BulkAddReviewNameOnlyFormSet = forms.formset_factory(
-    ReviewSinglePersonNameOnlyForm, extra=0, formset=BaseBulkAddReviewFormSet
+BulkAddReconcileNameOnlyFormSet = forms.formset_factory(
+    ReconcileSinglePersonNameOnlyForm, extra=0, formset=BaseBulkAddReconcileFormSet
 )
 
-BulkAddReviewFormSet = forms.formset_factory(
-    ReviewSinglePersonForm, extra=0, formset=BaseBulkAddReviewFormSet
+BulkAddReconcileFormSet = forms.formset_factory(
+    ReconcileSinglePersonForm, extra=0, formset=BaseBulkAddReconcileFormSet
 )
 
 
@@ -476,7 +476,7 @@ BulkAddByPartyFormset = forms.formset_factory(
 )
 
 
-class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
+class PartyBulkAddReviewFormSet(BaseBulkAddReconcileFormSet):
     def __init__(self, *args, **kwargs):
         self.ballot = kwargs["ballot"]
         kwargs["prefix"] = self.ballot.pk

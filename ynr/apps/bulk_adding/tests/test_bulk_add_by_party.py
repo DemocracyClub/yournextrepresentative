@@ -119,7 +119,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms["bulk-add-review"]
+        form = response.forms["bulk-add-reconcile"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(55, 59)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -160,7 +160,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms["bulk-add-review"]
+        form = response.forms["bulk-add-reconcile"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(50, 60)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -208,7 +208,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, '<label>Add a new profile "Pemphero Pasternak"</label>'
         )
 
-        form = response.forms["bulk-add-review"]
+        form = response.forms["bulk-add-reconcile"]
         # Now submit the valid form
         with self.assertNumQueries(FuzzyInt(75, 80)):
             form["{}-0-select_person".format(ballot.pk)] = "_new"
@@ -323,7 +323,7 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # Submit the form
 
         response = form.submit().follow()
-        form = response.forms["bulk-add-review"]
+        form = response.forms["bulk-add-reconcile"]
         # Select add new person for each ballot
         for ballot in ballots:
             form[f"{ballot.pk}-0-select_person"] = "_new"

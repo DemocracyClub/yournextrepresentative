@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from bulk_adding.forms import BulkAddFormSet, BulkAddReviewFormSet
+from bulk_adding.forms import BulkAddFormSet, BulkAddReconcileFormSet
 from bulk_adding.models import RawPeople
 from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
@@ -78,7 +78,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         """
         Regression test to check that when a Party is selected that was not
         included in the initially loaded parties from the default_party_choices
-        method, that the review step validates and passes. Previously this was
+        method, that the reconcile step validates and passes. Previously this was
         causing a 500 error see:
         https://sentry.io/organizations/democracy-club-gp/issues/2326522296/?project=169287&query=is%3Aunresolved
         """
@@ -109,16 +109,16 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # set value to party that wasnt loaded initially - mimicking the
         # "load more parties" flow
         form["form-0-party_1"] = barnsley_independents.ec_id
-        # submit the form to proceed to review step
+        # submit the form to proceed to reconcile step
         response = form.submit()
         self.assertEqual(response.status_code, 302)
         response = response.follow()
         #  confirm as a new person and submit lock suggestion
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
         response = form.submit().follow()
         # previously this raised a 500 error caused by
-        # AttributeError: 'ReviewSinglePersonFormFormSet' object has no
+        # AttributeError: 'ReconcileSinglePersonFormFormSet' object has no
         # attribute 'cleaned_data'
         self.assertEqual(response.status_code, 200)
 
@@ -150,7 +150,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
 
         # Confirmation page
@@ -228,7 +228,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(response.status_code, 302)
 
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
         response = form.submit().follow()
         form = response.forms["bulk-add-confirm-form"]
@@ -291,7 +291,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dulwich_post_ballot.save()
 
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
         response = form.submit()
         self.assertEqual(
@@ -333,7 +333,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
 
         response = form.submit().follow()
@@ -413,7 +413,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("1234567")
 
         # Confirmation page
@@ -488,7 +488,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_adding_to_existing_person_same_election(self):
         # This could happen if someone's missed that there was the
         # same person already listed on the first page, but then
-        # spotted them on the review page and said to merge them then.
+        # spotted them on the reconcile page and said to merge them then.
         existing_person = PersonFactory.create(
             id="1234567", name="Bart Simpson"
         )
@@ -522,7 +522,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         # as a new person or alternative radio buttons if any
         # candidates with similar names were found.
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("1234567")
 
         # Confirmation page
@@ -557,7 +557,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         self.assertEqual(response.status_code, 302)
 
-    def test_redirect_to_review_form(self):
+    def test_redirect_to_reconcile_form(self):
         RawPeople.objects.create(
             ballot=self.dulwich_post_ballot,
             textract_data=[{"name": "Bart", "party_id": "PP52"}],
@@ -692,7 +692,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit()
 
         response = response.follow()
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("1234567")
         response = form.submit()
         self.assertEqual(response.context["formset"].is_valid(), False)
@@ -852,9 +852,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         resp = form.submit()
         self.assertContains(resp, "Bart Simpson")
 
-    def test_existing_ballot_member_is_top_suggestion_on_review_form(self):
+    def test_existing_ballot_member_is_top_suggestion_on_reconcile_form(self):
         """
-        When reviewing candidates, a person already on the ballot should
+        When reconciling candidates, a person already on the ballot should
         appear as the first suggestion, even if another person with the
         same name exists elsewhere.
         """
@@ -896,11 +896,11 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
 
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         choices = form["form-0-select_person"].options
 
         # First option is always "_new"
@@ -933,7 +933,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.local_ballot,
         )
 
-        formset = BulkAddReviewFormSet(
+        formset = BulkAddReconcileFormSet(
             initial=[],
             ballot=self.dulwich_post_ballot,
         )
@@ -953,7 +953,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_existing_ballot_member_same_party_is_selected_by_default(self):
         """
         When a person is already on the ballot AND has previously stood for
-        the same party, their radio button on the review form should be
+        the same party, their radio button on the reconcile form should be
         pre-selected rather than defaulting to 'Add a new profile'.
         """
         existing_person = PersonFactory.create(name="Homer Simpson")
@@ -984,11 +984,11 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
 
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         self.assertEqual(
             form["form-0-select_person"].value,
             str(existing_person.pk),
@@ -999,7 +999,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     ):
         """
         When a person is on the ballot but the party on the SOPN differs,
-        the review form should still default to 'Add a new profile' rather
+        the reconcile form should still default to 'Add a new profile' rather
         than pre-selecting that person.
         """
         existing_person = PersonFactory.create(name="Homer Simpson")
@@ -1031,11 +1031,11 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
 
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         self.assertEqual(form["form-0-select_person"].value, "_new")
 
     def test_ballot_member_included_in_suggestions_for_name_variants(self):
@@ -1121,7 +1121,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 )
                 Person.objects.update_name_search()
 
-                formset = BulkAddReviewFormSet(initial=[], ballot=ballot)
+                formset = BulkAddReconcileFormSet(initial=[], ballot=ballot)
                 suggestions = formset.suggested_people(
                     search_name,
                     new_party=party.ec_id,
@@ -1140,7 +1140,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_confirm_page_shows_candidacies_to_remove(self):
         """
         When the confirm page is reached, people who are already on the ballot
-        but were not matched on the review page should appear in
+        but were not matched on the reconcile page should appear in
         candidacies_to_remove in the context.
         """
         BallotSOPN.objects.create(
@@ -1181,10 +1181,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         # match person_a to the existing person
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select(str(person_a.pk))
 
         # Follow through to the confirm page
@@ -1229,10 +1229,10 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
 
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
         response = form.submit().follow()
 
@@ -1280,12 +1280,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             source_type=RawPeople.SOURCE_PARSED_PDF,
         )
 
-        # Review: match person_a
+        # Reconcile: match person_a
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select(str(person_a.pk))
         response = form.submit().follow()
 
@@ -1367,7 +1367,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                 )
                 Person.objects.update_name_search()
 
-                formset = BulkAddReviewFormSet(initial=[], ballot=ballot)
+                formset = BulkAddReconcileFormSet(initial=[], ballot=ballot)
                 suggestions = formset.suggested_people(
                     search_name,
                     new_party=party.ec_id,
@@ -1383,17 +1383,17 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     suggestion_pks,
                 )
 
-    def test_review_form_restores_selections_on_back_navigation_from_confirm(
+    def test_reconcile_form_restores_selections_on_back_navigation_from_confirm(
         self,
     ):
         """
-        After a user completes the review form and is redirected to the
-        confirm page, navigating back to the review page (e.g. via the
+        After a user completes the reconcile form and is redirected to the
+        confirm page, navigating back to the reconcile page (e.g. via the
         browser back button or the edit link) should restore the person
         selections they made rather than resetting them to defaults.
 
         The user's choices are stored in RawPeople.reconciled_data when the
-        review form is submitted; the review view should use that data to
+        reconcile form is submitted; the reconcile view should use that data to
         re-populate select_person when reconciled_data is present.
         """
         BallotSOPN.objects.create(
@@ -1402,7 +1402,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             uploaded_file="sopn.pdf",
         )
         # Person exists but is NOT on this ballot and NOT same party as the
-        # SOPN entry, so the default selection on the review form is "_new".
+        # SOPN entry, so the default selection on the reconcile form is "_new".
         existing_person = PersonFactory.create(name="Homer Simpson")
         MembershipFactory.create(
             person=existing_person,
@@ -1426,13 +1426,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             source_type=RawPeople.SOURCE_PARSED_PDF,
         )
 
-        # Visit the review page — default should be "_new" because the person
+        # Visit the reconcile page — default should be "_new" because the person
         # is not on this ballot and has a different party.
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
         self.assertEqual(form["form-0-select_person"].value, "_new")
 
         # User manually selects the existing person instead of adding new.
@@ -1442,12 +1442,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit().follow()
         self.assertIn("bulk-add-confirm-form", response.forms)
 
-        # Navigate back to the review page
+        # Navigate back to the reconcile page
         response = self.app.get(
-            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            self.dulwich_post_ballot.get_bulk_add_reconcile_url(),
             user=self.user,
         )
-        form = response.forms["bulk_add_review_formset"]
+        form = response.forms["bulk_add_reconcile_formset"]
 
         # The user's explicit selection should be restored from reconciled_data.
         self.assertEqual(

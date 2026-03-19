@@ -97,7 +97,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 and self.ballot.rawpeople.is_trusted
             ):
                 return HttpResponseRedirect(
-                    self.ballot.get_bulk_add_review_url()
+                    self.ballot.get_bulk_add_reconcile_url()
                 )
         return super().get(request, *args, **kwargs)
 
@@ -155,14 +155,14 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             },
         )
 
-        return HttpResponseRedirect(context["ballot"].get_bulk_add_review_url())
+        return HttpResponseRedirect(context["ballot"].get_bulk_add_reconcile_url())
 
     def form_invalid(self, context):
         return self.render_to_response(context)
 
 
-class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
-    template_name = "bulk_add/sopns/add_review_form.html"
+class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
+    template_name = "bulk_add/sopns/add_reconcile_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -230,11 +230,11 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             initial.append(form)
 
         if self.request.POST:
-            context["formset"] = forms.BulkAddReviewFormSet(
+            context["formset"] = forms.BulkAddReconcileFormSet(
                 self.request.POST, ballot=context["ballot"]
             )
         else:
-            context["formset"] = forms.BulkAddReviewFormSet(
+            context["formset"] = forms.BulkAddReconcileFormSet(
                 initial=initial, ballot=context["ballot"]
             )
         return context
@@ -243,7 +243,7 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         ballot = context["ballot"]
         rawpeople: RawPeople = getattr(ballot, "rawpeople", None)
         if not rawpeople:
-            # TODO what do we do if we've submitted the review form and not
+            # TODO what do we do if we've submitted the reconcile form and not
             # got a rawperson any more?
             raise NotImplementedError("No rawpeople model to work with")
 

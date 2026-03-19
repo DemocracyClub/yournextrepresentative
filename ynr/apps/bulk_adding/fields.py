@@ -209,7 +209,7 @@ class PersonSuggestionChoiceIterator:
 
 class PersonSuggestionField(forms.ChoiceField):
     """
-    For use on the review page to show each suggested person as a radio field.
+    For use on the reconcile page to show each suggested person as a radio field.
     """
 
     widget = None  # set when instantiating if you want
