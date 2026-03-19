@@ -156,7 +156,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             return
         suggestions = self.suggested_people(
             form["name"].value(),
-            new_party=form.initial.get("party"),
+            new_party=form.initial.get("party_id"),
             new_election=self.ballot.election,
             new_name=form.initial.get("name"),
         )
@@ -173,7 +173,7 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         ] + list(form.fields["select_person"].choices)
         form.fields["select_person"].initial = "_new"
 
-        form.fields["party"] = forms.CharField(
+        form.fields["party_id"] = forms.CharField(
             widget=forms.HiddenInput(
                 attrs={"readonly": "readonly", "class": "party-select"}
             ),

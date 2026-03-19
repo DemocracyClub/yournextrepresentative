@@ -1,3 +1,6 @@
+from collections import Counter
+from typing import Dict
+
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
@@ -7,7 +10,7 @@ from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -15,8 +18,9 @@ from django.views.generic import FormView, RedirectView, TemplateView
 from moderation_queue.models import SuggestedPostLock
 from official_documents.models import BallotSOPN
 from official_documents.views import get_add_from_document_cta_flash_message
-from parties.models import Party
+from parties.models import Party, PartyDescription
 from people.models import Person
+from popolo.models import Membership
 
 
 class BulkAddSOPNRedirectView(RedirectView):
@@ -44,12 +48,6 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         """
         queryset = Ballot.objects.select_related(
             "post", "election", "rawpeople", "post__party_set", "sopn"
-        ).prefetch_related(
-            "membership_set",
-            "membership_set__person",
-            "membership_set__person__other_names",
-            "membership_set__party",
-            "membership_set__party__descriptions",
         )
         return get_object_or_404(
             queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
@@ -71,20 +69,6 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
-
-        people_set = set()
-        for membership in context["ballot"].membership_set.all():
-            person = membership.person
-            person.party = membership.party
-            person.previous_party_affiliations = (
-                membership.previous_party_affiliations.all()
-            )
-
-            people_set.add(person)
-
-        known_people = list(people_set)
-        known_people.sort(key=lambda i: i.last_name_guess)
-        context["known_people"] = known_people
         return context
 
     def remaining_posts_for_sopn(self):
@@ -138,23 +122,6 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         else:
             context["formset"] = forms.BulkAddFormSetFactory(**form_kwargs)
 
-        tables = list(context["formset"]) + context["known_people"]
-        sorted_tables = sorted(tables, key=sort_tables, reverse=False)
-        sorted_with_type = []
-        for table in sorted_tables:
-            if isinstance(table, QuickAddSinglePersonForm):
-                row = {
-                    "template_name": "bulk_add/sopns/quick_add_form.html",
-                    "data": table,
-                }
-            if isinstance(table, Person):
-                row = {
-                    "template_name": "bulk_add/sopns/existing_person_table.html",
-                    "data": table,
-                }
-            sorted_with_type.append(row)
-        context["sorted_with_type"] = sorted_with_type
-
         return context
 
     def form_valid(self, context):
@@ -200,27 +167,49 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         context = super().get_context_data(**kwargs)
 
         initial = []
-        if hasattr(context["ballot"], "rawpeople"):
-            raw_ballot_data = context["ballot"].rawpeople.textract_data
+
+        if hasattr(self.ballot, "rawpeople"):
+            raw_ballot_data = self.ballot.rawpeople.textract_data
+            # if self.ballot.rawpeople.reconciled_data:
+            #     raw_ballot_data = self.ballot.rawpeople.reconciled_data
+            # else:
+            #     raw_ballot_data = self.ballot.rawpeople.textract_data
         else:
             # Race condition! Someone else has processes this area
             # between page views. Best just show the data we have.
             raw_ballot_data = []
 
+        parties = Party.objects.prefetch_related(
+            Prefetch(
+                "descriptions",
+                PartyDescription.objects.all().only("description"),
+            )
+        ).filter(
+            ec_id__in=[candidacy["party_id"] for candidacy in raw_ballot_data]
+        )
+        parties_dict = {}
+        for party in parties:
+            descriptions = {desc.pk: desc for desc in party.descriptions.all()}
+            parties_dict[party.ec_id] = {
+                "party": party,
+                "descriptions": descriptions,
+            }
+
         for candidacy in raw_ballot_data:
             form = {}
-            party = Party.objects.get(ec_id=candidacy["party_id"])
+            party_dict = parties_dict[candidacy["party_id"]]
+            party_obj = party_dict["party"]
 
-            form["party_description_text"] = party.name
+            form["party_description_text"] = party_obj.name
             if candidacy.get("description_id"):
-                party_description = party.descriptions.get(
-                    pk=candidacy["description_id"]
+                party_description = party_dict["descriptions"].get(
+                    candidacy["description_id"]
                 )
                 form["party_description"] = party_description
                 form["party_description_text"] = party_description.description
 
             form["name"] = candidacy["name"]
-            form["party"] = party.ec_id
+            form["party_id"] = party_obj.ec_id
             form["source"] = context["ballot_sopn"].source_url
             form["sopn_last_name"] = candidacy["sopn_last_name"]
             form["sopn_first_names"] = candidacy["sopn_first_names"]
@@ -243,22 +232,118 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         return context
 
     def form_valid(self, context):
+        ballot = context["ballot"]
+        rawpeople: RawPeople = getattr(ballot, "rawpeople", None)
+        if not rawpeople:
+            # TODO what do we do if we've submitted the review form and not
+            # got a rawperson any more?
+            raise NotImplementedError("No rawpeople model to work with")
+
+        # Save this form to the reconciled_data field of the rawpeople object
+        reconciled_data = []
+        for person_form in context["formset"]:
+            # Replace the description object with the PK.
+            if person_form.cleaned_data["party_description"]:
+                person_form.cleaned_data[
+                    "party_description"
+                ] = person_form.cleaned_data["party_description"].pk
+            reconciled_data.append(person_form.cleaned_data)
+        rawpeople.reconciled_data = reconciled_data
+        rawpeople.save()
+        url = reverse(
+            "bulk_add_sopn_confirm",
+            kwargs={"ballot_paper_id": ballot.ballot_paper_id},
+        )
+        return HttpResponseRedirect(url)
+
+    def form_invalid(self, context):
+        return self.render_to_response(context)
+
+
+class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
+    template_name = "bulk_add/sopns/add_confirm.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get existing people on the ballot that we'll be removing
+        reconciled_data = {
+            person["select_person"]
+            for person in context["ballot"].rawpeople.reconciled_data
+            if person["select_person"] != "_new"
+        }
+        people_on_ballot = {
+            mem["person_id"]
+            for mem in context["ballot"]
+            .membership_set.all()
+            .values("person_id")
+        }
+        candidacies_to_remove = people_on_ballot - reconciled_data
+        context["candidacies_to_remove"] = Membership.objects.filter(
+            person_id__in=candidacies_to_remove, ballot=self.ballot
+        ).select_related("person", "party")
+
+        context["contested_warnings"] = self.odd_candidate_count_warnings(
+            context["ballot"], context["ballot"].rawpeople.reconciled_data
+        )
+
+        return context
+
+    def odd_candidate_count_warnings(
+        self, ballot, reconciled_data
+    ) -> Dict[str, Dict]:
+        """
+        Returns parties that are over- or under-contested.
+
+        Output format:
+        {
+            "over": {"PP52": {"count": 3, "party: <Party>}, ...},
+            "under": {"PP53": 1, "party: <Party>, ...},
+        }
+        """
+        # Count candidates per party
+        counts = Counter(c["party"] for c in reconciled_data if c.get("party"))
+
+        over = {}
+        under = {}
+
+        for party, count in counts.items():
+            if count != ballot.winner_count:
+                party_obj: Party = Party.objects.get(ec_id=party)
+                if count > ballot.winner_count:
+                    over[party] = {"count": count, "party": party_obj}
+                elif count < ballot.winner_count:
+                    under[party] = {"count": count, "party": party_obj}
+
+        return {
+            "over": over,
+            "under": under,
+        }
+
+    def post(self, request, *args, **kwargs):
+        # TODO: Do we need to validate anything here?
+        return self.form_valid(self.get_context_data(**kwargs))
+
+    def form_valid(self, context):
+        ballot = context["ballot"]
+        rawpeople: RawPeople = getattr(ballot, "rawpeople", None)
         with transaction.atomic():
-            for person_form in context["formset"]:
-                data = person_form.cleaned_data
-
-                if data.get("select_person") == "_new":
+            for person_data in rawpeople.reconciled_data:
+                if person_data.get("select_person") == "_new":
                     # Add a new person
-                    person = helpers.add_person(self.request, data)
+                    person = helpers.add_person(self.request, person_data)
                 else:
-                    person = Person.objects.get(pk=int(data["select_person"]))
-
-                party = Party.objects.get(ec_id=data["party"])
-                previous_party_affiliations = data.get(
+                    person = Person.objects.get(
+                        pk=int(person_data["select_person"])
+                    )
+                party = Party.objects.get(ec_id=person_data["party_id"])
+                previous_party_affiliations = person_data.get(
                     "previous_party_affiliations", None
                 )
                 if previous_party_affiliations:
-                    party_ids = data["previous_party_affiliations"].split(",")
+                    party_ids = person_data[
+                        "previous_party_affiliations"
+                    ].split(",")
                     previous_party_affiliations = Party.objects.filter(
                         ec_id__in=party_ids
                     )
@@ -268,12 +353,12 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                     person=person,
                     party=party,
                     ballot=context["ballot"],
-                    source=data["source"],
-                    party_description=data["party_description"],
+                    source=person_data["source"],
+                    party_description=person_data["party_description"],
                     previous_party_affiliations=previous_party_affiliations,
-                    sopn_last_name=data["sopn_last_name"],
-                    sopn_first_names=data["sopn_first_names"],
-                    data=data,
+                    sopn_last_name=person_data["sopn_last_name"],
+                    sopn_first_names=person_data["sopn_first_names"],
+                    data=person_data,
                 )
 
             # ballot has changed so we should remove any out of date suggestions
@@ -283,6 +368,18 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             SuggestedPostLock.objects.create(
                 user=self.request.user, ballot=ballot
             )
+
+            # Remove people on the ballot but not matched
+            for candidacy in context["candidacies_to_remove"]:
+                LoggedAction.objects.create(
+                    user=self.request.user,
+                    action_type=ActionType.CANDIDACY_DELETE,
+                    ip_address=get_client_ip(self.request),
+                    ballot=ballot,
+                    source="Removed from ballot as not listed on SOPN",
+                    edit_type=EditType.BULK_ADD.name,
+                )
+                candidacy.delete()
 
             LoggedAction.objects.create(
                 user=self.request.user,
@@ -316,9 +413,6 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         else:
             url = context["ballot"].get_absolute_url()
         return HttpResponseRedirect(url)
-
-    def form_invalid(self, context):
-        return self.render_to_response(context)
 
 
 class DeleteRawPeople(LoginRequiredMixin, FormView):

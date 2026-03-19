@@ -24,6 +24,11 @@ urlpatterns = [
         name="bulk_add_sopn_review",
     ),
     re_path(
+        r"^sopn/(?P<ballot_paper_id>[^/]+)/confirm/$",
+        views.BulkAddSOPNConfirmView.as_view(),
+        name="bulk_add_sopn_confirm",
+    ),
+    re_path(
         r"^party/(?P<election>[^/]+)/$",
         views.SelectPartyForm.as_view(),
         name="bulk_add_party_select",

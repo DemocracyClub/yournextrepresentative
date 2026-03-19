@@ -58,6 +58,10 @@ def update_person(
     }
 
     if party_description:
+        if isinstance(party_description, int):
+            party_description = PartyDescription.objects.get(
+                pk=party_description
+            )
         defaults.update(
             {
                 "party_description": party_description,
