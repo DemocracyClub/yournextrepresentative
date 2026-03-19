@@ -6,6 +6,7 @@ from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -162,39 +163,70 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        ballot_data = []
-        for ballot in self.object.election.ballot_set.all().order_by(
-            "post__label"
-        ):
-            ballot_for_matcher = {
+        ballots = [
+            {
                 "ballot_paper_id": ballot.ballot_paper_id,
                 "label": ballot.post.label,
+                "disabled": hasattr(ballot, "sopn")
+                and ballot.sopn.election_sopn_id != self.object.id,
             }
-            if hasattr(ballot, "sopn") and ballot.sopn.relevant_pages != "all":
-                if ballot.sopn.election_sopn_id == self.object.id:
-                    ballot_for_matcher["matched"] = bool(
-                        ballot.sopn.relevant_pages
-                    )
-                    ballot_for_matcher["matched_page"] = str(
-                        ballot.sopn.first_page_int
-                    )
-                elif ballot.sopn.election_sopn_id is not None:
-                    ballot_for_matcher["disabled"] = True
-            ballot_data.append(ballot_for_matcher)
+            for ballot in self.object.election.ballot_set.all().order_by(
+                "post__label"
+            )
+        ]
 
         context["matcher_props"] = {
             "election_id": self.object.election.name,
             "sopn_pdf": self.object.uploaded_file.url,
-            "ballots": ballot_data,
+            "ballots": ballots,
+            "pages": self.object.page_mapping,
         }
         return context
 
+    def validate_payload(self, pages):
+        # we're making quite a lot of assumptions about this data
+        # so we need to be quite strict about checking it on the way in
+        if any(value is None for value in pages.values()):
+            raise ValueError("All pages must be matched to a value")
+
+        if len(pages.keys()) == 0:
+            raise ValueError("Expected 1 or more pages")
+
+        if pages["0"] == ElectionSOPN.CONTINUATION:
+            raise ValueError("Fist page can't be a continuation page")
+
+        page_numbers = [int(k) for k, v in pages.items()]
+        if not page_numbers == list(
+            range(page_numbers[0], page_numbers[0] + len(page_numbers))
+        ):
+            raise ValueError("Expected a sequential list of pages")
+
+        previous_value = None
+        for page_value in pages.values():
+            if (
+                page_value == ElectionSOPN.CONTINUATION
+                and previous_value == ElectionSOPN.NOMATCH
+            ):
+                raise ValueError(
+                    "A continuation page can only follow a ballot page"
+                )
+            previous_value = page_value
+
+        return True
+
+    @transaction.atomic
     def post(self, request, **kwargs):
         sopn = self.get_object()
-        splitter = ElectionSOPNPageSplitter(
-            sopn,
-            clean_matcher_data(json.loads(request.POST.get("matched_pages"))),
-        )
+
+        pages = json.loads(request.POST.get("pages"))
+        self.validate_payload(pages)
+
+        sopn.blank_pages = [
+            k for k, v in pages.items() if v == ElectionSOPN.NOMATCH
+        ]
+        sopn.save()
+
+        splitter = ElectionSOPNPageSplitter(sopn, clean_matcher_data(pages))
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
         LoggedAction.objects.create(
             user=request.user,

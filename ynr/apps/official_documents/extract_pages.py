@@ -345,44 +345,27 @@ class ElectionSOPNDocument:
         return pages
 
 
-def clean_matcher_data(ballot_to_pages):
-    """
-    For simplicity, Svelte only POSTs the data of exact pages that
-    have been matched to a ballot.
-
-    We want to deal with a couple of things here:
-
-    1. Continuation page: we need to fill in the gaps of pages that have not been matched
-    2. Out of order pages: it's not always true that the pages in the SOPN are in order.
-
-    :return:
-    """
-
-    # First, convert the matched_page to a list of pages
-    for ballot_data in ballot_to_pages:
-        if matched_page := ballot_data.pop("matched_page", None):
-            ballot_data["matched_pages"] = [int(matched_page)]
-        else:
-            ballot_data["matched_pages"] = []
-
-    cleaned_data = {
-        ballot_data["ballot_paper_id"]: ballot_data["matched_pages"]
-        for ballot_data in ballot_to_pages
+def clean_matcher_data(pages):
+    # This function makes some assumptions about the data
+    # ensure pages has been checked with
+    # ElectionSOPNMatchingView.validate_payload()
+    # before passing it to this
+    ballots = {
+        v: []
+        for k, v in pages.items()
+        if v not in [ElectionSOPN.CONTINUATION, ElectionSOPN.NOMATCH]
     }
-
-    # Exclude any ballots that are not matches to any page
-    matched_ballots = [item for item in cleaned_data.items() if item[1]]
-    # Now, sort the list by the first matched page
-    sorted_data = sorted(matched_ballots, key=lambda x: x[1][0])
-
-    for i in range(len(sorted_data) - 1):
-        this_ballot, this_value = sorted_data[i]
-        next_ballot, next_value = sorted_data[i + 1]
-
-        if this_value[-1] + 1 < next_value[0]:
-            this_value.extend(range(this_value[-1] + 1, next_value[0]))
-
-    return cleaned_data
+    last_ballot = None
+    for k, v in pages.items():
+        if v == ElectionSOPN.NOMATCH:
+            continue
+        if v == ElectionSOPN.CONTINUATION:
+            if last_ballot is not None:
+                ballots[last_ballot].append(int(k))
+            continue
+        ballots[v].append(int(k))
+        last_ballot = v
+    return ballots
 
 
 class ElectionSOPNPageSplitter:

@@ -1,7 +1,7 @@
 <script>
     import PdfPage from "./lib/PdfPage.svelte";
     import * as pdfjs from "pdfjs-dist";
-    import {BallotStore} from "./lib/Store.js"
+    import {BallotStore, PageStore} from "./lib/Store.js"
     import {derived} from "svelte/store";
 
     pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
@@ -10,11 +10,27 @@
     $BallotStore = ballots
 
     export let sopn_pdf;
+    export let pages = {};
 
     var documentLoader = pdfjs.getDocument(sopn_pdf).promise;
 
-    export const transformedBallotsStore = derived(BallotStore, $BallotStore => {
-        return JSON.stringify($BallotStore);
+    documentLoader.then(pdf_document => {
+        const initialPages = {};
+        for (let i = 0; i < pdf_document.numPages; i++) {
+            initialPages[i] = null;
+        }
+        Object.entries(pages || {}).forEach(([page_num, ballot_id]) => {
+            initialPages[page_num] = ballot_id;
+        });
+        PageStore.set(initialPages);
+    });
+
+    export const transformedPagesStore = derived(PageStore, $PageStore => {
+        return JSON.stringify($PageStore);
+    });
+
+    export const allPagesMatched = derived(PageStore, $PageStore => {
+        return Object.values($PageStore).every(v => v !== null);
     });
 
 </script>
@@ -35,8 +51,11 @@
         {/each}
         <form method="post">
 
-            <input type="hidden" name="matched_pages" id="matched_pages" value="{$transformedBallotsStore}">
-            <button type="submit" class="ds-button">Save</button>
+            <input type="hidden" name="pages" id="pages" value="{$transformedPagesStore}">
+            {#if !$allPagesMatched}
+                <p class="form-error-summary">Match all pages to enable saving.</p>
+            {/if}
+            <button type="submit" class="ds-button" disabled={!$allPagesMatched}>Save</button>
         </form>
     {:catch error}
         Error: {error}
