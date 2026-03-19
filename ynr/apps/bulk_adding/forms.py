@@ -221,9 +221,13 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
         super().add_fields(form, index)
         if not form["name"].value():
             return
+        # On POST, form.initial is empty; fall back to the submitted POST data
+        party_id = form.initial.get("party_id") or form.data.get(
+            form.add_prefix("party_id")
+        )
         suggestions = self.suggested_people(
             form["name"].value(),
-            new_party=form.initial.get("party_id"),
+            new_party=party_id,
             new_election=self.ballot.election,
             new_name=form.initial.get("name"),
             ballot=self.ballot,
@@ -234,6 +238,13 @@ class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
             new_name=form.initial.get("name"),
             widget=PersonSuggestionRadioSelect,
         )
+
+        # If reconciled data exists, use that as the initial values
+        previous_selection = form.initial.get("select_person")
+        if previous_selection and form.fields["select_person"].valid_value(
+            str(previous_selection)
+        ):
+            form.fields["select_person"].initial = str(previous_selection)
 
         form.fields["party_id"] = forms.CharField(
             widget=forms.HiddenInput(
@@ -402,7 +413,7 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
     source = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
-    party_description = forms.ModelChoiceField(
+    description_id = forms.ModelChoiceField(
         required=False,
         widget=forms.HiddenInput(),
         queryset=PartyDescription.objects.all(),

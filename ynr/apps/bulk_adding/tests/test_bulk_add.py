@@ -1382,3 +1382,75 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
                     same_party_person.pk,
                     suggestion_pks,
                 )
+
+    def test_review_form_restores_selections_on_back_navigation_from_confirm(
+        self,
+    ):
+        """
+        After a user completes the review form and is redirected to the
+        confirm page, navigating back to the review page (e.g. via the
+        browser back button or the edit link) should restore the person
+        selections they made rather than resetting them to defaults.
+
+        The user's choices are stored in RawPeople.reconciled_data when the
+        review form is submitted; the review view should use that data to
+        re-populate select_person when reconciled_data is present.
+        """
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # Person exists but is NOT on this ballot and NOT same party as the
+        # SOPN entry, so the default selection on the review form is "_new".
+        existing_person = PersonFactory.create(name="Homer Simpson")
+        MembershipFactory.create(
+            person=existing_person,
+            post=self.local_post,
+            party=self.conservative_party,
+            ballot=self.local_ballot,
+        )
+        Person.objects.update_name_search()
+
+        RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            textract_data=[
+                {
+                    "name": "Homer Simpson",
+                    "party_id": self.labour_party.ec_id,
+                    "sopn_last_name": "Simpson",
+                    "sopn_first_names": "Homer",
+                }
+            ],
+            source="http://example.com",
+            source_type=RawPeople.SOURCE_PARSED_PDF,
+        )
+
+        # Visit the review page — default should be "_new" because the person
+        # is not on this ballot and has a different party.
+        response = self.app.get(
+            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            user=self.user,
+        )
+        form = response.forms["bulk_add_review_formset"]
+        self.assertEqual(form["form-0-select_person"].value, "_new")
+
+        # User manually selects the existing person instead of adding new.
+        form["form-0-select_person"].select(str(existing_person.pk))
+
+        # Submit and save reconciled_data, redirect to confirm
+        response = form.submit().follow()
+        self.assertIn("bulk-add-confirm-form", response.forms)
+
+        # Navigate back to the review page
+        response = self.app.get(
+            self.dulwich_post_ballot.get_bulk_add_review_url(),
+            user=self.user,
+        )
+        form = response.forms["bulk_add_review_formset"]
+
+        # The user's explicit selection should be restored from reconciled_data.
+        self.assertEqual(
+            form["form-0-select_person"].value,
+            str(existing_person.pk),
+        )

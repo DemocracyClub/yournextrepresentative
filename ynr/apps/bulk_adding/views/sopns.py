@@ -130,13 +130,12 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             if not form_data or form_data.get("DELETE"):
                 continue
             party_id = form_data["party"]["party_id"]
-            description_id = form_data["party"]["description_id"]
             candidate_data = {
                 "name": form_data["name"],
                 "sopn_last_name": form_data["sopn_last_name"],
                 "sopn_first_names": form_data["sopn_first_names"],
                 "party_id": party_id,
-                "description_id": description_id,
+                "description_id": form_data["party"]["description_id"],
             }
             if form_data["previous_party_affiliations"]:
                 candidate_data["previous_party_affiliations"] = form_data[
@@ -151,6 +150,8 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 "textract_data": raw_ballot_data,
                 "source": context["ballot_sopn"].source_url[:512],
                 "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
+                # Blank out the reconciled_data if we're submitting a new form
+                "reconciled_data": {}
             },
         )
 
@@ -170,10 +171,8 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
 
         if hasattr(self.ballot, "rawpeople"):
             raw_ballot_data = self.ballot.rawpeople.textract_data
-            # if self.ballot.rawpeople.reconciled_data:
-            #     raw_ballot_data = self.ballot.rawpeople.reconciled_data
-            # else:
-            #     raw_ballot_data = self.ballot.rawpeople.textract_data
+            if self.ballot.rawpeople.reconciled_data:
+                raw_ballot_data = self.ballot.rawpeople.reconciled_data
         else:
             # Race condition! Someone else has processes this area
             # between page views. Best just show the data we have.
@@ -201,12 +200,16 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
             party_obj = party_dict["party"]
 
             form["party_description_text"] = party_obj.name
-            if candidacy.get("description_id"):
+            description_pk = candidacy.get("description_id")
+            if description_pk:
                 party_description = party_dict["descriptions"].get(
-                    candidacy["description_id"]
+                    description_pk
                 )
-                form["party_description"] = party_description
-                form["party_description_text"] = party_description.description
+                if party_description:
+                    form["description_id"] = party_description
+                    form["party_description_text"] = (
+                        party_description.description
+                    )
 
             form["name"] = candidacy["name"]
             form["party_id"] = party_obj.ec_id
@@ -218,6 +221,11 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
                 form["previous_party_affiliations"] = ",".join(
                     candidacy["previous_party_affiliations"]
                 )
+
+            # Restore the user's previous select_person choice when navigating
+            # back from the confirm page
+            if candidacy.get("select_person"):
+                form["select_person"] = candidacy["select_person"]
 
             initial.append(form)
 
@@ -242,12 +250,11 @@ class BulkAddSOPNReviewView(BaseSOPNBulkAddView):
         # Save this form to the reconciled_data field of the rawpeople object
         reconciled_data = []
         for person_form in context["formset"]:
-            # Replace the description object with the PK.
-            if person_form.cleaned_data["party_description"]:
-                person_form.cleaned_data[
-                    "party_description"
-                ] = person_form.cleaned_data["party_description"].pk
-            reconciled_data.append(person_form.cleaned_data)
+            # Replace the description_id object with its pk for JSON storage.
+            form_data = dict(person_form.cleaned_data)
+            if form_data["description_id"]:
+                form_data["description_id"] = form_data["description_id"].pk
+            reconciled_data.append(form_data)
         rawpeople.reconciled_data = reconciled_data
         rawpeople.save()
         url = reverse(
@@ -354,7 +361,7 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
                     party=party,
                     ballot=context["ballot"],
                     source=person_data["source"],
-                    party_description=person_data["party_description"],
+                    party_description=person_data["description_id"],
                     previous_party_affiliations=previous_party_affiliations,
                     sopn_last_name=person_data["sopn_last_name"],
                     sopn_first_names=person_data["sopn_first_names"],
