@@ -58,7 +58,7 @@ class ElectionSOPNPageSplitter:
 
     @transaction.atomic()
     def split(
-        self, method=PageMatchingMethods.AUTO_MATCHED, parse_ballots=True
+        self, method=PageMatchingMethods.MANUAL_MATCHED, parse_ballots=True
     ):
         if self.election_sopn.pk is not None:
             BallotSOPN.objects.filter(
