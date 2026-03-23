@@ -20,29 +20,6 @@ class PDFProcessingError(ValueError):
     """
 
 
-def clean_matcher_data(pages):
-    # This function makes some assumptions about the data
-    # ensure pages has been checked with
-    # ElectionSOPNMatchingView.validate_payload()
-    # before passing it to this
-    ballots = {
-        v: []
-        for k, v in pages.items()
-        if v not in [ElectionSOPN.CONTINUATION, ElectionSOPN.NOMATCH]
-    }
-    last_ballot = None
-    for k, v in pages.items():
-        if v == ElectionSOPN.NOMATCH:
-            continue
-        if v == ElectionSOPN.CONTINUATION:
-            if last_ballot is not None:
-                ballots[last_ballot].append(int(k))
-            continue
-        ballots[v].append(int(k))
-        last_ballot = v
-    return ballots
-
-
 class ElectionSOPNPageSplitter:
     def __init__(
         self, election_sopn: ElectionSOPN, ballot_to_pages: Dict[str, List[int]]

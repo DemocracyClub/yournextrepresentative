@@ -20,7 +20,7 @@ from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
-from .extract_pages import ElectionSOPNPageSplitter, clean_matcher_data
+from .extract_pages import ElectionSOPNPageSplitter
 from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,
@@ -214,19 +214,41 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
 
         return True
 
+    def clean_matcher_data(self, pages):
+        self.validate_payload(pages)
+
+        ballots = {
+            v: []
+            for k, v in pages.items()
+            if v not in [ElectionSOPN.CONTINUATION, ElectionSOPN.NOMATCH]
+        }
+        last_ballot = None
+        for k, v in pages.items():
+            if v == ElectionSOPN.NOMATCH:
+                continue
+            if v == ElectionSOPN.CONTINUATION:
+                if last_ballot is not None:
+                    ballots[last_ballot].append(int(k))
+                continue
+            ballots[v].append(int(k))
+            last_ballot = v
+
+        return ballots
+
     @transaction.atomic
     def post(self, request, **kwargs):
         sopn = self.get_object()
 
         pages = json.loads(request.POST.get("pages"))
-        self.validate_payload(pages)
+
+        cleaned_data = self.clean_matcher_data(pages)
 
         sopn.blank_pages = [
             k for k, v in pages.items() if v == ElectionSOPN.NOMATCH
         ]
         sopn.save()
 
-        splitter = ElectionSOPNPageSplitter(sopn, clean_matcher_data(pages))
+        splitter = ElectionSOPNPageSplitter(sopn, cleaned_data)
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
         LoggedAction.objects.create(
             user=request.user,
