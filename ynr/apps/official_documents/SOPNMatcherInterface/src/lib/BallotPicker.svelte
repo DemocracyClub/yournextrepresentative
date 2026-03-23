@@ -9,12 +9,16 @@
         PageStore.update(pages => ({...pages, [page_num]: ballot_id}));
     }
 
+    $: if (page_number > 0 && $PageStore[page_number - 1] === 'NOMATCH' && $PageStore[page_number] === 'CONTINUATION') {
+        PageStore.update(pages => ({...pages, [page_number]: null}));
+    }
+
 </script>
 <div class="ballot-picker">
     <fieldset>
         <legend>Related ballot</legend>
         <div class="ds-stack-smallest">
-            {#if page_number > 0}
+            {#if page_number > 0 && $PageStore[page_number - 1] !== 'NOMATCH'}
                 <label class="ds-field-checkbox">
                     <input
                             type="radio"
