@@ -432,7 +432,9 @@ BulkAddFormSetFactory = forms.formset_factory(
 
 
 BulkAddReconcileNameOnlyFormSet = forms.formset_factory(
-    ReconcileSinglePersonNameOnlyForm, extra=0, formset=BaseBulkAddReconcileFormSet
+    ReconcileSinglePersonNameOnlyForm,
+    extra=0,
+    formset=BaseBulkAddReconcileFormSet,
 )
 
 BulkAddReconcileFormSet = forms.formset_factory(

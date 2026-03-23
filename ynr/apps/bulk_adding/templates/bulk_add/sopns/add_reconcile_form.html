@@ -15,7 +15,7 @@
 {% block content %}
 <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
     <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
-<h2>Review candidates</h2>
+<h2>Reconcile candidates to existing people</h2>
   {% if official_document %}
   <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
   {% endif %}
@@ -97,7 +97,7 @@
     {% endif %}
   {% endfor %}
 
-  <button type=submit>Submit lock suggestion</button>
+  <button type=submit>Next</button>
 </form>
 
 

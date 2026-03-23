@@ -151,11 +151,13 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 "source": context["ballot_sopn"].source_url[:512],
                 "source_type": RawPeople.SOURCE_BULK_ADD_FORM,
                 # Blank out the reconciled_data if we're submitting a new form
-                "reconciled_data": {}
+                "reconciled_data": {},
             },
         )
 
-        return HttpResponseRedirect(context["ballot"].get_bulk_add_reconcile_url())
+        return HttpResponseRedirect(
+            context["ballot"].get_bulk_add_reconcile_url()
+        )
 
     def form_invalid(self, context):
         return self.render_to_response(context)
@@ -207,9 +209,9 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
                 )
                 if party_description:
                     form["description_id"] = party_description
-                    form["party_description_text"] = (
-                        party_description.description
-                    )
+                    form[
+                        "party_description_text"
+                    ] = party_description.description
 
             form["name"] = candidacy["name"]
             form["party_id"] = party_obj.ec_id

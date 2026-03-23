@@ -848,7 +848,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         resp = form.submit()
         self.assertEqual(resp.status_code, 302)
         resp = resp.follow()
-        self.assertContains(resp, "Review candidates")
+        self.assertContains(resp, "Reconcile candidates")
         resp = form.submit()
         self.assertContains(resp, "Bart Simpson")
 
