@@ -84,8 +84,6 @@ class ElectionSOPNPageSplitter:
                 name=f"sopn-{ballot_paper_id}.pdf",
             )
             relevant_pages = ",".join([str(num) for num in matched_pages])
-            if len(matched_pages) == len(self.reader.pages):
-                relevant_pages = "all"
             if len(relevant_pages) >= 20:
                 # chances are this is an error, so raise
                 raise PDFProcessingError(
