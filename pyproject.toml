@@ -56,8 +56,6 @@ dependencies = [
     "whitenoise==6.5.0",
     "sorl-thumbnail-serializer-field",
     "slacker2",
-    # SOPN parsing
-    "pdfminer.six==20201018",
     "pypandoc_binary==1.14",
     "PyPDF2==2.12.1",
     "amazon-textract-response-parser==1.0.3",
