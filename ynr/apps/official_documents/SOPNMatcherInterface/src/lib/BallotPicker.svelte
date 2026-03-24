@@ -19,7 +19,7 @@
         <legend>Related ballot</legend>
         <div class="ds-stack-smallest">
             {#if page_number > 0 && $PageStore[page_number - 1] !== 'NOMATCH'}
-                <label class="ds-field-checkbox">
+                <label class="ds-field-radio">
                     <input
                             type="radio"
                             data-ballot="CONTINUATION"
@@ -31,7 +31,7 @@
                     <span>Continuation page</span>
                 </label>
             {/if}
-            <label class="ds-field-checkbox">
+            <label class="ds-field-radio">
                 <input
                         type="radio"
                         data-ballot="NOMATCH"
@@ -44,12 +44,9 @@
             </label>
             <hr />
 
-            {#each $BallotStore as {ballot_paper_id, label, disabled} (ballot_paper_id)}
+            {#each $BallotStore.filter(b => b.disabled === false) as {ballot_paper_id, label, disabled} (ballot_paper_id)}
                 {#if !Object.values($PageStore).includes(ballot_paper_id) || $PageStore[page_number] === ballot_paper_id}
-                    <label
-                            class="ds-field-checkbox"
-                            title={disabled ? "This ballot is matched to a page on another SOPN" : ""}
-                    >
+                    <label class="ds-field-radio">
 
                         <input
                                 type="radio"
@@ -58,19 +55,46 @@
                                 name="ballot_for_page_{page_number}"
                                 on:change={mark_ballot_for_page}
                                 checked={$PageStore[page_number] === ballot_paper_id}
-                                disabled={disabled}
                         >
-                        <span style={disabled ? "text-decoration: line-through;" : ""}>{label}</span>
+                        <span>{label}</span>
                     </label>
                 {/if}
             {/each}
+
+            {#if $BallotStore.filter(b => b.disabled === true).length > 0 }
+                <hr />
+                <div class="not-available">
+                    Not available for matching
+                    <ul>
+                        {#each $BallotStore.filter(b => b.disabled === true) as {ballot_paper_id, label, disabled} (ballot_paper_id)}
+                            <li>{label}</li>
+                        {/each}
+                    </ul>
+                    These ballots are matched to a page on another SOPN
+                </div>
+            {/if}
 
         </div>
     </fieldset>
 </div>
 
 <style>
-    .ds-scope .ds-field-checkbox:has(:disabled) span::before {
-        background-color: lightgray;
+    .ds-field-radio {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .ds-field-radio input[type="radio"] {
+        margin-top: 3px;
+    }
+
+    .not-available, .not-available * {
+        color: #4d4d4d;
+        font-size: .875rem;
+    }
+
+    .not-available ul {
+        margin-top: 1.25rem;
     }
 </style>
