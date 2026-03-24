@@ -17,8 +17,21 @@
     {% endif %}
 
   {% if user_can_upload_documents %}
-    {% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id as url %}
-    <a href="{{ url }}" class="button">Upload Statement of Persons Nominated (SOPN)</a>
+    {% url 'upload_ballot_sopn_view' ballot_paper_id=ballot.ballot_paper_id as upload_ballot_sopn_url %}
+
+    {% if ballot.election.electionsopn_set.all.count > 0 %}
+      The {{ ballot.election.name }} has
+      <a href="{% url "election_sopns_summary" ballot.election.slug %}">
+        {{ ballot.election.electionsopn_set.all.count }} SOPN documents
+      </a>
+      attached to the election.
+      It is likely that the candidates for this ballot are contained in one of those SOPNs.
+      If not, you can
+      <a href="{{ upload_ballot_sopn_url }}">upload a SOPN</a> for this ballot instead.
+    {% else %}
+      <a href="{{ upload_ballot_sopn_url }}" class="button">Upload Statement of Persons Nominated (SOPN)</a>
+    {% endif %}
+
   {% endif %}
 
 
