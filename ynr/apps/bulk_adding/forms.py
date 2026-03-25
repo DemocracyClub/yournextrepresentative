@@ -91,11 +91,22 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         This is to prevent adding loads of additional fields if not needed.
         """
 
+        form_counts = []
+
         seats_contested = self.ballot.winner_count
         # 3.5 is the average number of candidates per seat, historically, but
         # let's round that up to 4. Then multiply by the seats contested for
         # this ballot
-        return int(seats_contested * 4)
+        form_counts.append(int(seats_contested * 4))
+
+        if self.is_bound:
+            form_counts.append(super().total_form_count())
+
+        if hasattr(self.ballot, "raw_people"):
+            form_counts.append(len(self.ballot.rawpeople.textract_data))
+
+        form_counts.append(self.ballot.membership_count)
+        return max(form_counts) + 1
 
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)

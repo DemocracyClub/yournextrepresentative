@@ -10,7 +10,7 @@ from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import F, Prefetch
+from django.db.models import Count, F, Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -48,7 +48,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         """
         queryset = Ballot.objects.select_related(
             "post", "election", "rawpeople", "post__party_set", "sopn"
-        )
+        ).annotate(membership_count=Count("membership"))
         return get_object_or_404(
             queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
         )
