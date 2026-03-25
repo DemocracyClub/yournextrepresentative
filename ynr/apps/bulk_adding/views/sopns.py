@@ -4,7 +4,7 @@ from typing import Dict
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
-from candidates.models import Ballot, LoggedAction
+from candidates.models import Ballot, LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
@@ -397,6 +397,7 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
                     source="Removed from ballot as not listed on SOPN",
                     edit_type=EditType.BULK_ADD.name,
                 )
+                raise_if_unsafe_to_delete(candidacy)
                 candidacy.delete()
 
             LoggedAction.objects.create(
