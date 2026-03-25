@@ -7,6 +7,7 @@ from candidates.models import Ballot
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.db.models import JSONField
 from django.urls import reverse
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
@@ -122,7 +123,10 @@ class ElectionSOPN(TimeStampedModel):
 
     """
 
-    election = models.OneToOneField(
+    NOMATCH = "NOMATCH"
+    CONTINUATION = "CONTINUATION"
+
+    election = models.ForeignKey(
         "elections.Election", on_delete=models.CASCADE, blank=True
     )
 
@@ -140,6 +144,8 @@ class ElectionSOPN(TimeStampedModel):
         max_length=255, choices=PageMatchingMethods.choices, null=True
     )
 
+    blank_pages = JSONField(default=list)
+
     replacement_reason = models.CharField(
         verbose_name="Reason for replacement",
         help_text="Please be as descriptive as possible to explain why the replacement SOPN is needed",
@@ -156,17 +162,46 @@ class ElectionSOPN(TimeStampedModel):
     def get_absolute_url(self):
         return reverse(
             "election_sopn",
-            kwargs={"election_id": self.election.slug},
+            kwargs={"election_id": self.election.slug, "pk": self.id},
         )
 
     @property
-    def pages_matched(self):
+    def friendly_name(self):
+        return Path(self.uploaded_file.name).name
+
+    @property
+    def all_pages_matched(self):
         return (
             bool(self.page_matching_method)
             and not self.election.ballot_set.filter(
                 sopn__relevant_pages__isnull=True
             ).exists()
         )
+
+    @property
+    def any_pages_matched(self):
+        return (
+            bool(self.page_matching_method)
+            and self.election.ballot_set.filter(
+                sopn__relevant_pages__isnull=False
+            ).exists()
+        )
+
+    @property
+    def page_mapping(self):
+        pages = {int(page): ElectionSOPN.NOMATCH for page in self.blank_pages}
+        for ballot_sopn in (
+            BallotSOPN.objects.all()
+            .select_related("ballot")
+            .filter(election_sopn=self)
+        ):
+            ballot_sopn.validate_relevant_pages()
+            ballot_pages = ballot_sopn.relevant_pages.split(",")
+            head, *tail = ballot_pages
+            pages[int(head)] = ballot_sopn.ballot.ballot_paper_id
+            for page in tail:
+                pages[int(page)] = ElectionSOPN.CONTINUATION
+        return {str(k): v for k, v in sorted(pages.items())}
 
 
 def ballot_sopn_file_name(instance: "BaseBallotSOPN", filename):
@@ -187,6 +222,13 @@ class BaseBallotSOPN(TimeStampedModel):
 
     ballot = models.OneToOneField(
         "candidates.Ballot", on_delete=models.CASCADE, related_name="sopn"
+    )
+    election_sopn = models.ForeignKey(
+        "official_documents.ElectionSOPN",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        help_text="If this BallotSOPN was created by splitting an ElectionSOPN, the ElectionSOPN from whence it came",
     )
 
     # Don't add `ballot` here as we want different related names for each model
@@ -224,9 +266,39 @@ class BaseBallotSOPN(TimeStampedModel):
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source_url)
 
-    @property
-    def first_page_int(self):
-        return min(self.page_number_list)
+    def validate_relevant_pages(self):
+        """
+        We assume that relevant_pages is either:
+        A standalone BallotSOPN
+        in which case this may be the string 'all'
+
+        Related to an ElectionSOPN
+        in which case this must be a comma seperated list of sequential pages
+        3,4,5 is valid
+        but 3,4,6 or 3,5,4 is not valid
+        We can't deal with that
+        """
+
+        if self.relevant_pages == "all":
+            if self.election_sopn_id is not None:
+                raise ValueError(
+                    "relevant_pages cannot be 'all' when linked to an ElectionSOPN"
+                )
+            return True
+
+        page_numbers = self.page_number_list
+
+        if not page_numbers:
+            raise ValueError("relevant_pages cannot be empty")
+
+        if not page_numbers == list(
+            range(page_numbers[0], page_numbers[0] + len(page_numbers))
+        ):
+            raise ValueError(
+                f"relevant_pages must be a sequential list of pages, got: {self.relevant_pages!r}"
+            )
+
+        return True
 
     @property
     def page_number_list(self) -> List[int]:
@@ -235,6 +307,10 @@ class BaseBallotSOPN(TimeStampedModel):
     @property
     def one_based_relevant_pages(self):
         return ", ".join([str(i + 1) for i in self.page_number_list])
+
+    def save(self, *args, **kwargs):
+        self.validate_relevant_pages()
+        return super().save(*args, **kwargs)
 
 
 class BallotSOPN(BaseBallotSOPN):
@@ -287,6 +363,7 @@ def add_ballot_sopn(
     source_url: str,
     relevant_pages: str = "all",
     replacement_reason=None,
+    election_sopn=None,
     parse=True,
 ):
     """
@@ -304,12 +381,14 @@ def add_ballot_sopn(
     )
 
     BallotSOPN.objects.filter(ballot=ballot).delete()
+
     ballot_sopn: BallotSOPN = BallotSOPN.objects.create(
         ballot=ballot,
         relevant_pages=relevant_pages,
         uploaded_file=pdf_content,
         source_url=source_url,
         replacement_reason=replacement_reason,
+        election_sopn=election_sopn,
     )
     if parse:
         ballot_sopn.parse()

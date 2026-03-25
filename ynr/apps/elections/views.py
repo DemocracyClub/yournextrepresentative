@@ -23,7 +23,7 @@ from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.notifications import send_ballot_lock_notification
 from moderation_queue.forms import SuggestedPostLockForm
-from official_documents.models import BallotSOPN
+from official_documents.models import BallotSOPN, ElectionSOPN
 from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
@@ -33,7 +33,11 @@ from utils.db import LastWord, NullIfBlank
 
 class ElectionView(DetailView):
     template_name = "elections/election_detail.html"
-    model = Election
+    queryset = Election.objects.all().prefetch_related(
+        Prefetch(
+            "electionsopn_set", queryset=ElectionSOPN.objects.order_by("id")
+        )
+    )
     slug_url_kwarg = "election"
 
     def get_context_data(self, **kwargs):
@@ -374,15 +378,55 @@ class SOPNForBallotView(DetailView):
         return context
 
 
-class SOPNForElectionView(DetailView):
-    queryset = Election.objects.all().select_related("electionsopn")
-    slug_url_kwarg = "election_id"
-    slug_field = "slug"
-    template_name = "elections/sopn_for_election.html"
+class SOPNsForElectionSummary(TemplateView):
+    template_name = "elections/sopns_for_election_summary.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = self.object.ballot_set.order_by("post__label")
+
+        context["election"] = get_object_or_404(
+            Election, slug=kwargs["election_id"]
+        )
+
+        context["election_sopns"] = (
+            ElectionSOPN.objects.filter(election__slug=kwargs["election_id"])
+            .prefetch_related(
+                Prefetch(
+                    "ballotsopn_set",
+                    queryset=BallotSOPN.objects.select_related(
+                        "ballot", "ballot__post"
+                    ).order_by("ballot__post__label"),
+                )
+            )
+            .order_by("id")
+        )
+
+        context["ballots_without_sopn"] = (
+            Ballot.objects.filter(election__slug=kwargs["election_id"])
+            .filter(sopn__isnull=True)
+            .select_related("post")
+            .order_by("post__label")
+        )
+
+        return context
+
+
+class SOPNForElectionView(DetailView):
+    queryset = ElectionSOPN.objects.all().select_related("election")
+    template_name = "elections/sopn_for_election.html"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(election__slug=self.kwargs["election_id"])
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ballots"] = self.object.election.ballot_set.filter(
+            sopn__election_sopn_id=context["object"].id
+        ).order_by("post__label")
         return context
 
 

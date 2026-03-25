@@ -6,6 +6,7 @@ from candidates.models import Ballot, LoggedAction
 from candidates.models.db import ActionType, EditType
 from candidates.views.version_data import get_client_ip
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -19,11 +20,12 @@ from elections.models import Election
 from moderation_queue.models import SuggestedPostLock
 from sopn_parsing.helpers.text_helpers import NoTextInDocumentError
 
-from .extract_pages import ElectionSOPNPageSplitter, clean_matcher_data
+from .extract_pages import ElectionSOPNPageSplitter
 from .forms import UploadBallotSOPNForm, UploadElectionSOPNForm
 from .models import (
     DOCUMENT_UPLOADERS_GROUP_NAME,
     BallotSOPN,
+    ElectionSOPN,
     PageMatchingMethods,
     add_ballot_sopn,
 )
@@ -146,55 +148,117 @@ class ElectionSOPNMatchingView(GroupRequiredMixin, DetailView):
     required_group_name = DOCUMENT_UPLOADERS_GROUP_NAME
     template_name = "official_documents/election_sopn_matcher.html"
     queryset = (
-        Election.objects.all()
-        .select_related("electionsopn")
-        .prefetch_related("ballot_set")
+        ElectionSOPN.objects.all()
+        .select_related("election")
+        .prefetch_related("election__ballot_set")
     )
-    slug_url_kwarg = "election_id"
-    slug_field = "slug"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(election__slug=self.kwargs["election_id"])
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        ballot_data = []
-        for ballot in self.object.ballot_set.all().order_by("post__label"):
-            ballot_for_matcher = {
+        ballots = [
+            {
                 "ballot_paper_id": ballot.ballot_paper_id,
                 "label": ballot.post.label,
+                "disabled": hasattr(ballot, "sopn")
+                and ballot.sopn.election_sopn_id != self.object.id,
             }
-            if (
-                self.object.electionsopn.pages_matched
-                and ballot.sopn.relevant_pages != "all"
-            ):
-                ballot_for_matcher["matched"] = bool(ballot.sopn.relevant_pages)
-                ballot_for_matcher["matched_page"] = str(
-                    ballot.sopn.first_page_int
-                )
-            ballot_data.append(ballot_for_matcher)
+            for ballot in self.object.election.ballot_set.all().order_by(
+                "post__label"
+            )
+        ]
 
         context["matcher_props"] = {
-            "election_id": self.object.name,
-            "sopn_pdf": self.object.electionsopn.uploaded_file.url,
-            "ballots": ballot_data,
+            "election_id": self.object.election.name,
+            "sopn_pdf": self.object.uploaded_file.url,
+            "ballots": ballots,
+            "pages": self.object.page_mapping,
         }
         return context
 
-    def post(self, request, election_id):
-        election = self.get_object()
-        splitter = ElectionSOPNPageSplitter(
-            election.electionsopn,
-            clean_matcher_data(json.loads(request.POST.get("matched_pages"))),
-        )
+    def validate_payload(self, pages):
+        # we're making quite a lot of assumptions about this data
+        # so we need to be quite strict about checking it on the way in
+        if any(value is None for value in pages.values()):
+            raise ValueError("All pages must be matched to a value")
+
+        if len(pages.keys()) == 0:
+            raise ValueError("Expected 1 or more pages")
+
+        if pages["0"] == ElectionSOPN.CONTINUATION:
+            raise ValueError("Fist page can't be a continuation page")
+
+        page_numbers = [int(k) for k, v in pages.items()]
+        if not page_numbers == list(
+            range(page_numbers[0], page_numbers[0] + len(page_numbers))
+        ):
+            raise ValueError("Expected a sequential list of pages")
+
+        previous_value = None
+        for page_value in pages.values():
+            if (
+                page_value == ElectionSOPN.CONTINUATION
+                and previous_value == ElectionSOPN.NOMATCH
+            ):
+                raise ValueError(
+                    "A continuation page can only follow a ballot page"
+                )
+            previous_value = page_value
+
+        return True
+
+    def clean_matcher_data(self, pages):
+        self.validate_payload(pages)
+
+        ballots = {
+            v: []
+            for k, v in pages.items()
+            if v not in [ElectionSOPN.CONTINUATION, ElectionSOPN.NOMATCH]
+        }
+        last_ballot = None
+        for k, v in pages.items():
+            if v == ElectionSOPN.NOMATCH:
+                continue
+            if v == ElectionSOPN.CONTINUATION:
+                if last_ballot is not None:
+                    ballots[last_ballot].append(int(k))
+                continue
+            ballots[v].append(int(k))
+            last_ballot = v
+
+        return ballots
+
+    @transaction.atomic
+    def post(self, request, **kwargs):
+        sopn = self.get_object()
+
+        pages = json.loads(request.POST.get("pages"))
+
+        cleaned_data = self.clean_matcher_data(pages)
+
+        sopn.blank_pages = [
+            k for k, v in pages.items() if v == ElectionSOPN.NOMATCH
+        ]
+        sopn.save()
+
+        splitter = ElectionSOPNPageSplitter(sopn, cleaned_data)
         splitter.split(method=PageMatchingMethods.MANUAL_MATCHED)
         LoggedAction.objects.create(
             user=request.user,
-            election=election,
+            election=sopn.election,
             action_type=ActionType.SOPN_SPLIT_BALLOTS,
             ip_address=get_client_ip(request),
             source="Manual matching",
             edit_type=EditType.USER,
         )
-        return HttpResponseRedirect(election.electionsopn.get_absolute_url())
+        return HttpResponseRedirect(sopn.get_absolute_url())
 
 
 class PostsForDocumentView(DetailView):

@@ -21,7 +21,7 @@ urlpatterns = [
         name="upload_election_sopn_view",
     ),
     re_path(
-        r"^election/(?P<election_id>[^/]+)/match_pages/$",
+        r"^election/(?P<election_id>[^/]+)/match_pages/(?P<pk>\d+)$",
         csrf_exempt(views.ElectionSOPNMatchingView.as_view()),
         name="election_sopn_match_pages_view",
     ),

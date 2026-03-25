@@ -1,8 +1,3 @@
-"""
-Basic smoke tests for OfficialDocument model
-"""
-from unittest import skip
-
 from candidates.tests.factories import (
     ElectionFactory,
     ParliamentaryChamberFactory,
@@ -34,23 +29,54 @@ class TestModels(TestCase):
             "parl.dulwich-and-west-norwood.2015-05-07 (http://example.com/)",
         )
 
-    @skip("Until we store page numbers from parent on BallotSOPN")
-    def test_relevant_pages(self):
-        doc = BallotSOPN(ballot=self.ballot, source_url="http://example.com/")
-        self.assertIsNone(doc.first_page_number)
-        self.assertIsNone(doc.last_page_number)
 
-        doc.relevant_pages = "all"
+class TestValidateRelevantPages(TestCase):
+    def setUp(self):
+        election = ElectionFactory.create(
+            slug="parl.2015-05-07", name="2015 General Election"
+        )
+        commons = ParliamentaryChamberFactory.create()
+        post = PostFactory.create(
+            elections=(election,),
+            organization=commons,
+            slug="dulwich-and-west-norwood",
+            label="Member of Parliament for Dulwich and West Norwood",
+        )
+        self.ballot = post.ballot_set.get()
 
-        self.assertIsNone(doc.first_page_number)
-        self.assertIsNone(doc.last_page_number)
+    def _make_ballot_sopn(self, relevant_pages):
+        sopn = BallotSOPN(ballot=self.ballot, source_url="http://example.com/")
+        sopn.relevant_pages = relevant_pages
+        return sopn
 
-        doc.relevant_pages = "3,4,5,6,7"
+    def test_valid_all_without_election_sopn(self):
+        sopn = self._make_ballot_sopn("all")
+        assert sopn.validate_relevant_pages()
 
-        self.assertEqual(doc.first_page_number, 3)
-        self.assertEqual(doc.last_page_number, 7)
+    def test_valid_single_page(self):
+        sopn = self._make_ballot_sopn("3")
+        assert sopn.validate_relevant_pages()
 
-        doc.relevant_pages = "5,6,7,1"
+    def test_valid_multiple_pages(self):
+        sopn = self._make_ballot_sopn("3,4,5")
+        assert sopn.validate_relevant_pages()
 
-        self.assertEqual(doc.first_page_number, 1)
-        self.assertEqual(doc.last_page_number, 7)
+    def test_invalid_all_with_election_sopn(self):
+        sopn = self._make_ballot_sopn("all")
+        sopn.election_sopn_id = 1
+        with self.assertRaisesRegex(
+            ValueError, "cannot be 'all' when linked to an ElectionSOPN"
+        ):
+            sopn.validate_relevant_pages()
+
+    def test_invalid(self):
+        page_lists = [
+            "3,4,6",  # gap
+            "5,4,3",  # descending
+            "3,5,4",  # out of order
+        ]
+        for page_list in page_lists:
+            with self.subTest(page_list=page_list):
+                sopn = self._make_ballot_sopn(page_list)
+                with self.assertRaisesRegex(ValueError, "sequential"):
+                    sopn.validate_relevant_pages()

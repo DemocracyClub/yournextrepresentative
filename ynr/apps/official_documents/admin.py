@@ -5,7 +5,7 @@ from .models import BallotSOPN, ElectionSOPN
 
 class ElectionSOPNAdmin(admin.ModelAdmin):
     list_display = ("created", "election", "source_url")
-    search_fields = ("ballot__ballot_paper_id", "source_url")
+    search_fields = ("election__name", "election__slug", "source_url")
     ordering = ("-created",)
 
 

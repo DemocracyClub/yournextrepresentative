@@ -2,37 +2,40 @@
 {% load pipeline %}
 {% load static %}
 {% block hero %}
-    <h1>SOPN for {{ object.name }}</h1>
+    <h1>SOPN for {{ object.election.name }}</h1>
 {% endblock %}
 
 {% block content %}
 
-    <p>Statement of Persons Nominated for {{ object.name }}. This document contains information for
-        all {{ object.ballot_set.count }} ballots in the election.</p>
-    {% if object.electionsopn.pages_matched %}
-        <p>The pages in this document have been matched to the ballots in this election:</p>
+    <p>
+      Statement of Persons Nominated for
+      <a href="{% url 'election_view' object.election.slug %}">{{ object.election.name }}</a>.
+    </p>
+
+    {% if ballots %}
+        <p>The pages in this document have been matched to ballots in this election:</p>
         <ul>
             {% for ballot in ballots %}
-                <li>
-                    <a href="{{ ballot.get_sopn_url }}">{{ ballot.post.label }}</a>: {{ ballot.sopn.one_based_relevant_pages }}
-                </li>
+              <li>
+                <a href="{{ ballot.get_sopn_url }}">{{ ballot.post.label }}</a>
+                : {{ ballot.sopn.one_based_relevant_pages }}
+              </li>
             {% endfor %}
         </ul>
-        <a href="{% url "election_sopn_match_pages_view" election_id=object.slug %}" class="button">Edit</a>
+        <a href="{% url "election_sopn_match_pages_view" election_id=object.election.slug pk=object.pk %}" class="button">Edit</a>
     {% else %}
         <p>This SOPN hasn't been matched against ballots yet.</p>
         {% if user_can_upload_documents %}
-            <a href="{% url "election_sopn_match_pages_view" election_id=object.slug %}" class="button">Match pages
-                manually</a>
+            <a href="{% url "election_sopn_match_pages_view" election_id=object.election.slug pk=object.pk %}" class="button">Match pages manually</a>
         {% endif %}
     {% endif %}
-    <div id="sopn-{{ object.slug }}" class="pdf_container"></div>
+    <div id="sopn-{{ object.election.slug }}" class="pdf_container"></div>
 
     <script type="module">
         import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
         SOPN_VIEWER.ShowSOPNInline(
-            '{{ object.sopn.uploaded_file.url }}',
-            '{{ object.ballot_paper_id }}'
+            '{{ object.uploaded_file.url }}',
+            '{{ object.election.slug }}'
         )
     </script>
 

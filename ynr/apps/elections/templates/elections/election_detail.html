@@ -111,20 +111,18 @@
                             Review photos</a>
                     </li>
                 {% endif %}
-                {% if object.has_electionsopn %}
-                    <li>
-                        <a href="{{ object.electionsopn.get_absolute_url }}" class="button small">View SOPN</a>
-                    </li>
-                {% else %}
 
-                    {% if user_can_upload_documents %}
-                        <li>
-                            <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
-                               class="button small">
-                                Upload SOPN</a>
-                        </li>
-                    {% endif %}
-
+                {% if object.electionsopn_set.all.count > 0 %}
+                  <li>
+                      <a href="{% url "election_sopns_summary" object.slug %}" class="button small">View SOPNs</a>
+                  </li>
+                {% endif %}
+                {% if user_can_upload_documents %}
+                  <li>
+                      <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
+                          class="button small">
+                          Upload SOPN</a>
+                  </li>
                 {% endif %}
 
             </ul>

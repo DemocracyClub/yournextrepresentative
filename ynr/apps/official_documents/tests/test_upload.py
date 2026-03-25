@@ -376,7 +376,7 @@ class TestElectionSOPNSplitting(TestUserMixin, WebTest):
         self.assertFalse(LoggedAction.objects.exists())
 
         with EXAMPLE_PDF_PATH.open("rb") as f:
-            ElectionSOPN.objects.create(
+            sopn = ElectionSOPN.objects.create(
                 election=self.election,
                 source_url="https://example.com/",
                 uploaded_file=ContentFile(f.read(), "test.pdf"),
@@ -385,7 +385,7 @@ class TestElectionSOPNSplitting(TestUserMixin, WebTest):
         response = self.app.get(
             reverse(
                 "election_sopn_match_pages_view",
-                kwargs={"election_id": self.election.slug},
+                kwargs={"election_id": self.election.slug, "pk": sopn.pk},
             ),
             user=self.user_who_can_upload_documents,
         )
@@ -395,19 +395,14 @@ class TestElectionSOPNSplitting(TestUserMixin, WebTest):
         response = self.app.post(
             reverse(
                 "election_sopn_match_pages_view",
-                kwargs={"election_id": self.election.slug},
+                kwargs={"election_id": self.election.slug, "pk": sopn.pk},
             ),
             user=self.user_who_can_upload_documents,
             params={
-                "matched_pages": json.dumps(
-                    [
-                        {
-                            "ballot_paper_id": self.ballot.ballot_paper_id,
-                            "label": self.ballot.post.label,
-                            "matched": True,
-                            "matched_page": "0",
-                        }
-                    ]
+                "pages": json.dumps(
+                    {
+                        "0": self.ballot.ballot_paper_id,
+                    }
                 )
             },
         )

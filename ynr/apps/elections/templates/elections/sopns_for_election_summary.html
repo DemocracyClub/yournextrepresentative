@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load pipeline %}
+{% load static %}
+{% block hero %}
+    <h1>Election SOPNs for {{ election.name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <p>
+        Statement of Persons Nominated documents for
+        <a href="{% url 'election_view' election.slug %}">{{ election.name }}</a>.
+    </p>
+
+    {% if election_sopns and ballots_without_sopn %}
+        <h2>⚠️ Ballots without SOPN</h2>
+        <p>The following ballots in this election do not have a SOPN linked:</p>
+        <ul>
+            {% for ballot in ballots_without_sopn %}
+                <li>
+                    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+                    {{ ballot.locked_status_html }}
+                    {{ ballot.cancelled_status_html }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if election_sopns %}
+        <h2>Election SOPNs</h2>
+        
+        {% for election_sopn in election_sopns %}
+            <div>
+                <h3>
+                    <a href="{{ election_sopn.get_absolute_url }}">
+                      {{ election_sopn.friendly_name }}
+                    </a>
+                </h3>
+                <p>
+                    <strong>Source:</strong> <a href="{{ election_sopn.source_url }}" target="_blank">{{ election_sopn.source_url }}</a>
+                </p>
+                
+                {% if election_sopn.ballotsopn_set.exists %}
+                    <h4>Ballots linked to this SOPN:</h4>
+                    <ul>
+                        {% for ballot_sopn in election_sopn.ballotsopn_set.all %}
+                            <li>
+                                <a href="{{ ballot_sopn.get_absolute_url }}">
+                                    {{ ballot_sopn.ballot.post.label }}
+                                </a>
+                                (Pages: {{ ballot_sopn.one_based_relevant_pages }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No ballots have been linked to this SOPN yet.</p>
+                    <a href="{% url "election_sopn_match_pages_view" election_id=election.slug pk=election_sopn.pk %}" class="button tiny">Match pages manually</a>
+                {% endif %}
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No Election SOPNs have been uploaded for this election.</p>
+    {% endif %}
+
+{% endblock %}
