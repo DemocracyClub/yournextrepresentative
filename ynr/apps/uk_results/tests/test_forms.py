@@ -13,6 +13,7 @@ class TestResultSetForm(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
     def setUp(self):
         super().setUp()
         self.ballot = self.local_post.ballot_set.get()
+        self.ballot.voting_system = self.ballot.VOTING_SYSTEM_FPTP
 
         # Create three people:
         self.people = [
