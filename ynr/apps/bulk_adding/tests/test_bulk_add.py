@@ -1454,3 +1454,87 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             form["form-0-select_person"].value,
             str(existing_person.pk),
         )
+
+
+class TestOddCandidateCountWarnings(
+    TestUserMixin, UK2015ExamplesMixin, WebTest
+):
+    """
+    Tests for the odd_candidate_count_warnings logic
+    """
+
+    def _submit_candidates_to_confirm_page(self, ballot, candidates):
+        """
+        Run the bulk-add process for a given ballot, until the confirm page
+        """
+        BallotSOPN.objects.get_or_create(
+            ballot=ballot,
+            defaults={
+                "source_url": "http://example.com",
+                "uploaded_file": "sopn.pdf",
+            },
+        )
+        url = f"/bulk_adding/sopn/{ballot.ballot_paper_id}/?edit=1"
+        response = self.app.get(url, user=self.user)
+        form = response.forms["bulk_add_form"]
+        for i, (name, party_ec_id) in enumerate(candidates):
+            form[f"form-{i}-name"] = name
+            form[f"form-{i}-party_1"] = party_ec_id
+        response = form.submit().follow()
+
+        form = response.forms["bulk_add_reconcile_formset"]
+        for i in range(len(candidates)):
+            form[f"form-{i}-select_person"].select("_new")
+        return form.submit().follow()
+
+    def test_no_warnings_when_one_candidate_per_party(self):
+        response = self._submit_candidates_to_confirm_page(
+            self.dulwich_post_ballot,
+            [
+                ("Alice Smith", self.green_party.ec_id),
+                ("Bob Jones", self.labour_party.ec_id),
+            ],
+        )
+        self.assertNotContains(response, "Over contested")
+        self.assertNotContains(response, "Under contested")
+
+    def test_over_contested_warning(self):
+        """
+        Two candidates from the same party on a single-seat ballot should show
+        an over-contested warning
+        """
+        response = self._submit_candidates_to_confirm_page(
+            self.dulwich_post_ballot,
+            [
+                ("Alice Smith", self.green_party.ec_id),
+                ("Bob Green", self.green_party.ec_id),
+            ],
+        )
+        self.assertContains(
+            response,
+            f"<li>{self.green_party.name}: 2 candidates</li>",
+            html=True,
+        )
+        self.assertNotContains(response, "Under contested")
+        self.assertContains(response, "Over contested")
+
+    def test_under_contested_warning(self):
+        """
+        One candidate from a party on a two-seat ballot
+        triggers an under-contested warning.
+        """
+        self.dulwich_post_ballot.winner_count = 2
+        self.dulwich_post_ballot.save()
+        response = self._submit_candidates_to_confirm_page(
+            self.dulwich_post_ballot,
+            [
+                ("Alice Smith", self.green_party.ec_id),
+            ],
+        )
+        self.assertContains(
+            response,
+            f"<li>{self.green_party.name}: 1 candidate</li>",
+            html=True,
+        )
+        self.assertContains(response, "Under contested")
+        self.assertNotContains(response, "Over contested")

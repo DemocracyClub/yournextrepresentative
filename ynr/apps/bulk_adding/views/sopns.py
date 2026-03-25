@@ -310,14 +310,24 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
         }
         """
         # Count candidates per party
-        counts = Counter(c["party"] for c in reconciled_data if c.get("party"))
+        party_model_cache = {
+            party.ec_id: party
+            for party in Party.objects.filter(
+                ec_id__in=[
+                    c["party_id"] for c in reconciled_data if c.get("party_id")
+                ]
+            )
+        }
+        counts = Counter(
+            c["party_id"] for c in reconciled_data if c.get("party_id")
+        )
 
         over = {}
         under = {}
 
         for party, count in counts.items():
             if count != ballot.winner_count:
-                party_obj: Party = Party.objects.get(ec_id=party)
+                party_obj: Party = party_model_cache[party]
                 if count > ballot.winner_count:
                     over[party] = {"count": count, "party": party_obj}
                 elif count < ballot.winner_count:
