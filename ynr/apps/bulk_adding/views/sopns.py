@@ -183,7 +183,7 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
         parties = Party.objects.prefetch_related(
             Prefetch(
                 "descriptions",
-                PartyDescription.objects.all().only("description"),
+                PartyDescription.objects.all(),
             )
         ).filter(
             ec_id__in=[candidacy["party_id"] for candidacy in raw_ballot_data]
@@ -195,7 +195,6 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
                 "party": party,
                 "descriptions": descriptions,
             }
-
         for candidacy in raw_ballot_data:
             form = {}
             party_dict = parties_dict[candidacy["party_id"]]

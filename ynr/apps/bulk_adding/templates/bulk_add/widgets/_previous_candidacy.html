@@ -15,7 +15,7 @@
   {% else %}
     {{ party.name }}
   {% endif %}
-  {% if candidacy.ballot.sopn %}
+  {% if candidacy.ballot.has_sopn %}
     (<a href="{{ candidacy.ballot.sopn.get_absolute_url }}">SOPN</a>)
   {% endif %}
 {% endwith %}

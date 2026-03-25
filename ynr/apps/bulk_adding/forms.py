@@ -184,8 +184,10 @@ class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
                         "ballot__election",
                         "ballot__election__organization",
                         "ballot__post",
+                        "ballot__sopn",
                     ).order_by("-ballot__election__election_date"),
                 ),
+                "other_names",
             )
             .annotate(**annotations)
         )
