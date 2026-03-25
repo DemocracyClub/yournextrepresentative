@@ -46,7 +46,7 @@
                 </td>
                 <td>
                   {% for candidacy in choice.data.previous_candidacies %}
-                    <li>{{ candidacy }}</li>
+                    <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
                   {% endfor %}
                 </td>
               </tr>
