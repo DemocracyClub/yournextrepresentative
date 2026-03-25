@@ -116,7 +116,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit().follow()
 
         self.assertContains(
-            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
+            response,
+            "<label>Add a new profile &quot;Pemphero Pasternak&quot;</label>",
         )
 
         form = response.forms["bulk-add-reconcile"]
@@ -157,7 +158,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit().follow()
 
         self.assertContains(
-            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
+            response,
+            "<label>Add a new profile &quot;Pemphero Pasternak&quot;</label>",
         )
 
         form = response.forms["bulk-add-reconcile"]
@@ -205,7 +207,8 @@ class TestBulkAddingByParty(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = form.submit().follow()
 
         self.assertContains(
-            response, '<label>Add a new profile "Pemphero Pasternak"</label>'
+            response,
+            "<label>Add a new profile &quot;Pemphero Pasternak&quot;</label>",
         )
 
         form = response.forms["bulk-add-reconcile"]

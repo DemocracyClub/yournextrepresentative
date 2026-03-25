@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator, validate_email
 from django.forms.models import ModelChoiceIteratorValue
 from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 from people.helpers import (
     clean_instagram_url,
     clean_linkedin_url,
@@ -195,7 +194,7 @@ class PersonSuggestionChoiceIterator:
         field = self.field
         yield (
             "_new",
-            mark_safe(f'Add a new profile "{field.new_name}"'),
+            f'Add a new profile "{field.new_name}"',
         )
 
         for person in field.suggestions:
@@ -204,7 +203,7 @@ class PersonSuggestionChoiceIterator:
                 "bulk_add/widgets/person_suggestion_choice_label.html",
                 {"object": person},
             )
-            yield (value, mark_safe(label))
+            yield value, label
 
 
 class PersonSuggestionField(forms.ChoiceField):
