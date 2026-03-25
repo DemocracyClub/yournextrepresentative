@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import path, re_path
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views import (
@@ -9,6 +9,7 @@ from .views import (
     PhotoUploadSuccess,
     RemoveSuggestedLocksView,
     SOPNReviewRequiredView,
+    SuggestLockReviewDetailView,
     SuggestLockReviewListView,
     SuggestLockView,
     upload_photo,
@@ -44,14 +45,19 @@ urlpatterns = [
         name="photo-upload-success",
     ),
     re_path(
-        r"^suggest-lock/(?P<election_id>.*)/$",
-        SuggestLockView.as_view(),
-        name="constituency-suggest-lock",
-    ),
-    re_path(
         r"^suggest-lock/$",
         ensure_csrf_cookie(SuggestLockReviewListView.as_view()),
         name="suggestions-to-lock-review-list",
+    ),
+    path(
+        "suggest-lock/ballot/<str:ballot_paper_id>/",
+        ensure_csrf_cookie(SuggestLockReviewDetailView.as_view()),
+        name="suggestions-to-lock-review-single-ballot",
+    ),
+    re_path(
+        r"^suggest-lock/(?P<election_id>.*)/$",
+        SuggestLockView.as_view(),
+        name="constituency-suggest-lock",
     ),
     re_path(
         r"^sopn-review-required/$",

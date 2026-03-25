@@ -91,7 +91,7 @@ class TestSuggestLockReviewListView(TestCase):
         result = self.view.get_random_election()
         self.assertEqual(result, self.sheffield)
 
-    def test_get_lock_suggestions_returns_all_other_users_suggestions(self):
+    def test_get_queryset_returns_all_other_users_suggestions(self):
         """
         Test that when only another user has created a lock suggestions for that
         elections ballots, all ballots are returned
@@ -99,12 +99,12 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.other_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.other_user)
 
-        result = self.view.get_lock_suggestions()
+        result = self.view.get_queryset()
         self.assertEqual(result.count(), 2)
         self.assertIn(self.ecclesall, result)
         self.assertIn(self.fulwood, result)
 
-    def test_get_lock_suggestions_returns_one_other_users_suggestion(self):
+    def test_get_queryset_returns_one_other_users_suggestion(self):
         """
         Test that when both logged in user and another user has created a lock
         suggestions for that ballots, only ballots with lock suggestion by
@@ -113,12 +113,12 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.logged_in_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.other_user)
 
-        result = self.view.get_lock_suggestions()
+        result = self.view.get_queryset()
         self.assertEqual(result.count(), 1)
         self.assertNotIn(self.ecclesall, result)
         self.assertIn(self.fulwood, result)
 
-    def test_get_lock_suggestions_returns_empty_qs(self):
+    def test_get_queryset_returns_empty_qs(self):
         """
         Test that when all lock suggestions are related to logged in user that
         an empty Ballot QuerySet is returned
@@ -126,11 +126,11 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.logged_in_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.logged_in_user)
 
-        result = self.view.get_lock_suggestions()
+        result = self.view.get_queryset()
         self.assertEqual(result.count(), 0)
         self.assertFalse(result.exists())
 
-    def test_get_lock_suggestions_excludes_locked_ballots(self):
+    def test_get_queryset_excludes_locked_ballots(self):
         """
         It should not be possible now for a user to create a lock
         suggestion fora locked ballot via the website. But this is a
@@ -140,7 +140,7 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.other_user)
         self.ecclesall.candidates_locked = True
         self.ecclesall.save()
-        queryset = self.view.get_lock_suggestions()
+        queryset = self.view.get_queryset()
         self.assertEqual(queryset.count(), 0)
 
 

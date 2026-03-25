@@ -23,7 +23,13 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import urlize
-from django.views.generic import CreateView, ListView, TemplateView, View
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    View,
+)
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
@@ -340,39 +346,10 @@ class SuggestLockView(LoginRequiredMixin, CreateView):
         return self.object.ballot.get_absolute_url()
 
 
-class SuggestLockReviewListView(
-    GroupRequiredMixin, LoginRequiredMixin, TemplateView
-):
-    """
-    This is the view which lists all post lock suggestions that need review
-
-    Most people will get to this by clicking on the red highlighted 'Post lock
-    suggestions' counter in the header.
-    """
-
-    template_name = "moderation_queue/suggestedpostlock_review.html"
+class BaseLockSuggestionMixin:
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
 
-    def get_random_election(self):
-        """
-        Get a random Election which has ballots with lock suggestions not
-        belonging to the user.
-        """
-        # using annotate and order_by('?') produces strange results
-        # see https://code.djangoproject.com/ticket/26390
-        # so first do the annotation and filtering
-        num_lock_suggestions = Count(
-            "ballot",
-            filter=Q(ballot__suggestedpostlock__isnull=False)
-            & ~Q(ballot__suggestedpostlock__user=self.request.user),
-        )
-        elections = Election.objects.annotate(
-            num_lock_suggestions=num_lock_suggestions
-        ).filter(num_lock_suggestions__gte=1)
-        # then use that QS to get the QS to randomise and return an object
-        return Election.objects.filter(pk__in=elections).order_by("?").first()
-
-    def get_lock_suggestions(self):
+    def get_queryset(self):
         """
         Return a QuerySet of Ballot objects with lock suggestions unrelated to
         the user in the request.
@@ -401,13 +378,54 @@ class SuggestLockReviewListView(
             )
         )
 
+
+class SuggestLockReviewListView(
+    BaseLockSuggestionMixin,
+    GroupRequiredMixin,
+    LoginRequiredMixin,
+    TemplateView,
+):
+    """
+    This is the view which lists all post lock suggestions that need review
+
+    Most people will get to this by clicking on the red highlighted 'Post lock
+    suggestions' counter in the header.
+    """
+
+    template_name = "moderation_queue/suggestedpostlock_review.html"
+
+    def get_random_election(self):
+        """
+        Get a random Election which has ballots with lock suggestions not
+        belonging to the user.
+        """
+        # using annotate and order_by('?') produces strange results
+        # see https://code.djangoproject.com/ticket/26390
+        # so first do the annotation and filtering
+        num_lock_suggestions = Count(
+            "ballot",
+            filter=Q(ballot__suggestedpostlock__isnull=False)
+            & ~Q(ballot__suggestedpostlock__user=self.request.user),
+        )
+        elections = Election.objects.annotate(
+            num_lock_suggestions=num_lock_suggestions
+        ).filter(num_lock_suggestions__gte=1)
+        # then use that QS to get the QS to randomise and return an object
+        return Election.objects.filter(pk__in=elections).order_by("?").first()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ballots = self.get_lock_suggestions()
+        ballots = self.get_queryset()
         election = self.get_random_election()
         context["total_ballots"] = ballots.count()
         context["ballots"] = ballots.filter(election=election)[:10]
         return context
+
+
+class SuggestLockReviewDetailView(BaseLockSuggestionMixin, DetailView):
+    slug_url_kwarg = "ballot_paper_id"
+    slug_field = "ballot_paper_id"
+    template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
 
 class SOPNReviewRequiredView(ListView):
