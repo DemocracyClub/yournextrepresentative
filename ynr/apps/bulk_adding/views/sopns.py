@@ -339,8 +339,12 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
         }
 
     def post(self, request, *args, **kwargs):
-        # TODO: Do we need to validate anything here?
-        return self.form_valid(self.get_context_data(**kwargs))
+        context = self.get_context_data(**kwargs)
+        ballot = context["ballot"]
+        rawpeople = getattr(ballot, "rawpeople", None)
+        if not rawpeople or not rawpeople.reconciled_data:
+            return HttpResponseRedirect(ballot.get_bulk_add_reconcile_url())
+        return self.form_valid(context)
 
     def form_valid(self, context):
         ballot = context["ballot"]
