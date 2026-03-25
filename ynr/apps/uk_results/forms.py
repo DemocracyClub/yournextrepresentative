@@ -75,11 +75,10 @@ class ResultSetForm(forms.ModelForm):
                 }
             except CandidateResult.DoesNotExist:
                 initial = {}
-
             fields[name] = forms.CharField(
                 label=membership.name_and_party,
                 initial=initial.get("num_ballots"),
-                required=True,
+                required=self.ballot.can_enter_votes_cast,
                 widget=DCIntegerInput,
             )
             fields[f"tied_vote_{name}"] = forms.BooleanField(
@@ -116,15 +115,15 @@ class ResultSetForm(forms.ModelForm):
         Validates that there not more coin toss winners than seats up
         """
         cleaned_data = super().clean()
+        if self.ballot.can_enter_votes_cast:
+            for field_name, value in cleaned_data.items():
+                if field_name.startswith("memberships_"):
+                    cleaned_data[field_name] = int(value.replace(",", ""))
 
-        for field_name, value in cleaned_data.items():
-            if field_name.startswith("memberships_"):
-                cleaned_data[field_name] = int(value.replace(",", ""))
-
-        if len(self._tied_vote_winners) > self.ballot.winner_count:
-            raise forms.ValidationError(
-                "Can't have more coin toss winners than seats up!"
-            )
+            if len(self._tied_vote_winners) > self.ballot.winner_count:
+                raise forms.ValidationError(
+                    "Can't have more coin toss winners than seats up!"
+                )
 
         return cleaned_data
 
@@ -137,34 +136,37 @@ class ResultSetForm(forms.ModelForm):
             )
             instance.ip_address = get_client_ip(request)
             instance.save()
-            winners = self.get_winners()
-            if winners:
-                # we have winners so initially mark all candidates not elected
-                # before we record result and mark the winners as elected below
-                self.ballot.membership_set.update(elected=False)
-            else:
-                #  otherwise we cant be sure who was elected
-                self.ballot.membership_set.update(elected=None)
+            if self.ballot.can_enter_votes_cast:
+                winners = self.get_winners()
+                if winners:
+                    # we have winners so initially mark all candidates not elected
+                    # before we record result and mark the winners as elected below
+                    self.ballot.membership_set.update(elected=False)
+                else:
+                    #  otherwise we cant be sure who was elected
+                    self.ballot.membership_set.update(elected=None)
 
-            recorder = RecordBallotResultsHelper(self.ballot, instance.user)
-            for membership, field_name in self.memberships:
-                tied_vote_winner = self.cleaned_data[f"tied_vote_{field_name}"]
-                num_votes = self.cleaned_data[field_name]
-                rank = self.get_candidate_rank(num_votes)
-                winner = field_name in winners
+                recorder = RecordBallotResultsHelper(self.ballot, instance.user)
+                for membership, field_name in self.memberships:
+                    tied_vote_winner = self.cleaned_data[
+                        f"tied_vote_{field_name}"
+                    ]
+                    num_votes = self.cleaned_data[field_name]
+                    rank = self.get_candidate_rank(num_votes)
+                    winner = field_name in winners
 
-                instance.candidate_results.update_or_create(
-                    membership=membership,
-                    defaults={
-                        "num_ballots": num_votes,
-                        "tied_vote_winner": tied_vote_winner,
-                        "rank": rank,
-                    },
-                )
-                if winner:
-                    recorder.mark_person_as_elected(
-                        membership.person, source=instance.source
+                    instance.candidate_results.update_or_create(
+                        membership=membership,
+                        defaults={
+                            "num_ballots": num_votes,
+                            "tied_vote_winner": tied_vote_winner,
+                            "rank": rank,
+                        },
                     )
+                    if winner:
+                        recorder.mark_person_as_elected(
+                            membership.person, source=instance.source
+                        )
 
             instance.record_version()
 
