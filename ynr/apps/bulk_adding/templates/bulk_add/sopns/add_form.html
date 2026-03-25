@@ -25,18 +25,14 @@
                     <li>Find the part of the document about {{ post.label }}</li>
                     <li>Either
                         <ol type="a">
-                            <li>Add new candidates in the form below,</li>
-                            <li>Or check that any list below is correct.</li>
+                            <li>Add all the candidates in the form below,</li>
                         </ol>
                     </li>
-                    <li>Press review.
-                        <ol type="a">
-                            <li>If you have added candidates, this will check for duplicates. Press ‘Add new person’ if
-                                you’re happy that we don’t already have that person.
-                            </li>
-                        </ol>
-                    </li>
-                    <li>If you think this is the complete list, check the box.</li>
+                    <li>Press next</li>
+                    <li>Match candidate to existing people in our database</li>
+                    <li>Press next</li>
+                    <li>Double check everything</li>
+                    <li>Press confirm</li>
                     <li>Bask in the glow of making democracy better for everyone.</li>
                     <li>Return to the home page to do another one!</li>
                 </ol>
@@ -74,7 +70,6 @@
             <template id="empty_quick_add_form">
                 {% include 'bulk_add/sopns/quick_add_form.html' with data=formset.empty_form counter="__prefix_display__"%}
             </template>
-            <button type=submit>Review</button>
             <a href="{{ ballot_sopn.get_absolute_url }}" target="sopn_view" class="button">Nomination paper (SoPN)</a>
             {% csrf_token %}
             {{ formset.management_form }}

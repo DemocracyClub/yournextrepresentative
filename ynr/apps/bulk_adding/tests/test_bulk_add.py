@@ -32,7 +32,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "This post doesn't have a nomination paper"
         )
 
-        self.assertNotContains(response, "Review")
+        self.assertNotContains(response, "Next")
 
     def testFormIfSopn(self):
         BallotSOPN.objects.create(
@@ -50,7 +50,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             response, "This post doesn't have a nomination paper"
         )
 
-        self.assertContains(response, "Review")
+        self.assertContains(response, "Next")
 
     def test_with_raw_people_regression_test(self):
         """

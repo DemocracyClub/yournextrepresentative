@@ -9,9 +9,6 @@
             <th colspan="2" {% if form.has_error %}class="form-error-summary"{% endif %}>
                 Person <span class="person_number">{{ counter }}</span>
             </th>
-            <th>
-                Actions
-            </th>
         </tr>
         </thead>
         <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
