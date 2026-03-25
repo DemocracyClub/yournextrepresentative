@@ -244,9 +244,11 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
         ballot = context["ballot"]
         rawpeople: RawPeople = getattr(ballot, "rawpeople", None)
         if not rawpeople:
-            # TODO what do we do if we've submitted the reconcile form and not
-            # got a rawperson any more?
-            raise NotImplementedError("No rawpeople model to work with")
+            # We end up in this situation when someone else has bulk added
+            # and suggested locking. There's not much we can do here
+            # so we can redirect to the ballot page where the user
+            # will at least get a message about the state of the ballot
+            return HttpResponseRedirect(ballot.get_absolute_url())
 
         # Save this form to the reconciled_data field of the rawpeople object
         reconciled_data = []
