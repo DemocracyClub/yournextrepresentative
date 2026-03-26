@@ -40,9 +40,11 @@ class TestBallotUrlMethods(TestCase):
         url = self.ballot.get_bulk_add_url()
         assert url == f"/bulk_adding/sopn/{self.ballot.ballot_paper_id}/"
 
-    def test_get_bulk_add_review_url(self):
-        url = self.ballot.get_bulk_add_review_url()
-        assert url == f"/bulk_adding/sopn/{self.ballot.ballot_paper_id}/review/"
+    def test_get_bulk_add_reconcile_url(self):
+        url = self.ballot.get_bulk_add_reconcile_url()
+        assert (
+            url == f"/bulk_adding/sopn/{self.ballot.ballot_paper_id}/reconcile/"
+        )
 
     def test_get_sopn_view(self):
         url = self.ballot.get_sopn_url()

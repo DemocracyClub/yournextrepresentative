@@ -1,64 +1,3 @@
-.bulk-add__known-people {
-
-    table tr:nth-of-type(2n), table tr {
-        background-color: transparent;
-    }
-
-    tbody + tbody::before {
-        height:auto;
-    }
-
-    table tbody:nth-of-type(2n) {
-        background-color: #F9F9F9;
-    }
-
-    .name, tbody td:first-child {
-        width:30%;
-    }
-    .actions {
-        .button {
-            margin:0
-        }
-    }
-    ul {
-        font-size: 0.875rem;
-        line-height: 1rem; 
-    }
-
-    .other-names {
-        margin: 0;
-
-        li {
-            list-style: none;
-            margin: 0;
-        }
-
-        li,p {
-            font-size: 0.8em;
-        }
-
-        .highlight {
-            background-color: gold;
-            padding: 0 0.4em;
-        }
-    }
-
-    .js-bulk-known-person-not-standing {
-        display: none;
-    }
-}
-
-.js {
-    .bulk-add__known-people {
-        .js-bulk-known-person-not-standing {
-            display: inline;
-        }
-    }
-    .js-row {
-        border-bottom: 1px solid black;
-    }
-}
-
 .sopn_adding_table {
     td {
         vertical-align: top;
@@ -75,7 +14,7 @@
     td {
         vertical-align: top;
     }
-    tr.selected_action {
+    tr:has(input:checked) {
         background-color: #fdf2d5;
     }
 }

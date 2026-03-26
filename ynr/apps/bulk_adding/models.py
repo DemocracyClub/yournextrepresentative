@@ -49,6 +49,7 @@ class RawPeople(TimeStampedModel):
     source_type = models.CharField(
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
     )
+    reconciled_data = JSONField(default=list)
 
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source)

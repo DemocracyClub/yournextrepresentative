@@ -4,6 +4,7 @@ import unicodedata
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import connection
 from django.db.models import Count, F, OuterRef, Subquery
+from django.db.models.functions import Coalesce
 from people.managers import PersonQuerySet
 from people.models import Person
 from popolo.models import Membership
@@ -74,8 +75,14 @@ def search_person_by_name(name: str, synonym: bool = False) -> PersonQuerySet:
     # Build the query
     membership_subquery = Subquery(
         Membership.objects.filter(person=OuterRef("id"))
+        .annotate(
+            populated_party_name=Coalesce(
+                F("party_name"),
+                F("party__name"),
+            )
+        )
         .order_by("-pk")
-        .values("party_name")[:1]
+        .values("populated_party_name")[:1]
     )
     return (
         Person.objects.annotate(membership_count=Count("memberships"))

@@ -3,7 +3,7 @@
 {% block content %}
 <h2>{{ election_obj.name }}: {{ party }} candidates</h2>
 
-<form method="POST" id="bulk-add-review">
+<form method="POST" id="bulk-add-reconcile">
 {% csrf_token %}
 
 {% for formset in formsets %}
@@ -31,7 +31,7 @@
           <tbody>
             {% for choice in form.select_person %}
 
-              <tr {% if choice.data.value == '_new' %}class="selected_action"{% endif %}>
+              <tr>
                 <td class="multiple-choice" style="margin-left:1em">
                   {{ choice.tag }}
                     <label>{{ choice.choice_label }}</label>
@@ -46,7 +46,7 @@
                 </td>
                 <td>
                   {% for candidacy in choice.data.previous_candidacies %}
-                    <li>{{ candidacy }}</li>
+                    <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
                   {% endfor %}
                 </td>
               </tr>
@@ -65,14 +65,5 @@
 
   <button type=submit>Next</button>
 </form>
-
-  <script>
-  $('.sopn_adding_suggestions_table tr').click(function() {
-    var row = $(this);
-    $("tr").removeClass("selected_action");
-    row.addClass("selected_action");
-    row.find('td input[type=radio]').prop('checked', true);
-  });
-  </script>
 
 {% endblock content %}

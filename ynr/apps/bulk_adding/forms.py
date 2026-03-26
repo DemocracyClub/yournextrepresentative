@@ -1,12 +1,18 @@
 from bulk_adding.fields import (
     PersonIdentifierFieldSet,
-    PersonSuggestionModelChoiceField,
+    PersonSuggestionField,
     PersonSuggestionRadioSelect,
 )
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import CharField, IntegerField, Prefetch, Value
-from django.utils.safestring import SafeText
+from django.db.models import (
+    CharField,
+    Exists,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Value,
+)
 from parties.forms import (
     PartyIdentifierField,
     PopulatePartiesMixin,
@@ -77,6 +83,31 @@ class BulkAddFormSet(BaseBulkAddFormSet):
             self.get_previous_party_affiliations_choices()
         )
 
+    def total_form_count(self) -> int:
+        """
+        Base the additional fields on the seats contested multiplied
+        by a sensible default.
+
+        This is to prevent adding loads of additional fields if not needed.
+        """
+
+        form_counts = []
+
+        seats_contested = self.ballot.winner_count
+        # 3.5 is the average number of candidates per seat, historically, but
+        # let's round that up to 4. Then multiply by the seats contested for
+        # this ballot
+        form_counts.append(int(seats_contested * 4))
+
+        if self.is_bound:
+            form_counts.append(super().total_form_count())
+
+        if hasattr(self.ballot, "raw_people"):
+            form_counts.append(len(self.ballot.rawpeople.textract_data))
+
+        form_counts.append(self.ballot.membership_count)
+        return max(form_counts) + 1
+
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs["party_choices"] = self.parties
@@ -109,71 +140,126 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         return parties.values_list("ec_id", "name")
 
 
-class BaseBulkAddReviewFormSet(BaseBulkAddFormSet):
+class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
     def suggested_people(
         self,
         person_name,
         new_party,
         new_election,
         new_name,
+        ballot=None,
     ):
-        if person_name:
-            org_id = (
-                new_election.organization.pk
-                if new_election and new_election.organization
-                else None
-            )
-            annotations = {
-                "new_party": Value(new_party, output_field=CharField()),
-                "new_organisation": Value(
-                    org_id,
-                    output_field=IntegerField(),
-                ),
-                "new_name": Value(new_name, output_field=CharField()),
-            }
+        """
+        At a basic level, use the person search system to find existing people
+        who might be the same as the values submitted via bulk adding.
 
-            qs = (
-                search_person_by_name(person_name, synonym=True)
-                .prefetch_related(
-                    Prefetch(
-                        "memberships",
-                        queryset=Membership.objects.select_related(
-                            "party",
-                            "ballot",
-                            "ballot__election",
-                            "ballot__election__organization",
-                        ),
-                    ),
-                )
-                .annotate(**annotations)
+        Normal weightings apply, with two additional weights:
+
+        1. If there's a match for a person that's already listed on the ballot
+           then that gets pulled to the top of the list.
+        2. People with the same party as the new person are weighted higher.
+           Party matching like this isn't going to be right in all cases
+           (people switch party) but it will be more useful than name alone
+           more of the time
+
+        These two additional weights combined should catch the 'this candidate
+        is already listed on the ballot' case, or at least it's a simpler
+        UX than simply asking users to de-duplicate existing people on the
+        previous form.
+        """
+        if not person_name:
+            return None
+
+        org_id = (
+            new_election.organization.pk
+            if new_election and new_election.organization
+            else None
+        )
+        annotations = {
+            "new_party": Value(new_party, output_field=CharField()),
+            "new_organisation": Value(
+                org_id,
+                output_field=IntegerField(),
+            ),
+            "new_name": Value(new_name, output_field=CharField()),
+        }
+
+        qs = (
+            search_person_by_name(person_name, synonym=True)
+            .prefetch_related(
+                Prefetch(
+                    "memberships",
+                    queryset=Membership.objects.select_related(
+                        "party",
+                        "ballot",
+                        "ballot__election",
+                        "ballot__election__organization",
+                        "ballot__post",
+                        "ballot__sopn",
+                    ).order_by("-ballot__election__election_date"),
+                ),
+                "other_names",
             )
-            return qs[:5]
-        return None
+            .annotate(**annotations)
+        )
+
+        order_by = []
+
+        if ballot:
+            # Annotate the QS with on_ballot: True if the matched person
+            # exists on a given ballot.
+            on_ballot = Exists(
+                Membership.objects.filter(person=OuterRef("pk"), ballot=ballot)
+            )
+            qs = qs.annotate(on_ballot=on_ballot)
+            order_by.append("-on_ballot")
+
+        if new_party:
+            # Annotate the QS with same_party: True if the person has a
+            # candidacy with the same party as the given one
+            same_party = Exists(
+                Membership.objects.filter(
+                    person=OuterRef("pk"), party__ec_id=new_party
+                )
+            )
+            qs = qs.annotate(same_party=same_party)
+            order_by.append("-same_party")
+
+        if order_by:
+            qs = qs.order_by(*order_by, "-rank", "membership_count")
+
+        return qs[:5]
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
         if not form["name"].value():
             return
+        # On POST, form.initial is empty; fall back to the submitted POST data
+        party_id = form.initial.get("party_id") or form.data.get(
+            form.add_prefix("party_id")
+        )
         suggestions = self.suggested_people(
             form["name"].value(),
-            new_party=form.initial.get("party"),
+            new_party=party_id,
             new_election=self.ballot.election,
             new_name=form.initial.get("name"),
+            ballot=self.ballot,
         )
-        form.fields["select_person"] = PersonSuggestionModelChoiceField(
-            queryset=suggestions,
+
+        form.fields["select_person"] = PersonSuggestionField(
+            suggestions=suggestions,
+            new_name=form.initial.get("name"),
             widget=PersonSuggestionRadioSelect,
         )
 
-        form.fields["select_person"].choices = [
-            (
-                "_new",
-                SafeText(f'Add a new profile "{form.initial.get("name")}"'),
-            )
-        ] + list(form.fields["select_person"].choices)
-        form.fields["select_person"].initial = "_new"
+        # If reconciled data exists, use that as the initial values
+        previous_selection = form.initial.get("select_person")
+        if previous_selection and form.fields["select_person"].valid_value(
+            str(previous_selection)
+        ):
+            form.fields["select_person"].initial = str(previous_selection)
 
-        form.fields["party"] = forms.CharField(
+        form.fields["party_id"] = forms.CharField(
             widget=forms.HiddenInput(
                 attrs={"readonly": "readonly", "class": "party-select"}
             ),
@@ -308,7 +394,7 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
         return super().clean()
 
 
-class ReviewSinglePersonNameOnlyForm(forms.Form):
+class ReconcileSinglePersonNameOnlyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         kwargs.pop("party_choices", None)
         super().__init__(*args, **kwargs)
@@ -318,7 +404,7 @@ class ReviewSinglePersonNameOnlyForm(forms.Form):
     )
 
 
-class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
+class ReviewBulkAddByPartyForm(ReconcileSinglePersonNameOnlyForm):
     biography = StrippedCharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
@@ -336,11 +422,11 @@ class ReviewBulkAddByPartyForm(ReviewSinglePersonNameOnlyForm):
     )
 
 
-class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
+class ReconcileSinglePersonForm(ReconcileSinglePersonNameOnlyForm):
     source = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={"readonly": "readonly"})
     )
-    party_description = forms.ModelChoiceField(
+    description_id = forms.ModelChoiceField(
         required=False,
         widget=forms.HiddenInput(),
         queryset=PartyDescription.objects.all(),
@@ -354,16 +440,18 @@ class ReviewSinglePersonForm(ReviewSinglePersonNameOnlyForm):
 
 
 BulkAddFormSetFactory = forms.formset_factory(
-    QuickAddSinglePersonForm, extra=15, formset=BulkAddFormSet, can_delete=True
+    QuickAddSinglePersonForm, extra=0, formset=BulkAddFormSet, can_delete=True
 )
 
 
-BulkAddReviewNameOnlyFormSet = forms.formset_factory(
-    ReviewSinglePersonNameOnlyForm, extra=0, formset=BaseBulkAddReviewFormSet
+BulkAddReconcileNameOnlyFormSet = forms.formset_factory(
+    ReconcileSinglePersonNameOnlyForm,
+    extra=0,
+    formset=BaseBulkAddReconcileFormSet,
 )
 
-BulkAddReviewFormSet = forms.formset_factory(
-    ReviewSinglePersonForm, extra=0, formset=BaseBulkAddReviewFormSet
+BulkAddReconcileFormSet = forms.formset_factory(
+    ReconcileSinglePersonForm, extra=0, formset=BaseBulkAddReconcileFormSet
 )
 
 
@@ -403,7 +491,7 @@ BulkAddByPartyFormset = forms.formset_factory(
 )
 
 
-class PartyBulkAddReviewFormSet(BaseBulkAddReviewFormSet):
+class PartyBulkAddReviewFormSet(BaseBulkAddReconcileFormSet):
     def __init__(self, *args, **kwargs):
         self.ballot = kwargs["ballot"]
         kwargs["prefix"] = self.ballot.pk

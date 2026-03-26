@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+
+{% block content %}
+    <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
+    <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
+
+    <h2>Review ballot</h2>
+    <p>When finished, this is what the final ballot will look like. If something looks wrong, please <a
+            href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a></p>
+    <table>
+        <caption>{{ ballot.rawpeople.reconciled_data|length }}
+            candidate{{ ballot.rawpeople.reconciled_data|pluralize }} | {{ ballot.winner_count }} seat contested
+        </caption>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for person in ballot.rawpeople.reconciled_data %}
+            <tr>
+                <td>
+
+                    {% if person.select_person != "_new" %}
+                        {# Use url here as we don't have the person object #}
+                        <a href="{% url 'person-view' person_id=person.select_person ignored_slug=person.name|slugify %}">
+                            {{ person.name }}
+                        </a>
+                    {% else %}
+                        {{ person.name }} (Add new person)
+                    {% endif %}
+                </td>
+                <td>
+                    {% if person.party in contested_warnings.over %}
+                        ⚠️
+                    {% endif %}
+                    {{ person.party_description_text }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if contested_warnings.over or contested_warnings.under %}
+        <h3>Warnings</h3>
+        {% if contested_warnings.over %}
+            <p><strong>⚠️ Over contested</strong>: The following parties have more candidate than seats contested. This
+                might indicate an error.</p>
+            <ul>
+                {% for party_id, data in contested_warnings.over.items %}
+                    <li>{{ data.party.name }}: {{ data.count }} candidates</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if contested_warnings.under %}
+            <p><strong>Under contested</strong>: The following parties have fewer candidate than seats contested. It's
+                worth double-checking but it's not uncommon.</p>
+            <ul>
+                {% for party_id, data in contested_warnings.under.items %}
+                    <li>{{ data.party.name }}: {{ data.count }} candidate{{ data.count|pluralize }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
+
+    {% if candidacies_to_remove %}
+        <h2>Existing {{ candidacies_to_remove|pluralize:"person,people" }} to be removed</h2>
+        <p>The following {{ candidacies_to_remove|pluralize:"person,people" }} were listed on the ballot before the SOPN
+            was published
+            and will be removed. If they were not listed on the SOPN then it's likely they were added in error or the
+            {{ candidacies_to_remove|pluralize:"person,people" }} failed to be nominated.</p>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for candidacy in candidacies_to_remove %}
+                <tr>
+                    <td><a href="{{ candidacy.person.get_absolute_url }}">{{ candidacy.person.name }}</a></td>
+                    <td>{{ candidacy.party.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+
+    <form id="bulk-add-confirm-form" method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm</button>
+    </form>
+{% endblock %}

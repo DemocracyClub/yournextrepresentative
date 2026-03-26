@@ -1,0 +1,21 @@
+{% with org=candidacy.ballot.election.organization party=candidacy.party %}
+  {% if org.pk == person.new_organisation %}
+    <strong>
+      {{ candidacy.ballot.election.election_date.year }}
+      {{ org.name }}
+    </strong>:
+  {% else %}
+    {{ candidacy.ballot.election.election_date.year }}
+    {{ org.name }}:
+  {% endif %}
+  {{ candidacy.ballot.post.short_label }}
+  <br>
+  {% if party.ec_id == person.new_party %}
+    <strong>{{ party.name }}</strong>
+  {% else %}
+    {{ party.name }}
+  {% endif %}
+  {% if candidacy.ballot.has_sopn %}
+    (<a href="{{ candidacy.ballot.sopn.get_absolute_url }}">SOPN</a>)
+  {% endif %}
+{% endwith %}

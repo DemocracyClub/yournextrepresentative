@@ -126,4 +126,33 @@ $(function(){
             $form.remove();
         });
     });
+
+    const form = document.getElementById("bulk_add_form");
+    const rowsContainer = document.getElementById("formset-rows");
+    const template = document.getElementById("empty_quick_add_form");
+    const totalFormsInput = form.querySelector('[name$="-TOTAL_FORMS"]');
+
+
+    if (!form || !rowsContainer || !template || !totalFormsInput) {
+        return;
+    }
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "button small success right";
+    addButton.textContent = "Add another person form";
+
+    addButton.addEventListener("click", function () {
+        const formIndex = parseInt(totalFormsInput.value, 10);
+        let templateHtml = template.innerHTML.replace(/__prefix__/g, formIndex);
+        templateHtml = templateHtml.replace(/__prefix_display__/g, formIndex + 1);
+        rowsContainer.insertAdjacentHTML("beforeend", templateHtml);
+        totalFormsInput.value = formIndex + 1;
+        populate_party_selects();
+        populate_prev_party_selects();
+    });
+
+    rowsContainer.insertAdjacentElement("afterend", addButton);
+
+
 });
