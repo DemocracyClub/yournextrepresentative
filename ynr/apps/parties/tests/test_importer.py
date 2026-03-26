@@ -30,7 +30,7 @@ FAKE_PARTY_DICT = {
     "RegisterName": "Great Britain",
     "RegistrationStatusName": "Registered",
     "FieldingCandidatesInEngland": True,
-    "FieldingCandidatesInScotland": True,
+    "FieldingCandidatesInScotland": False,
     "FieldingCandidatesInWales": True,
     "ApprovedDate": "/Date(1134345600000)/",
     "PartyDescriptions": [
@@ -47,6 +47,10 @@ FAKE_PARTY_DICT = {
             "Id": 382,
         }
     ],
+}
+FAKE_PARTY_DICT_WITH_SCOTLAND = {
+    **FAKE_PARTY_DICT,
+    "FieldingCandidatesInScotland": True,
 }
 
 FAKE_RESULTS_DICT = {"Total": 1, "Result": [FAKE_PARTY_DICT for i in range(50)]}
@@ -161,6 +165,17 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         party["FieldingCandidatesInScotland"] = True
         self.assertEqual(party.nation_list, ["ENG", "SCO", "WAL"])
 
+    def test_make_scottish_variant(self):
+        party = ECParty(FAKE_PARTY_DICT)
+        cases = [
+            ("Scottish National Party", None),
+            ("The Wombles Alliance", "The Scottish Wombles Alliance"),
+            ("Wombles Alliance", "Scottish Wombles Alliance"),
+        ]
+        for name, expected in cases:
+            with self.subTest(name=name):
+                self.assertEqual(party.make_scottish_variant(name), expected)
+
     def test_clean_description_text(self):
         # a little hard to see, but this tests character conversion from en-dash (U2013) to minus (U002D)
         self.assertEqual(
@@ -193,6 +208,27 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         self.assertEqual(
             party_model.default_emblem.description, "Box containing the word"
         )
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_save_scotland(self, FakeEmblemPath):
+        FakeEmblemPath.return_value = make_tmp_file_from_source(
+            EXAMPLE_IMAGE_FILENAME
+        )
+        self.assertEqual(Party.objects.count(), 2)
+        self.assertEqual(PartyDescription.objects.count(), 2)
+        self.assertFalse(PartyEmblem.objects.all().exists())
+        party = ECParty(FAKE_PARTY_DICT_WITH_SCOTLAND)
+        party.save()
+        self.assertEqual(Party.objects.count(), 3)
+        party_model = Party.objects.get(ec_id="PP01")
+        self.assertEqual(party_model.descriptions.count(), 3)
+        descriptions = party_model.descriptions.values_list(
+            "description", flat=True
+        )
+        self.assertIn("Make Good Use of Bad Rubbish", descriptions)
+        self.assertIn("Gwneud Defnydd Da o Sbwriel Gwael", descriptions)
+        # Party importer should auto-create Scottish variant
+        self.assertIn("Scottish Wombles Alliance", descriptions)
 
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_emblem_marked_inactive(self, FakeEmblemPath):
