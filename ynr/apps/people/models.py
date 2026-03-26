@@ -417,6 +417,10 @@ class Person(TimeStampedModel, models.Model):
             # Always create a version if this is a merge
             should_insert = True
 
+        if new_version["information_source"] == "profile-photo":
+            # Always create a version if this is a photo upload
+            should_insert = True
+
         if should_insert:
             versions.insert(0, new_version)
 
