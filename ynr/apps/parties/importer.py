@@ -228,6 +228,13 @@ class ECParty(dict):
             if field not in self:
                 raise ValueError("{} missing".format(field))
 
+    def make_scottish_variant(self, name):
+        if "Scottish" in name:
+            return None
+        if name.startswith("The "):
+            return f"The Scottish {name[4:]}"
+        return f"Scottish {name}"
+
     def save(self):
         self.model, self.created = Party.objects.update_or_create(
             ec_id=self.ec_id,
@@ -269,6 +276,23 @@ class ECParty(dict):
                         ),
                     }
                 )
+        unique_descriptions = {d["text"] for d in descriptions}
+
+        if self.model.nations and "SCO" in self.model.nations:
+            scottish_variant = self.make_scottish_variant(self.model.name)
+            if scottish_variant:
+                scottish_variant = clean_description_text(scottish_variant)
+                # Only add the Scottish variant to descriptions[]
+                # if we have not already seen it as a registered description
+                # We're better off using the registered decription if possible
+                # because we will have a DateDescriptionFirstApproved
+                if scottish_variant not in unique_descriptions:
+                    descriptions.append(
+                        {
+                            "text": scottish_variant,
+                            "date": None,
+                        }
+                    )
 
         for description in descriptions:
             PartyDescription.objects.update_or_create(
