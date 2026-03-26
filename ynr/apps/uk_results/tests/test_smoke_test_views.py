@@ -60,6 +60,34 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, WebTest, TestCase):
         winner = Membership.objects.get(person_id=15)
         self.assertTrue(winner.elected)
 
+    def test_form_view_creates_result_non_fptp(self):
+        self.ballot.voting_system = "STV"
+        self.ballot.save()
+        url = reverse(
+            "ballot_paper_results_form",
+            kwargs={
+                "ballot_paper_id": "local.maidstone.DIW:E05005004.2016-05-05"
+            },
+        )
+        resp = self.app.get(url, user=self.user_who_can_record_results)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, r'pattern="[0-9\s\.]*"')
+        form = resp.forms["ballot_paper_results_form"]
+        # Check that membership fields are not present for non-FPTP
+        self.assertNotIn("memberships_13", form.fields)
+        self.assertNotIn("memberships_14", form.fields)
+        self.assertNotIn("memberships_15", form.fields)
+
+        form["source"] = "Example ResultSet for testing"
+        form["num_turnout_reported"] = 1000
+        form["total_electorate"] = 2000
+        form.submit()
+        self.assertEqual(CandidateResult.objects.count(), 0)
+        self.assertEqual(ResultSet.objects.count(), 1)
+        self.assertEqual(ResultSet.objects.first().num_turnout_reported, 1000)
+        self.assertEqual(ResultSet.objects.first().total_electorate, 2000)
+        self.assertEqual(ResultSet.objects.first().turnout_percentage, 50.0)
+
     def test_partial_result_not_saved(self):
         url = reverse(
             "ballot_paper_results_form",

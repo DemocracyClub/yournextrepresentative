@@ -91,6 +91,12 @@
                       Edit the results
                     </a>
                   </p>
+                {% else %}
+                  <p>
+                    <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
+                      Edit Result Info
+                    </a>
+                  </p>
                 {% endif %}
             </div>
           {% elif ballot.uncontested %}

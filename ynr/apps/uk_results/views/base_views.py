@@ -36,7 +36,6 @@ class BallotPaperResultsUpdateView(LoginRequiredMixin, FormView):
         self.ballot = get_object_or_404(
             Ballot,
             cancelled=False,
-            voting_system=Ballot.VOTING_SYSTEM_FPTP,
             ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
 

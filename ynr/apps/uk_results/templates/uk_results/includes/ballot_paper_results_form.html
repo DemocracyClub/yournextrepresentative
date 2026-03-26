@@ -3,22 +3,24 @@
   {{ form.errors }}
   {% csrf_token %}
   <table>
-    <tbody>
-      {% for membership_field, tied_vote_field in form.membership_fields %}
-      <tr>
-        <td>{{ membership_field.label }}</td>
-        <td>
-          {{ membership_field.errors }}
-          {{ membership_field }}
-            <div id="coin-toss" style="display: none">
-              {{ tied_vote_field }} 
-              {{ tied_vote_field.label_tag }}
-              <h3 id="coin-emoji" class="flip">🪙</h3> 
-            </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
+    {% if ballot.can_enter_votes_cast %}
+      <tbody>
+        {% for membership_field, tied_vote_field in form.membership_fields %}
+        <tr>
+          <td>{{ membership_field.label }}</td>
+          <td>
+            {{ membership_field.errors }}
+            {{ membership_field }}
+              <div id="coin-toss" style="display: none">
+                {{ tied_vote_field }}
+                {{ tied_vote_field.label_tag }}
+                <h3 id="coin-emoji" class="flip">🪙</h3>
+              </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    {% endif %}
     <tbody>
       <tr>
         <td>{{ results_form.num_spoilt_ballots.label }}</td>
