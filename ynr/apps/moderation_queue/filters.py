@@ -89,6 +89,9 @@ class QueuedImageFilter(django_filters.FilterSet):
         widget=DSLinkWidget,
     )
 
+    def exclude_username(self, queryset, name, value):
+        return queryset.exclude(user__username__iexact=value)
+
     ordering = django_filters.OrderingFilter(
         choices=[
             ("-election_date", "Election date candidate is standing in"),
@@ -136,6 +139,16 @@ class QueuedImageFilter(django_filters.FilterSet):
             ),
         )
         super().__init__(*args, **kwargs)
+        if self.request.user.is_staff:
+            f = django_filters.CharFilter(
+                label="Exclude username",
+                method="exclude_username",
+            )
+            # required so the `exclude_username` method string can be
+            # resolved on this FilterSet
+            f.parent = self
+            self.filters["username_exclude_filter"] = f
+            self.form.fields["username_exclude_filter"] = f.field
 
     @property
     def shortcuts(self):
