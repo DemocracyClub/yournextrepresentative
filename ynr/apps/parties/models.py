@@ -179,6 +179,20 @@ class PartyDescription(TimeStampedModel):
     date_description_approved = models.DateField(null=True)
     active = models.BooleanField(default=True)
 
+    """
+    There are some special rules about variants of the party name that can
+    be used on ballot papers in Scotland and Wales (short version:
+    You can use the words Scottish/Welsh/Cymreig etc alongside the party
+    name, even if that isn't a registered description).
+
+    This means sometimes it is useful for us to create a
+    PartyDescription object which is not actually a description registered
+    with the Electoral Commission.
+
+    These are "pseudo descriptions".
+    """
+    pseudo_description = models.BooleanField(default=False)
+
     class Meta:
         ordering = ["-active"]
 
