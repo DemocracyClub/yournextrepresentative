@@ -263,6 +263,7 @@ class ECParty(dict):
                     "date": self.parse_date(
                         description["DateDescriptionFirstApproved"]
                     ),
+                    "pseudo_description": False,
                 }
             )
             if description.get("Translation"):
@@ -274,6 +275,7 @@ class ECParty(dict):
                         "date": self.parse_date(
                             description["DateDescriptionFirstApproved"]
                         ),
+                        "pseudo_description": False,
                     }
                 )
         unique_descriptions = {d["text"] for d in descriptions}
@@ -290,7 +292,8 @@ class ECParty(dict):
                     descriptions.append(
                         {
                             "text": scottish_variant,
-                            "date": None,
+                            "date": self.date_deregistered,
+                            "pseudo_description": True,
                         }
                     )
 
@@ -298,7 +301,10 @@ class ECParty(dict):
             PartyDescription.objects.update_or_create(
                 description=description["text"],
                 party=self.model,
-                defaults={"date_description_approved": description["date"]},
+                defaults={
+                    "date_description_approved": description["date"],
+                    "pseudo_description": description["pseudo_description"],
+                },
             )
 
         for emblem_dict in self.get("PartyEmblems", []):
