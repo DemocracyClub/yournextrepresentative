@@ -11,7 +11,7 @@ from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -23,6 +23,7 @@ from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.notifications import send_ballot_lock_notification
 from moderation_queue.forms import SuggestedPostLockForm
+from moderation_queue.models import SuggestedPostLock
 from official_documents.models import BallotSOPN, ElectionSOPN
 from parties.models import Party
 from people.forms.forms import NewPersonForm
@@ -42,13 +43,17 @@ class ElectionView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballots"] = (
+        ballots = (
             Ballot.objects.filter(election=self.object)
             .order_by("post__label")
             .select_related("post")
             .select_related("election")
             .select_related("resultset")
-            .prefetch_related("suggestedpostlock_set")
+            .annotate(
+                _has_lock_suggestion=Exists(
+                    SuggestedPostLock.objects.filter(ballot=OuterRef("pk"))
+                )
+            )
             .prefetch_related(
                 Prefetch(
                     "membership_set",
@@ -84,6 +89,18 @@ class ElectionView(DetailView):
             )
         )
 
+        if self.request.user.is_authenticated:
+            ballots = ballots.annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
+            )
+
+        context["ballots"] = ballots
+
         return context
 
 
@@ -98,9 +115,13 @@ class ElectionListView(TemplateView):
             Ballot.objects.current_or_future()
             .select_related("election", "post")
             .select_related("resultset")
-            .prefetch_related("suggestedpostlock_set")
             .prefetch_related("sopn")
             .annotate(memberships_count=Count("membership", distinct=True))
+            .annotate(
+                _has_lock_suggestion=Exists(
+                    SuggestedPostLock.objects.filter(ballot=OuterRef("pk"))
+                )
+            )
             .annotate(
                 elected_count=Count(
                     "membership",
@@ -112,6 +133,16 @@ class ElectionListView(TemplateView):
                 "election__election_date", "election__name", "post__label"
             )
         )
+        if self.request.user.is_authenticated:
+            qs = qs.annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
+            )
+
         f = CurrentOrFutureBallotFilter(self.request.GET, qs)
 
         context["filter"] = f

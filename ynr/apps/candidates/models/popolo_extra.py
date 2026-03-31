@@ -563,7 +563,10 @@ class Ballot(EEModifiedMixin, models.Model):
 
     @property
     def has_lock_suggestion(self):
-        return self.suggestedpostlock_set.exists()
+        try:
+            return self._has_lock_suggestion
+        except AttributeError:
+            return self.suggestedpostlock_set.exists()
 
     @property
     def hashed_memberships(self):
