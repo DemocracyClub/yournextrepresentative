@@ -14,9 +14,9 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Party</th>
                 <th>Existing other names</th>
                 <th>Actions</th>
-                <th>Party</th>
             </tr>
             </thead>
             <tbody>
@@ -25,12 +25,26 @@
                     <td>
                         <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
                     </td>
+                <td>
+                        {% if membership.party_description_text %}
+                            {{ membership.party_description_text }}
+                        {% else %}
+                            {{ membership.party }}
+                        {% endif %}
+
+                        {% if membership.previous_party_affiliations.exists %}
+                            <small>Previous party affiliations:</small>
+                            {% for previous_party in membership.previous_party_affiliations.all %}
+                                <small>{{ previous_party.name }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
                     <td>
                         <ul>
                             {% if membership.person.other_names.exists %}
-                                {% for name in membership.person.other_names.all %}
-                                    <li>{{ name.name }}</li>
-                                {% endfor %}
+                            {% for name in membership.person.other_names.all %}
+                            <li>{{ name.name }}</li>
+                            {% endfor %}
                             {% endif %}
                         </ul>
                     </td>
@@ -50,20 +64,7 @@
                             ❌ Not standing
                         </a>
                     </td>
-                    <td>
-                        {% if membership.party_description_text %}
-                            {{ membership.party_description_text }}
-                        {% else %}
-                            {{ membership.party }}
-                        {% endif %}
 
-                        {% if membership.previous_party_affiliations.exists %}
-                            <small>Previous party affiliations:</small>
-                            {% for previous_party in membership.previous_party_affiliations.all %}
-                                <small>{{ previous_party.name }}</small>
-                            {% endfor %}
-                        {% endif %}
-                    </td>
 
                 </tr>
             {% endfor %}
