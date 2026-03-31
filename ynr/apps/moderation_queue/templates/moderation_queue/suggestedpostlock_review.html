@@ -39,11 +39,7 @@
 
     {% for ballot in ballots_by_source.list %}
 
-          <h4>
-              <a href="{{ ballot.get_absolute_url }}">
-                {{ ballot.post.short_label }}
-              </a>
-          </h4>
+          <h4>{{ ballot.post.short_label }}</h4>
 
           {% if ballot.membership_set.exists %}
             <table style="width:100%">
@@ -52,7 +48,7 @@
               <th>SOPN</th>
             </thead>
             <tbody>
-              {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
+              {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot show_detail_url=1 %}
             </tbody>
             </table>
 

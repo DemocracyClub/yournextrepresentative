@@ -4,8 +4,10 @@
 <tr>
     <td>
         <p>
-            Ballot: <a href="{{ ballot.get_absolute_url }}">
-            {{ ballot.post.short_label }}</a>
+            <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
+            {% if show_detail_url %}
+                | <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}">Lock page</a>
+            {% endif %}
         </p>
 
 
