@@ -24,12 +24,15 @@
                 <tr>
                     <td>
                         <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                        {% if membership.sopn_last_name %}
+                            <br>({{ membership.sopn_last_name }}, {{ membership.sopn_first_names }})
+                        {% endif %}
                     </td>
-                <td>
+                    <td>
                         {% if membership.party_description_text %}
                             {{ membership.party_description_text }}
                         {% else %}
-                            {{ membership.party }}
+                            {{ membership.party_name }}
                         {% endif %}
 
                         {% if membership.previous_party_affiliations.exists %}
@@ -40,13 +43,13 @@
                         {% endif %}
                     </td>
                     <td>
-                        <ul>
-                            {% if membership.person.other_names.exists %}
-                            {% for name in membership.person.other_names.all %}
-                            <li>{{ name.name }}</li>
-                            {% endfor %}
-                            {% endif %}
-                        </ul>
+                        {% if membership.person.other_names.exists %}
+                            <ul>
+                                {% for name in membership.person.other_names.all %}
+                                    <li>{{ name.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
@@ -56,6 +59,10 @@
                         <a href="{% url 'person-other-name-create' membership.person.pk %}"
                            class="radius secondary label known-person-alternate-name" title="Add alternative names">
                             🏷️ Add name
+                        </a><br>
+                        <a href="{% url 'person-sopn-names-edit' person_id=membership.person_id membership_id=membership.id %}"
+                           class="radius secondary label" title="Edit SOPN names" target="_blank">
+                            🏷️ Edit SOPN name
                         </a><br>
 
                         <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
@@ -80,7 +87,8 @@
                  style="max-width:100% !important; width: 100% !important;"></div>
             {% if ballot.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
                 <script type="module">
-                    import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
+                    import {SOPN_VIEWER} from '/upload_document/sopn_viewer.js';
+
                     SOPN_VIEWER.ShowSOPNInline(
                         '{{ ballot.sopn.uploaded_file.url }}',
                         '{{ ballot.ballot_paper_id }}'
