@@ -1,14 +1,25 @@
 {% load static %}
 {% load pipeline %}
+{% load humanize %}
 <tr>
     <td>
-        <a href="{{ ballot.get_absolute_url }}">
-            {{ ballot.post.short_label }}
-        </a>
-        suggested by<br>
-        {% for spl in ballot.suggestedpostlock_set.all %}
-            {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
-        {% endfor %}
+        <p>
+            Ballot: <a href="{{ ballot.get_absolute_url }}">
+            {{ ballot.post.short_label }}</a>
+        </p>
+
+
+        <p>
+            {{ ballot.suggestedpostlock_set.count|apnumber|title }}
+            {{ ballot.suggestedpostlock_set.count|pluralize:"person,people" }}
+            has checked this ballot, saying:</p>
+        <ul>
+            {% for suggestedpostlock in ballot.suggestedpostlock_set.all %}
+                <li>{{ suggestedpostlock.user }}: <q>{{ suggestedpostlock.justification }}</q></li>
+            {% endfor %}
+        </ul>
+
+
         <table style="width:100%">
             <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
             <thead>
