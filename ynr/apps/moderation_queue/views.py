@@ -23,9 +23,8 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import urlize
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import (
-    CreateView,
-    DetailView,
     ListView,
     TemplateView,
     View,
@@ -306,44 +305,76 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return self.form_invalid(self.form)
 
 
-class SuggestLockView(LoginRequiredMixin, CreateView):
-    """This handles creating a SuggestedPostLock from a form submission"""
+class SuggestLockView(LoginRequiredMixin, TemplateView):
+    """Review lock suggestions for a single ballot."""
 
-    model = SuggestedPostLock
-    form_class = SuggestedPostLockForm
+    template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
-    def form_invalid(self, form):
-        messages.add_message(
-            request=self.request,
-            level=messages.ERROR,
-            message="Cannot add a lock suggestion because candidates are already locked",
-            extra_tags="ballot-changed",
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ballot"] = get_object_or_404(
+            Ballot.objects.select_related("election", "post").prefetch_related(
+                "officialdocument_set",
+                models.Prefetch(
+                    "suggestedpostlock_set",
+                    SuggestedPostLock.objects.select_related("user"),
+                ),
+                models.Prefetch(
+                    "membership_set",
+                    Membership.objects.select_related(
+                        "person", "party"
+                    ).prefetch_related(
+                        "person__other_names", "previous_party_affiliations"
+                    ),
+                ),
+            ),
+            ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
-        return HttpResponseRedirect(form.instance.ballot.get_absolute_url())
+        return context
 
-    def form_valid(self, form):
-        user = self.request.user
-        form.instance.user = user
 
+class SuggestLockCreateView(LoginRequiredMixin, View):
+    """Accept a POST to create a SuggestedPostLock, then redirect."""
+
+    def post(self, request, ballot_paper_id):
+        ballot = get_object_or_404(Ballot, ballot_paper_id=ballot_paper_id)
+        form = SuggestedPostLockForm(request.POST, ballot=ballot)
+
+        if not form.is_valid():
+            messages.add_message(
+                request=request,
+                level=messages.ERROR,
+                message="Cannot add a lock suggestion because candidates are already locked",
+                extra_tags="ballot-changed",
+            )
+            return HttpResponseRedirect(ballot.get_absolute_url())
+
+        justification = form.cleaned_data["justification"]
+        SuggestedPostLock.objects.create(
+            ballot=ballot,
+            user=request.user,
+            justification=justification,
+        )
         LoggedAction.objects.create(
-            user=self.request.user,
+            user=request.user,
             action_type=ActionType.SUGGEST_BALLOT_LOCK,
-            ballot=form.cleaned_data["ballot"],
-            ip_address=get_client_ip(self.request),
-            source=form.cleaned_data["justification"],
+            ballot=ballot,
+            ip_address=get_client_ip(request),
+            source=justification,
         )
-
         messages.add_message(
-            self.request,
+            request,
             messages.SUCCESS,
             message="Thanks for suggesting we lock an area!",
             extra_tags="ballot-changed",
         )
 
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.ballot.get_absolute_url()
+        next_url = request.GET.get("next")
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}
+        ):
+            return HttpResponseRedirect(next_url)
+        return HttpResponseRedirect(ballot.get_absolute_url())
 
 
 class BaseLockSuggestionMixin:
@@ -420,12 +451,6 @@ class SuggestLockReviewListView(
         context["total_ballots"] = ballots.count()
         context["ballots"] = ballots.filter(election=election)[:10]
         return context
-
-
-class SuggestLockReviewDetailView(BaseLockSuggestionMixin, DetailView):
-    slug_url_kwarg = "ballot_paper_id"
-    slug_field = "ballot_paper_id"
-    template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
 
 class SOPNReviewRequiredView(ListView):

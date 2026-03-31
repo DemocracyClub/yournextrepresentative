@@ -9,7 +9,7 @@ from .views import (
     PhotoUploadSuccess,
     RemoveSuggestedLocksView,
     SOPNReviewRequiredView,
-    SuggestLockReviewDetailView,
+    SuggestLockCreateView,
     SuggestLockReviewListView,
     SuggestLockView,
     upload_photo,
@@ -50,14 +50,14 @@ urlpatterns = [
         name="suggestions-to-lock-review-list",
     ),
     path(
-        "suggest-lock/ballot/<str:ballot_paper_id>/",
-        ensure_csrf_cookie(SuggestLockReviewDetailView.as_view()),
-        name="suggestions-to-lock-review-single-ballot",
-    ),
-    re_path(
-        r"^suggest-lock/(?P<election_id>.*)/$",
+        "suggest-lock/<str:ballot_paper_id>/",
         SuggestLockView.as_view(),
-        name="constituency-suggest-lock",
+        name="suggest-lock",
+    ),
+    path(
+        "suggest-lock/create/<str:ballot_paper_id>/",
+        SuggestLockCreateView.as_view(),
+        name="suggest-lock-create",
     ),
     re_path(
         r"^sopn-review-required/$",

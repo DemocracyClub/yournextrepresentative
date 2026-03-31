@@ -183,9 +183,7 @@ class BallotPaperView(TemplateView):
                 user=self.request.user
             ).exists()
         else:
-            context["suggest_lock_form"] = SuggestedPostLockForm(
-                initial={"ballot": ballot}
-            )
+            context["suggest_lock_form"] = SuggestedPostLockForm(ballot=ballot)
 
         # Check if adding and removing Memberships for this ballot
         # is allowed.

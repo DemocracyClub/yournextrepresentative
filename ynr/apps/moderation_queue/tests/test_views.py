@@ -147,15 +147,15 @@ class TestSuggestLockReviewListView(TestCase):
 class TestSuggestLockView(TestUserMixin, UK2015ExamplesMixin, TestCase):
     def test_lock_suggestion_created(self):
         url = reverse(
-            "constituency-suggest-lock",
-            kwargs={"election_id": self.local_ballot.ballot_paper_id},
+            "suggest-lock-create",
+            kwargs={"ballot_paper_id": self.local_ballot.ballot_paper_id},
         )
         self.client.force_login(user=self.user)
         self.assertFalse(self.local_ballot.candidates_locked)
         self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
         response = self.client.post(
             url,
-            data={"ballot": self.local_ballot.pk, "justification": "Testing"},
+            data={"justification": "Testing"},
             follow=True,
         )
         self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 1)
@@ -168,14 +168,14 @@ class TestSuggestLockView(TestUserMixin, UK2015ExamplesMixin, TestCase):
         self.local_ballot.candidates_locked = True
         self.local_ballot.save()
         url = reverse(
-            "constituency-suggest-lock",
-            kwargs={"election_id": self.local_ballot.ballot_paper_id},
+            "suggest-lock-create",
+            kwargs={"ballot_paper_id": self.local_ballot.ballot_paper_id},
         )
         self.client.force_login(user=self.user)
         self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
         response = self.client.post(
             url,
-            data={"ballot": self.local_ballot.pk, "justification": "Testing"},
+            data={"justification": "Testing"},
             follow=True,
         )
         self.assertEqual(self.local_ballot.suggestedpostlock_set.count(), 0)
