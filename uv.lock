@@ -1980,11 +1980,11 @@ wheels = [
 
 [[package]]
 name = "uk-election-timetables"
-version = "4.2.3"
+version = "4.4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/35/9b/107225e58c5089f42d1ba9c7cf55e1193bbfe572a830cdb984d96de6b362/uk_election_timetables-4.2.3.tar.gz", hash = "sha256:3ac5e5fb22a8ff5c61c48614a542055c6e573376e7aa848f17aceab504d79d05", size = 18313, upload-time = "2025-02-19T11:37:36.204Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/24/7e/fcb9e159c3e38b38305e0d51d2737d5680a993e6180c5e1e09477efb6a25/uk_election_timetables-4.4.0.tar.gz", hash = "sha256:1462ee03dad497550078d1a3728ee88aa5c92a226fef0c9d1fddc525663658df", size = 18746, upload-time = "2026-03-31T07:12:06.506Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6f/15/89293000dc17c2ec037f6f8be1cbe2f0d646ce11b059a6f341c261914a21/uk_election_timetables-4.2.3-py3-none-any.whl", hash = "sha256:73d0c7becba126a92398d8e4aa17be35dcea15ecf4bcfd07e432939b58c85e6b", size = 20475, upload-time = "2025-02-19T11:37:34.217Z" },
+    { url = "https://files.pythonhosted.org/packages/79/6c/6351387e8e88e97d6e2bfb65bc895018199f0e59277d4e03927dd18c3ed7/uk_election_timetables-4.4.0-py3-none-any.whl", hash = "sha256:f14a84d6f95cac34835018d8292b3e664bad8cd98323795477976bf89d744973", size = 21076, upload-time = "2026-03-31T07:12:05.316Z" },
 ]
 
 [[package]]
@@ -2287,7 +2287,7 @@ requires-dist = [
     { name = "sorl-thumbnail", specifier = "==12.11.0" },
     { name = "sorl-thumbnail-serializer-field", git = "https://github.com/dessibelle/sorl-thumbnail-serializer-field.git?tag=0.2" },
     { name = "uk-election-ids", specifier = "==0.9.1" },
-    { name = "uk-election-timetables", specifier = "==4.2.3" },
+    { name = "uk-election-timetables", specifier = "==4.4.0" },
     { name = "whitenoise", specifier = "==6.5.0" },
 ]
 
