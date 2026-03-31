@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 from django.http import (
     Http404,
     HttpResponseBadRequest,
@@ -313,8 +313,8 @@ class SuggestLockView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ballot"] = get_object_or_404(
-            Ballot.objects.select_related("election", "post").prefetch_related(
-                "officialdocument_set",
+            Ballot.objects.select_related("election", "post")
+            .prefetch_related(
                 models.Prefetch(
                     "suggestedpostlock_set",
                     SuggestedPostLock.objects.select_related("user"),
@@ -327,6 +327,14 @@ class SuggestLockView(LoginRequiredMixin, TemplateView):
                         "person__other_names", "previous_party_affiliations"
                     ),
                 ),
+            )
+            .annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
             ),
             ballot_paper_id=self.kwargs["ballot_paper_id"],
         )

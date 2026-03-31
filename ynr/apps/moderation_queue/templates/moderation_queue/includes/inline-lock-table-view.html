@@ -10,7 +10,6 @@
             {% endif %}
         </p>
 
-
         <p>
             {{ ballot.suggestedpostlock_set.count|apnumber|title }}
             {{ ballot.suggestedpostlock_set.count|pluralize:"person,people" }}
@@ -90,7 +89,12 @@
             {% endfor %}
             </tbody>
         </table>
+    {% if ballot.current_user_suggested_lock %}
+    	Locking disabled because you suggested locking this page
+    {% else %}
         {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
+    {% endif %}
+
     </td>
     <td>
         {% if ballot.sopn and ballot.sopn.uploaded_file %}
