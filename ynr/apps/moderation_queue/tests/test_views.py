@@ -66,8 +66,8 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.logged_in_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.logged_in_user)
 
-        result = self.view.get_random_election()
-        self.assertIsNone(result)
+        result = self.view.get_context_data()["ballots"]
+        self.assertFalse(result.exists())
 
     def test_get_random_election_one_other_users_lock_suggestion(self):
         """
@@ -77,7 +77,7 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.logged_in_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.other_user)
 
-        result = self.view.get_random_election()
+        result = self.view.get_context_data()["ballots"][0].election
         self.assertEqual(result, self.sheffield)
 
     def test_get_random_election_only_other_users_lock_suggestions(self):
@@ -88,7 +88,7 @@ class TestSuggestLockReviewListView(TestCase):
         create_lock_suggestion(ballot=self.ecclesall, user=self.other_user)
         create_lock_suggestion(ballot=self.fulwood, user=self.other_user)
 
-        result = self.view.get_random_election()
+        result = self.view.get_context_data()["ballots"][0].election
         self.assertEqual(result, self.sheffield)
 
     def test_get_queryset_returns_all_other_users_suggestions(self):

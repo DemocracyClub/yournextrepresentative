@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.http import (
     Http404,
     HttpResponseBadRequest,
@@ -391,9 +391,8 @@ class BaseLockSuggestionMixin:
                 Q(suggestedpostlock__isnull=True)
                 | Q(suggestedpostlock__user=self.request.user)
             )
-            .select_related("election", "post")
+            .select_related("election", "post", "sopn")
             .prefetch_related(
-                "officialdocument_set",
                 models.Prefetch(
                     "suggestedpostlock_set",
                     SuggestedPostLock.objects.select_related("user"),
@@ -425,30 +424,14 @@ class SuggestLockReviewListView(
 
     template_name = "moderation_queue/suggestedpostlock_review.html"
 
-    def get_random_election(self):
-        """
-        Get a random Election which has ballots with lock suggestions not
-        belonging to the user.
-        """
-        # using annotate and order_by('?') produces strange results
-        # see https://code.djangoproject.com/ticket/26390
-        # so first do the annotation and filtering
-        num_lock_suggestions = Count(
-            "ballot",
-            filter=Q(ballot__suggestedpostlock__isnull=False)
-            & ~Q(ballot__suggestedpostlock__user=self.request.user),
-        )
-        elections = Election.objects.annotate(
-            num_lock_suggestions=num_lock_suggestions
-        ).filter(num_lock_suggestions__gte=1)
-        # then use that QS to get the QS to randomise and return an object
-        return Election.objects.filter(pk__in=elections).order_by("?").first()
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ballots = self.get_queryset()
-        election = self.get_random_election()
         context["total_ballots"] = ballots.count()
+        election_ids = ballots.values_list("election_id", flat=True).distinct()
+        election = (
+            Election.objects.filter(pk__in=election_ids).order_by("?").first()
+        )
         context["ballots"] = ballots.filter(election=election)[:10]
         return context
 
