@@ -67,7 +67,13 @@
                 {% endif %}
 
                 {% if not ballot.cancelled %}
+                    <p>{{ ballot.suggested_lock_html }}</p>
+                    {% if not ballot.current_user_suggested_lock %}
+                        <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
+                    {% endif %}
+
                     <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
+
                     {% if ballot.election.in_past %}
                         {% if ballot.resultset %}
                             <a class="button tiny" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit

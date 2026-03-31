@@ -83,7 +83,6 @@
           <th>Candidates known</th>
           <th>Status</th>
           {% if group.list.0.polls_closed %} 
-            <th>Results Complete?</th>
             <th>Winner(s) marked</th>
             <th>Has Electorate</th>
             <th>Has Turnout Reported</th>
@@ -112,34 +111,40 @@
           </td>
           <td>{{ ballot.memberships_count }}</td>
           <td>
-            {% if ballot.cancelled %}
-              {{ ballot.cancelled }}
-            {% elif ballot.candidates_locked %}
-              {{ ballot.locked_status_html }}
-            {% else %}
-              {% if ballot.has_sopn and not ballot.suggestedpostlock_set.exists %}
-                SOPN Uploaded <br><a href="{{ ballot.get_bulk_add_url }}" class="button tiny">Add candidates</a>
-              {% else %}
-                {% if ballot.suggestedpostlock_set.exists %}
-                {{ ballot.suggested_lock_html }}
+            {# Status column #}
+            {% if ballot.polls_closed %}
+                {% if ballot.resultset.resultset_complete %}
+                    <i style="text-align:center;">✓</i> Has results
+                {% else %}
+                  {% if user_can_record_results %}
+                    <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
+                  {% else %}
+                    Incomplete
+                  {% endif %}
                 {% endif %}
-                Unlocked
-              {% endif %}
+            {% else %}
+                {% if ballot.cancelled %}
+                  {{ ballot.cancelled }}
+                {% elif ballot.candidates_locked %}
+                  {{ ballot.locked_status_html }}
+                {% else %}
+                  {% if ballot.has_sopn and not ballot.has_lock_suggestion %}
+                    SOPN Uploaded <br><a href="{{ ballot.get_bulk_add_url }}" class="button tiny">Add candidates</a>
+                  {% else %}
+                    {% if ballot.has_lock_suggestion %}
+                        {{ ballot.suggested_lock_html }}
+                        {% if not ballot.current_user_suggested_lock %}
+                            <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
+                        {% endif %}
+                    {% else %}
+                      Unlocked
+                  {% endif %}
+                  {% endif %}
 
+                {% endif %}
             {% endif %}
           </td>
-          {% if ballot.polls_closed %} 
-            <td>
-            {% if ballot.resultset.resultset_complete %}
-              <i style="text-align:center;">✓</i>
-            {% else %}
-              {% if user_can_record_results %}
-                <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
-              {% else %}
-                Incomplete
-              {% endif %}
-            {% endif %}
-            </td>
+          {% if ballot.polls_closed %}
             <td>
               {% if ballot.elected_count >= ballot.winner_count %}
                 <i style="text-align:center;">✓</i>
