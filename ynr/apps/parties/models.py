@@ -100,6 +100,7 @@ class Party(TimeStampedModel):
 
     class Meta:
         ordering = ("name",)
+        verbose_name_plural = "parties"
 
     @property
     def default_emblem(self):
