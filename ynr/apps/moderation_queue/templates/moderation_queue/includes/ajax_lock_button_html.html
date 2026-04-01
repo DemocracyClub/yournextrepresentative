@@ -1,14 +1,17 @@
-<div class="lock_button_container left">
-  <form method=post action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
-    {% if ballot.candidates_locked %}
-      <input type="hidden" name="lock" value="unlock">
-    {% else %}
-      <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
-      <input type="hidden" name="lock" value="lock">
-    {% endif %}
-  </form>
-</div>
+<div class="row">
+    <div class="lock_button_container left">
+        <form method=post action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
+            {% if ballot.candidates_locked %}
+                <input type="hidden" name="lock" value="unlock">
+            {% else %}
+                <input type="hidden" name="hashed_memberships" value="{{ ballot.hashed_memberships }}">
+                <input type="hidden" name="lock" value="lock">
+            {% endif %}
+        </form>
+    </div>
 
-<div class="remove-lock-suggestion_container right">
-  <form method=post action="{% url 'remove-lock-suggestion-ajax' %}" data-ballot="{{ ballot.ballot_paper_id }}"></form>
+    <div class="remove-lock-suggestion_container right">
+        <form method=post action="{% url 'remove-lock-suggestion-ajax' %}"
+              data-ballot="{{ ballot.ballot_paper_id }}"></form>
+    </div>
 </div>

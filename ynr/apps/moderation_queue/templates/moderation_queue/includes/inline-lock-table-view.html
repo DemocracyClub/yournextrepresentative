@@ -1,22 +1,32 @@
 {% load static %}
 {% load pipeline %}
+{% load humanize %}
 <tr>
     <td>
-        <a href="{{ ballot.get_absolute_url }}">
-            {{ ballot.post.short_label }}
-        </a>
-        suggested by<br>
-        {% for spl in ballot.suggestedpostlock_set.all %}
-            {{ spl.user }}{% if spl.justification %}: {{ spl.justification }}{% endif %}<br>
-        {% endfor %}
+        {% if show_detail_url %}
+        <p>
+            <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
+        </p>
+        {% endif %}
+        <p>
+            {{ ballot.suggestedpostlock_set.count|apnumber|title }}
+            {{ ballot.suggestedpostlock_set.count|pluralize:"person,people" }}
+            has checked this ballot, saying:</p>
+        <ul>
+            {% for suggestedpostlock in ballot.suggestedpostlock_set.all %}
+                <li>{{ suggestedpostlock.user }}: <q>{{ suggestedpostlock.justification }}</q></li>
+            {% endfor %}
+        </ul>
+
+
         <table style="width:100%">
             <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Party</th>
                 <th>Existing other names</th>
                 <th>Actions</th>
-                <th>Party</th>
             </tr>
             </thead>
             <tbody>
@@ -24,15 +34,32 @@
                 <tr>
                     <td>
                         <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                        {% if membership.sopn_last_name %}
+                            <br>({{ membership.sopn_last_name }}, {{ membership.sopn_first_names }})
+                        {% endif %}
                     </td>
                     <td>
-                        <ul>
-                            {% if membership.person.other_names.exists %}
+                        {% if membership.party_description_text %}
+                            {{ membership.party_description_text }}
+                        {% else %}
+                            {{ membership.party_name }}
+                        {% endif %}
+
+                        {% if membership.previous_party_affiliations.exists %}
+                            <small>Previous party affiliations:</small>
+                            {% for previous_party in membership.previous_party_affiliations.all %}
+                                <small>{{ previous_party.name }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if membership.person.other_names.exists %}
+                            <ul>
                                 {% for name in membership.person.other_names.all %}
                                     <li>{{ name.name }}</li>
                                 {% endfor %}
-                            {% endif %}
-                        </ul>
+                            </ul>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
@@ -43,6 +70,10 @@
                            class="radius secondary label known-person-alternate-name" title="Add alternative names">
                             🏷️ Add name
                         </a><br>
+                        <a href="{% url 'person-sopn-names-edit' person_id=membership.person_id membership_id=membership.id %}"
+                           class="radius secondary label" title="Edit SOPN names" target="_blank">
+                            🏷️ Edit SOPN name
+                        </a><br>
 
                         <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
                            href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}"
@@ -50,26 +81,21 @@
                             ❌ Not standing
                         </a>
                     </td>
-                    <td>
-                        {% if membership.party_description_text %}
-                            {{ membership.party_description_text }}
-                        {% else %}
-                            {{ membership.party }}
-                        {% endif %}
 
-                        {% if membership.previous_party_affiliations.exists %}
-                            <small>Previous party affiliations:</small>
-                            {% for previous_party in membership.previous_party_affiliations.all %}
-                                <small>{{ previous_party.name }}</small>
-                            {% endfor %}
-                        {% endif %}
-                    </td>
 
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+    {% if ballot.current_user_suggested_lock %}
+    	Locking disabled because you suggested locking this page
+    {% else %}
         {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
+        {% if show_detail_url %}
+            <p class="row"><a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}"># Link to this locking form</a></p>
+        {% endif %}
+    {% endif %}
+
     </td>
     <td>
         {% if ballot.sopn and ballot.sopn.uploaded_file %}
@@ -79,7 +105,8 @@
                  style="max-width:100% !important; width: 100% !important;"></div>
             {% if ballot.sopn.uploaded_file.url|slice:"-3:" == "pdf" %}
                 <script type="module">
-                    import { SOPN_VIEWER } from '/upload_document/sopn_viewer.js';
+                    import {SOPN_VIEWER} from '/upload_document/sopn_viewer.js';
+
                     SOPN_VIEWER.ShowSOPNInline(
                         '{{ ballot.sopn.uploaded_file.url }}',
                         '{{ ballot.ballot_paper_id }}'

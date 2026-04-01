@@ -60,7 +60,9 @@
                   <strong>{{ ballot.suggested_lock_html }}</strong> You suggested locking this ballot. Someone else needs to double-check and lock it.
                 </p>
               {% else %}
-                <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+
+                    <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+                    <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button small">Review lock suggestion</a>
               {% endif %}
 
             {% endif %}
@@ -220,21 +222,33 @@
           </a>
         {% endif %}
 
+        {# Locking #}
+        {% if candidates.exists and user_can_lock %}
+            <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
+                {% csrf_token %}
+                {% if ballot.candidates_locked %}
+                    <input type="submit" class="button small" value="Unlock">
+                {% endif %}
+            </form>
+        {% endif %}
+
         {% if ballot.has_sopn %}
         <p>
             {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
         </p>
         {% endif %}
 
-        {% include "elections/includes/_ballot_lock_form.html" %}
 
-        {% if user_can_record_results and has_any_winners %}
+
+
+        {% include "elections/includes/_ballot_suggest_locking.html" %}
+
+         {% if user_can_record_results and has_any_winners %}
           <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
             {% csrf_token %}
             <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
           </form>
         {% endif %}
-        {% include "elections/includes/_ballot_suggest_locking.html" %}
 
         {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
           <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>

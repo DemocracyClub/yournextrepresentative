@@ -11,7 +11,7 @@
     {% endif %}
   {% elif candidates.exists %}
     <button class="button small" aria-expanded="false" aria-controls="suggest_lock_form" data-toggle>Suggest locking</button>
-    <form class="source-confirmation" method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=ballot.election %}" hidden>
+    <form class="source-confirmation" method=post id="suggest_lock_form" action="{% url 'suggest-lock-create' ballot_paper_id=ballot.ballot_paper_id %}" hidden>
     {% csrf_token %}
     <p>
       If you think the candidates for this ballot is complete,
@@ -29,8 +29,6 @@
       the list is final.
     </p>
 
-
-    {{ suggest_lock_form.ballot }}
 
     {{ suggest_lock_form.justification.label_tag }}
     <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>

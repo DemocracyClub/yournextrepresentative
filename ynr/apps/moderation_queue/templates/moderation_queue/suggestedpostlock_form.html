@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<form method=post id="suggest_lock_form" action="{% url 'constituency-suggest-lock' election_id=election %}">
+<form method=post id="suggest_lock_form" action="{% url 'suggest-lock-create' ballot_paper_id=ballot.ballot_paper_id %}">
   {% csrf_token %}
   {{ form }}
   <button type="submit" class="button">Suggest locking</button>

@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models import Count, Q
+from django.db.models import Exists, OuterRef, Q
 from django.http import (
     Http404,
     HttpResponseBadRequest,
@@ -23,7 +23,12 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import urlize
-from django.views.generic import CreateView, ListView, TemplateView, View
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.generic import (
+    ListView,
+    TemplateView,
+    View,
+)
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
@@ -300,92 +305,16 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return self.form_invalid(self.form)
 
 
-class SuggestLockView(LoginRequiredMixin, CreateView):
-    """This handles creating a SuggestedPostLock from a form submission"""
+class SuggestLockView(LoginRequiredMixin, TemplateView):
+    """Review lock suggestions for a single ballot."""
 
-    model = SuggestedPostLock
-    form_class = SuggestedPostLockForm
+    template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
-    def form_invalid(self, form):
-        messages.add_message(
-            request=self.request,
-            level=messages.ERROR,
-            message="Cannot add a lock suggestion because candidates are already locked",
-            extra_tags="ballot-changed",
-        )
-        return HttpResponseRedirect(form.instance.ballot.get_absolute_url())
-
-    def form_valid(self, form):
-        user = self.request.user
-        form.instance.user = user
-
-        LoggedAction.objects.create(
-            user=self.request.user,
-            action_type=ActionType.SUGGEST_BALLOT_LOCK,
-            ballot=form.cleaned_data["ballot"],
-            ip_address=get_client_ip(self.request),
-            source=form.cleaned_data["justification"],
-        )
-
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            message="Thanks for suggesting we lock an area!",
-            extra_tags="ballot-changed",
-        )
-
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.ballot.get_absolute_url()
-
-
-class SuggestLockReviewListView(
-    GroupRequiredMixin, LoginRequiredMixin, TemplateView
-):
-    """
-    This is the view which lists all post lock suggestions that need review
-
-    Most people will get to this by clicking on the red highlighted 'Post lock
-    suggestions' counter in the header.
-    """
-
-    template_name = "moderation_queue/suggestedpostlock_review.html"
-    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
-
-    def get_random_election(self):
-        """
-        Get a random Election which has ballots with lock suggestions not
-        belonging to the user.
-        """
-        # using annotate and order_by('?') produces strange results
-        # see https://code.djangoproject.com/ticket/26390
-        # so first do the annotation and filtering
-        num_lock_suggestions = Count(
-            "ballot",
-            filter=Q(ballot__suggestedpostlock__isnull=False)
-            & ~Q(ballot__suggestedpostlock__user=self.request.user),
-        )
-        elections = Election.objects.annotate(
-            num_lock_suggestions=num_lock_suggestions
-        ).filter(num_lock_suggestions__gte=1)
-        # then use that QS to get the QS to randomise and return an object
-        return Election.objects.filter(pk__in=elections).order_by("?").first()
-
-    def get_lock_suggestions(self):
-        """
-        Return a QuerySet of Ballot objects with lock suggestions unrelated to
-        the user in the request.
-        """
-        return (
-            Ballot.objects.exclude(candidates_locked=True)
-            .exclude(
-                Q(suggestedpostlock__isnull=True)
-                | Q(suggestedpostlock__user=self.request.user)
-            )
-            .select_related("election", "post")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ballot"] = get_object_or_404(
+            Ballot.objects.select_related("election", "post")
             .prefetch_related(
-                "officialdocument_set",
                 models.Prefetch(
                     "suggestedpostlock_set",
                     SuggestedPostLock.objects.select_related("user"),
@@ -399,13 +328,126 @@ class SuggestLockReviewListView(
                     ),
                 ),
             )
+            .annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
+            ),
+            ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
+        return context
+
+
+class SuggestLockCreateView(LoginRequiredMixin, View):
+    """Accept a POST to create a SuggestedPostLock, then redirect."""
+
+    def post(self, request, ballot_paper_id):
+        ballot = get_object_or_404(Ballot, ballot_paper_id=ballot_paper_id)
+        form = SuggestedPostLockForm(request.POST, ballot=ballot)
+
+        if not form.is_valid():
+            messages.add_message(
+                request=request,
+                level=messages.ERROR,
+                message="Cannot add a lock suggestion because candidates are already locked",
+                extra_tags="ballot-changed",
+            )
+            return HttpResponseRedirect(ballot.get_absolute_url())
+
+        justification = form.cleaned_data["justification"]
+        SuggestedPostLock.objects.create(
+            ballot=ballot,
+            user=request.user,
+            justification=justification,
+        )
+        LoggedAction.objects.create(
+            user=request.user,
+            action_type=ActionType.SUGGEST_BALLOT_LOCK,
+            ballot=ballot,
+            ip_address=get_client_ip(request),
+            source=justification,
+        )
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            message="Thanks for suggesting we lock an area!",
+            extra_tags="ballot-changed",
+        )
+
+        next_url = request.GET.get("next")
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}
+        ):
+            return HttpResponseRedirect(next_url)
+        return HttpResponseRedirect(ballot.get_absolute_url())
+
+
+class BaseLockSuggestionMixin:
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
+
+    def get_queryset(self):
+        """
+        Return a QuerySet of Ballot objects with lock suggestions unrelated to
+        the user in the request.
+        """
+        return (
+            Ballot.objects.exclude(candidates_locked=True)
+            .exclude(
+                Q(suggestedpostlock__isnull=True)
+                | Q(suggestedpostlock__user=self.request.user)
+            )
+            .select_related("election", "post", "sopn")
+            .prefetch_related(
+                models.Prefetch(
+                    "suggestedpostlock_set",
+                    SuggestedPostLock.objects.select_related("user"),
+                ),
+                models.Prefetch(
+                    "membership_set",
+                    Membership.objects.select_related(
+                        "person", "party"
+                    ).prefetch_related(
+                        "person__other_names", "previous_party_affiliations"
+                    ),
+                ),
+            )
+            .annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
+            )
+        )
+
+
+class SuggestLockReviewListView(
+    BaseLockSuggestionMixin,
+    GroupRequiredMixin,
+    LoginRequiredMixin,
+    TemplateView,
+):
+    """
+    This is the view which lists all post lock suggestions that need review
+
+    Most people will get to this by clicking on the red highlighted 'Post lock
+    suggestions' counter in the header.
+    """
+
+    template_name = "moderation_queue/suggestedpostlock_review.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ballots = self.get_lock_suggestions()
-        election = self.get_random_election()
+        ballots = self.get_queryset()
         context["total_ballots"] = ballots.count()
+        election_ids = ballots.values_list("election_id", flat=True).distinct()
+        election = (
+            Election.objects.filter(pk__in=election_ids).order_by("?").first()
+        )
         context["ballots"] = ballots.filter(election=election)[:10]
         return context
 

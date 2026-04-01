@@ -28,22 +28,21 @@
   <p>Suggestions are grouped by nomination paper</p>
   <p>Showing {{ ballots.count }} of {{ total_ballots|intcomma }} ballots with suggested locks. Reload this page to get another random set.</p>
 
-  {% regroup ballots by officialdocument_set.first.source_url as ballots_by_doc_source %}
+  {% regroup ballots by sopn.election_sopn as ballots_by_election_sopn %}
 
-  {% for ballots_by_source in ballots_by_doc_source  %}
+  {% for ballots_by_source in ballots_by_election_sopn  %}
     <h3>{{ ballots_by_source.list.0.election.name }}</h3>
 
-    <p>
-      Source: {{ ballots_by_source.grouper|default_if_none:"No source"|urlize }}
-    </p>
+    {% if ballots_by_source.grouper %}
+        <p>
+            Source: <a href="{{ ballots_by_source.grouper.get_absolute_url }}">{{ ballots_by_source.grouper.friendly_name }}</a>
+        </p>
+    {% endif %}
+
 
     {% for ballot in ballots_by_source.list %}
 
-          <h4>
-              <a href="{{ ballot.get_absolute_url }}">
-                {{ ballot.post.short_label }}
-              </a>
-          </h4>
+          <h4>{{ ballot.post.short_label }}</h4>
 
           {% if ballot.membership_set.exists %}
             <table style="width:100%">
@@ -52,7 +51,7 @@
               <th>SOPN</th>
             </thead>
             <tbody>
-              {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
+              {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot show_detail_url=1 %}
             </tbody>
             </table>
 

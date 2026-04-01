@@ -18,7 +18,7 @@ from people.forms.forms import StrippedCharField
 from PIL import Image as PILImage
 from utils.mail import send_mail
 
-from .models import CopyrightOptions, QueuedImage, SuggestedPostLock
+from .models import CopyrightOptions, QueuedImage
 
 
 class UploadPersonPhotoImageForm(forms.ModelForm):
@@ -281,18 +281,19 @@ class PhotoReviewForm(forms.Form):
         )
 
 
-class SuggestedPostLockForm(forms.ModelForm):
-    class Meta:
-        model = SuggestedPostLock
-        fields = ["justification", "ballot"]
-        widgets = {
-            "ballot": forms.HiddenInput(),
-            "justification": forms.Textarea(attrs={"rows": 1, "columns": 72}),
-        }
+class SuggestedPostLockForm(forms.Form):
+    justification = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 1, "columns": 72}),
+        help_text="e.g I've reviewed the nomination paper for this ballot",
+        required=True,
+    )
+
+    def __init__(self, *args, ballot=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ballot = ballot
 
     def clean(self):
-        ballot = self.cleaned_data["ballot"]
-        if ballot.candidates_locked:
+        if self.ballot.candidates_locked:
             raise ValidationError(
                 "Cannot create a lock suggestion for a locked ballot"
             )

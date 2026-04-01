@@ -1,7 +1,7 @@
 from candidates.models.popolo_extra import Ballot
 from candidates.tests.test_models import BallotsWithResultsMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.http import QueryDict
 from django.test import RequestFactory, TestCase
 from django_webtest import WebTest
@@ -82,6 +82,7 @@ class TestResultsAnnotated(BallotsWithResultsMixin, TestCase):
     def setUp(self):
         self.rf = RequestFactory()
         self.request = self.rf.get("/elections/")
+        self.request.user = AnonymousUser()
         self.request.GET = QueryDict(
             "has_results=1&review_required=locked&is_cancelled=0"
         )
