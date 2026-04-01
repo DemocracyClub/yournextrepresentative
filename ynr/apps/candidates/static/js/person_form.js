@@ -172,7 +172,7 @@ var setup_single_party_select = function(i, partySelect) {
   partySelect.select2(select_options);
 };
 
-var populate_party_selects = function() {
+var populate_party_selects = window.populate_party_selects = function() {
   var allPartySelects = $(PARTY_WIDGET_SELECT_CLASS);
   allPartySelects.attr("disabled", false);
   $(PARTY_WIDGET_INPUT_CLASS).hide();
@@ -192,7 +192,7 @@ var setup_multiple_party_select = function(i, partySelect) {
   })
 } 
 
-var populate_prev_party_selects = function() {
+var populate_prev_party_selects = window.populate_prev_party_selects = function() {
   var allPrevPartySelects = $(PREVIOUS_PARTY_AFFILIATIONS_SELECT_CLASS);
   allPrevPartySelects.each(setup_multiple_party_select);
 };
