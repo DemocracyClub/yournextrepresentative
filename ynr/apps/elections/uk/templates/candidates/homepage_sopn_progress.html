@@ -19,6 +19,17 @@
   {% endif %}
 {% endif %}
 
+{% if SOPN_DATES %}
+<p>
+The SOPN publication date{{ SOPN_DATES|length|pluralize }} for the {{ sopn_tracker_election_name }} {{ SOPN_DATES|length|pluralize:"is,are" }}:
+</p>
+<ul style="list-style: none;">
+  {% for nation, date in SOPN_DATES %}
+    <li><strong>{{ nation }}</strong>: {{ date|date }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <h3><strong>{{ sopn_progress.posts_lock_suggested|intcomma }}</strong> areas have been entered</h3>
 <div class="radius progress success large-12" role="progressbar"
     aria-valuenow="{{ sopn_progress.posts_lock_suggested }}"
