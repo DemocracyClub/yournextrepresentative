@@ -5,9 +5,7 @@
     <td>
         <p>
             <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
-            {% if show_detail_url %}
-                | <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}">Lock page</a>
-            {% endif %}
+
         </p>
 
         <p>
@@ -93,6 +91,9 @@
     	Locking disabled because you suggested locking this page
     {% else %}
         {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
+        {% if show_detail_url %}
+            <p class="row"><a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}"># Link to this locking form</a></p>
+        {% endif %}
     {% endif %}
 
     </td>
