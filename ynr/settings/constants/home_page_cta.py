@@ -12,7 +12,7 @@ SOPN_TRACKER_INFO = {
     "election_date": "2026-05-07",
     "election_name": "2026 elections",
 }
-SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/1SJQdgVe6N4PRoI70XR6XC02MIzchlyB2S3WKRR_GoBw/edit?gid=0#gid=0"
+SOPN_SHEET_URL = "https://docs.google.com/spreadsheets/d/1ZpFy1dhmgLSpAhyLcSxsOnLzMH2znlyoS_lgFCjDkqg/edit?gid=0#gid=0"
 SOPN_DATES = [
     ("Scotland", date(year=2026, month=4, day=1)),
     ("England and Wales", date(year=2026, month=4, day=9)),
