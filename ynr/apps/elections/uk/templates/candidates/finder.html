@@ -40,6 +40,17 @@
 {% endblock %}
 
 {% block content %}
+    {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
+        <div class="finder__forms cta-{{ front_page_cta }}">
+            <div class="finder__forms__container">
+                {% sopn_import_progress %}
+                {% current_election_stats %}
+                {% results_progress %}
+            </div>
+        </div>
+    {% endif %}
+
+
   <div class="finder__forms cta-{{ front_page_cta }}">
     <div class="finder__forms__container" style="top:-1em">
       {#      <h3>Can you find contact info for your local&nbsp;parties?</h3>#}
@@ -74,15 +85,7 @@
     </div>
   </div>
 
-  {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
-    <div class="finder__forms cta-{{ front_page_cta }}">
-      <div class="finder__forms__container">
-        {% sopn_import_progress %}
-        {% current_election_stats %}
-        {% results_progress %}
-      </div>
-    </div> 
-  {% endif %}
+
 
   {% if show_data_download %}
     <div class="finder__forms cta-{{ front_page_cta }}">
