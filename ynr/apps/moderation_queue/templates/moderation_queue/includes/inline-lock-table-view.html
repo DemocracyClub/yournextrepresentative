@@ -3,11 +3,11 @@
 {% load humanize %}
 <tr>
     <td>
+        {% if show_detail_url %}
         <p>
             <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
-
         </p>
-
+        {% endif %}
         <p>
             {{ ballot.suggestedpostlock_set.count|apnumber|title }}
             {{ ballot.suggestedpostlock_set.count|pluralize:"person,people" }}
