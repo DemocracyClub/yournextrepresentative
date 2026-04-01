@@ -285,7 +285,7 @@ class SuggestedPostLockForm(forms.Form):
     justification = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 1, "columns": 72}),
         help_text="e.g I've reviewed the nomination paper for this ballot",
-        required=False,
+        required=True,
     )
 
     def __init__(self, *args, ballot=None, **kwargs):
