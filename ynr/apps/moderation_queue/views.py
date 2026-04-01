@@ -414,6 +414,14 @@ class BaseLockSuggestionMixin:
                     ),
                 ),
             )
+            .annotate(
+                current_user_suggested_lock=Exists(
+                    SuggestedPostLock.objects.filter(
+                        ballot=OuterRef("pk"),
+                        user=self.request.user,
+                    )
+                )
+            )
         )
 
 
