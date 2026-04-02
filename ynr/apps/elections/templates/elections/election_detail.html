@@ -67,8 +67,8 @@
                 {% endif %}
 
                 {% if not ballot.cancelled %}
-                    <p>{{ ballot.suggested_lock_html }}</p>
                     {% if user_can_lock and not ballot.current_user_suggested_lock %}
+                        <p>{{ ballot.suggested_lock_html }}</p>
                         <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
                     {% endif %}
 
