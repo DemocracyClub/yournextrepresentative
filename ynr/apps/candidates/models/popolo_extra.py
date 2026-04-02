@@ -569,6 +569,10 @@ class Ballot(EEModifiedMixin, models.Model):
             return self.suggestedpostlock_set.exists()
 
     @property
+    def memberships(self):
+        return Membership.objects.all().memberships_for_ballot(self)
+
+    @property
     def hashed_memberships(self):
         """
         Return an md5 hash based on the party, person and list position of the
