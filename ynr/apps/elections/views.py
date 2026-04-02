@@ -285,6 +285,14 @@ class BallotPaperView(TemplateView):
         if self.request.user.is_authenticated:
             context = self.get_authenticated_user_context(ballot, context)
 
+        context["has_missing_list_positions"] = False
+        if ballot.election.party_lists_in_use and any(
+            c.party_list_position is None
+            for c in context["candidates"]
+            if c.party.ec_id != "ynmp-party:2"
+        ):
+            context["has_missing_list_positions"] = True
+
         return context
 
 
