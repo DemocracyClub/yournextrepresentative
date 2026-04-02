@@ -305,9 +305,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         return self.form_invalid(self.form)
 
 
-class SuggestLockView(LoginRequiredMixin, TemplateView):
+class SuggestLockView(GroupRequiredMixin, TemplateView):
     """Review lock suggestions for a single ballot."""
 
+    required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
     template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
     def get_context_data(self, **kwargs):
