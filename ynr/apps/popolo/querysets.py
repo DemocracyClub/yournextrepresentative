@@ -2,8 +2,6 @@ from datetime import datetime
 
 from django.db import models
 from django.db.models import Q
-from django.db.models.functions import Coalesce
-from utils.db import LastWord, NullIfBlank
 
 __author__ = "guglielmo"
 
@@ -90,22 +88,10 @@ class MembershipQuerySet(DateframeableQuerySet):
     def memberships_for_ballot(
         self, ballot, exclude_memberships_qs=None, exclude_people_qs=None
     ):
-        elected_ordering = models.F("elected").desc(nulls_last=True)
-        order_by = [elected_ordering, "-result__num_ballots"]
-        if ballot.election.party_lists_in_use:
-            order_by += ["party__name", "party_list_position"]
-        else:
-            order_by += ["name_for_ordering", "person__name"]
-        qs = self.filter(ballot=ballot)
+        qs = ballot.memberships
 
-        qs = qs.annotate(last_name=LastWord("person__name"))
-        qs = qs.annotate(
-            name_for_ordering=Coalesce(
-                NullIfBlank("person__sort_name"), "last_name"
-            )
-        )
-        qs = qs.order_by(*order_by)
         qs = qs.select_related("person", "person__image", "party", "result")
+
         if ballot.is_welsh_run:
             qs = qs.prefetch_related("previous_party_affiliations")
 
