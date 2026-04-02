@@ -17,6 +17,9 @@
         <tr>
             <th>Name</th>
             <th>Description</th>
+            {% if ballot.election.party_lists_in_use %}
+                <th>List position</th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -38,6 +41,9 @@
                         ⚠️
                     {% endif %}
                     {{ person.party_description_text }}</td>
+                    {% if ballot.election.party_lists_in_use %}
+                        <td>{{ person.party_list_position }}</td>
+                    {% endif %}
             </tr>
         {% endfor %}
         </tbody>

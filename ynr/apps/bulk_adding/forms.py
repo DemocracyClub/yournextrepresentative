@@ -51,6 +51,15 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].initial = self.source
             form.fields["source"].widget = forms.HiddenInput()
 
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                label="Position in party list ('1' for first, '2' for second, etc.)",
+                min_value=1,
+                required=True,
+                initial=None,
+                widget=forms.NumberInput(attrs={"class": "party-position"}),
+            )
+
     def clean(self):
         if (
             not self.initial_form_count()
@@ -273,6 +282,10 @@ class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
             widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
             required=False,
         )
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                min_value=1, required=True, widget=forms.HiddenInput()
+            )
 
     def clean(self):
         errors = []

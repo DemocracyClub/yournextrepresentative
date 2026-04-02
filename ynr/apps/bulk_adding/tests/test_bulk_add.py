@@ -1455,6 +1455,60 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             str(existing_person.pk),
         )
 
+    def test_party_list_position_on_bulk_add(self):
+        """
+        Test that party list position is entered on the add form, carried
+        through the reconcile step, and saved correctly to the membership.
+        """
+        election = self.dulwich_post_ballot.election
+        election.party_lists_in_use = True
+        election.save()
+
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        )
+
+        form = response.forms["bulk_add_form"]
+        form["form-0-name"] = "Homer Simpson"
+        form["form-0-party_1"] = self.green_party.ec_id
+        form["form-0-party_list_position"] = "3"
+
+        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+
+        # party_list_position should be saved to textract_data
+        raw_people = RawPeople.objects.get()
+        self.assertEqual(raw_people.textract_data[0]["party_list_position"], 3)
+
+        # Reconcile step — party_list_position carried as a hidden field
+        response = response.follow()
+        form = response.forms["bulk_add_reconcile_formset"]
+        form["form-0-select_person"].select("_new")
+
+        # Confirmation page
+        response = form.submit().follow()
+
+        # party_list_position should be in reconciled_data
+        self.assertEqual(
+            response.context["ballot"].rawpeople.reconciled_data[0][
+                "party_list_position"
+            ],
+            3,
+        )
+
+        form = response.forms["bulk-add-confirm-form"]
+        form.submit()
+
+        membership = Person.objects.get(name="Homer Simpson").memberships.get()
+        self.assertEqual(membership.party_list_position, 3)
+
 
 class TestOddCandidateCountWarnings(
     TestUserMixin, UK2015ExamplesMixin, WebTest

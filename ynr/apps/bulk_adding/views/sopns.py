@@ -141,6 +141,10 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 candidate_data["previous_party_affiliations"] = form_data[
                     "previous_party_affiliations"
                 ]
+            if form_data.get("party_list_position") is not None:
+                candidate_data["party_list_position"] = form_data[
+                    "party_list_position"
+                ]
 
             raw_ballot_data.append(candidate_data)
 
@@ -222,6 +226,9 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
                 form["previous_party_affiliations"] = ",".join(
                     candidacy["previous_party_affiliations"]
                 )
+
+            if candidacy.get("party_list_position") is not None:
+                form["party_list_position"] = candidacy["party_list_position"]
 
             # Restore the user's previous select_person choice when navigating
             # back from the confirm page
@@ -379,6 +386,7 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
                     ballot=context["ballot"],
                     source=person_data["source"],
                     party_description=person_data["description_id"],
+                    list_position=person_data.get("party_list_position"),
                     previous_party_affiliations=previous_party_affiliations,
                     sopn_last_name=person_data["sopn_last_name"],
                     sopn_first_names=person_data["sopn_first_names"],
