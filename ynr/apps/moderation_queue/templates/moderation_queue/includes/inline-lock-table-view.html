@@ -25,6 +25,9 @@
             <tr>
                 <th>Name</th>
                 <th>Party</th>
+                {% if ballot.election.party_lists_in_use %}
+                  <th>List Position</th>
+                {% endif %}
                 <th>Existing other names</th>
                 <th>Actions</th>
             </tr>
@@ -52,6 +55,9 @@
                             {% endfor %}
                         {% endif %}
                     </td>
+                    {% if ballot.election.party_lists_in_use %}
+                      <td>{{ membership.party_list_position }}</td>
+                    {% endif %}
                     <td>
                         {% if membership.person.other_names.exists %}
                             <ul>
