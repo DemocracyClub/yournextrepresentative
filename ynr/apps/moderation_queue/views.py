@@ -312,7 +312,7 @@ class SuggestLockView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ballot"] = get_object_or_404(
+        ballot = get_object_or_404(
             Ballot.objects.select_related("election", "post")
             .prefetch_related(
                 models.Prefetch(
@@ -338,6 +338,13 @@ class SuggestLockView(LoginRequiredMixin, TemplateView):
             ),
             ballot_paper_id=self.kwargs["ballot_paper_id"],
         )
+
+        if ballot.candidates_locked:
+            raise Http404()
+        if not ballot.has_lock_suggestion:
+            raise Http404()
+
+        context["ballot"] = ballot
         return context
 
 
