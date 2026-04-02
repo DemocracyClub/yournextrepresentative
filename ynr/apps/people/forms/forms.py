@@ -451,6 +451,7 @@ class NewPersonForm(PopulatePartiesMixin, BasePersonForm):
                 ballot=self.cleaned_data["ballot_paper_id"],
                 party=party_data["party_obj"],
                 party_name=party_data["party_name"],
+                party_list_position=self.cleaned_data["party_list_position"],
                 party_description=party_data["description_obj"],
                 post=self.cleaned_data["ballot_paper_id"].post,
             )
