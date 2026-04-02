@@ -33,7 +33,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for membership in ballot.membership_set.all|dictsort:"person.last_name_guess" %}
+            {% for membership in ballot.memberships %}
                 <tr>
                     <td>
                         <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>

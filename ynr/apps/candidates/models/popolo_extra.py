@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.admin.utils import NestedObjects
 from django.db import connection, models
 from django.db.models import Count, Exists, F, JSONField, Max, OuterRef
-from django.db.models.functions import Greatest
+from django.db.models.functions import Coalesce, Greatest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -19,6 +19,7 @@ from elections.models import Election
 from moderation_queue.models import QueuedImage
 from popolo.models import Membership
 from uk_election_ids.datapackage import VOTING_SYSTEMS
+from utils.db import LastWord, NullIfBlank
 from utils.mixins import EEModifiedMixin
 
 """Extensions to the base django-popolo classes for YourNextRepresentative
@@ -567,6 +568,24 @@ class Ballot(EEModifiedMixin, models.Model):
             return self._has_lock_suggestion
         except AttributeError:
             return self.suggestedpostlock_set.exists()
+
+    @property
+    def memberships(self):
+        elected_ordering = models.F("elected").desc(nulls_last=True)
+        order_by = [elected_ordering, "-result__num_ballots"]
+        if self.election.party_lists_in_use:
+            order_by += ["party__name", "party_list_position"]
+        else:
+            order_by += ["name_for_ordering", "person__name"]
+        qs = self.membership_set.all()
+
+        qs = qs.annotate(last_name=LastWord("person__name"))
+        qs = qs.annotate(
+            name_for_ordering=Coalesce(
+                NullIfBlank("person__sort_name"), "last_name"
+            )
+        )
+        return qs.order_by(*order_by)
 
     @property
     def hashed_memberships(self):
