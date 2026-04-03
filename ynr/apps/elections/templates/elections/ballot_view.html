@@ -250,6 +250,10 @@
           </form>
         {% endif %}
 
+        {% if has_missing_list_positions %}
+          <p>Some candidates on this party list ballot are missing list positions. Can you add them?</p>
+        {% endif %}
+
         {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
           <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
         {% endif %}
