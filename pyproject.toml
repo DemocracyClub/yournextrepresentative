@@ -91,7 +91,6 @@ dev = [
     "pytest-freezegun==0.4.2",
     "pytest-subtests==0.13.1",
     "pytest-ruff==0.2.1",
-    "responses==0.25.0",
     "ruff==0.2.2",
     "watchdog==4.0.2",
     "WebTest==3.0.0",
