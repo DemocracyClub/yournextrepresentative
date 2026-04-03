@@ -61,6 +61,7 @@ dependencies = [
     "amazon-textract-response-parser==1.0.3",
     "amazon-textract-helper==0.0.35",
     "pandas>=3.0.0",
+    "wreq==0.10.2",
 ]
 
 [dependency-groups]
