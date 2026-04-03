@@ -2122,6 +2122,29 @@ wheels = [
 ]
 
 [[package]]
+name = "wreq"
+version = "0.10.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/3b/891fc8891a3ffb9a2133516df5ab7d397d4b1c6b5aa28954487852975a29/wreq-0.10.2.tar.gz", hash = "sha256:6cbc4f75336e48e59f98b6d49440385c31bdcfa3442bfa7ad2c5f844ffebab91", size = 196841, upload-time = "2026-03-27T17:10:18.586Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/80/02/faf82d453492ac3f0d1978459dbcf0ba16d47c0dc82b023c05f54677ce62/wreq-0.10.2-cp311-abi3-macosx_10_12_x86_64.whl", hash = "sha256:50f400507ae8f82aa214b5d2a107f29c13c8b9bdb715f45dbaa6dd79c1a4f3fd", size = 4025195, upload-time = "2026-03-27T17:09:59.778Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/c6/166b2f3cd75e27f8be0c9048e09a5cff2cb750ec6d0da3421f9096ca084c/wreq-0.10.2-cp311-abi3-macosx_11_0_arm64.whl", hash = "sha256:2a9f18e3a9e13f255022913d20bcb7ad35cd673fe601cc19cf26465456f1bbc2", size = 3787165, upload-time = "2026-03-27T17:09:56.028Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/e9/84f61da438a0efd227beea05cdc964cbf98f4bfc7af2b85eeaf55f319586/wreq-0.10.2-cp311-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:025684aea38f28b8bc5b8314a0479665dfa4a4bea289d01682fea0eeb75fe895", size = 4140653, upload-time = "2026-03-27T17:09:52.018Z" },
+    { url = "https://files.pythonhosted.org/packages/39/d8/cba50e56bbd711b51ebf435125754cd19c521f3b605d74382c95c65aca94/wreq-0.10.2-cp311-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:59c521bbf6661f0fc7b781dfe1460be6e363b6482dbb35ef48cdc4966ccba1bb", size = 4200841, upload-time = "2026-03-27T17:09:38.774Z" },
+    { url = "https://files.pythonhosted.org/packages/23/06/ca5c70d16edf4673e86c0479ca3ba13c7356a93db2436a28c98b13df2286/wreq-0.10.2-cp311-abi3-manylinux_2_34_armv7l.whl", hash = "sha256:11e4745e0a96505678751ddd4381f2ed154c289cc83ed3f44355013f379f8726", size = 3888023, upload-time = "2026-03-27T17:09:43.274Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/0c/e8dc5dcf96624dfbf9951a588b68622154b5d7fbb470ef0c7809dac4a3ea/wreq-0.10.2-cp311-abi3-manylinux_2_34_i686.whl", hash = "sha256:66e870869b1f0f9ab5f0dddee7e3b6068805c3461b945dc422cbb0dadf225301", size = 4304589, upload-time = "2026-03-27T17:09:47.836Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/29/9c5acae4bbf67e33eae42734ff177a6bcdb8e0ee4807f05b20155ad8d8e4/wreq-0.10.2-cp311-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:6370b57ccd940faeaf6a6faa3677a92ba9af69214add00f7e26500e23af01088", size = 3962815, upload-time = "2026-03-27T17:10:04.126Z" },
+    { url = "https://files.pythonhosted.org/packages/c7/f4/a653d6eb1b10dea5045d1f6ccb11131baac73c666c9cd0492d107118ec1c/wreq-0.10.2-cp311-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:adaa287e1e478ba7fbcf0e4556bb65c410006808a3a181412836acc025c62946", size = 3886388, upload-time = "2026-03-27T17:10:08.702Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/92/af1c6f407521bcdc9c58dc735bf4d969b23ee15041129b2e16b0d8a95f7b/wreq-0.10.2-cp311-abi3-musllinux_1_2_i686.whl", hash = "sha256:36dd91fa088f1e9d8c419ad53706bc274d00ded92e0c7f56d675ded064938d60", size = 4006893, upload-time = "2026-03-27T17:10:13.199Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/b8/01fb5234b063a5cccbf83a970fd9bc9e8fd2d3bdf5bb8c944486b581a29e/wreq-0.10.2-cp311-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:3ae31bd45fa6b3f50ac4c9e227c590dff1f857362bbe93687d9ab5a567e32849", size = 4164838, upload-time = "2026-03-27T17:10:17.192Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/fd/dba13f90673774f018fb841f804cf63cdb8c1e8436549344bf62b06d2fc0/wreq-0.10.2-cp311-abi3-win32.whl", hash = "sha256:c9bb0c3548e4449908dea8084993d04371e360884eb8f68e43b87fbf959004ee", size = 3598235, upload-time = "2026-03-27T17:10:32.201Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/cf/e7b79d882747d6ae371df6fb9853cde14d47633a73d7a1c7f1618391d347/wreq-0.10.2-cp311-abi3-win_amd64.whl", hash = "sha256:2584d4f15b1f80c009b818a7168004b40a038ada933f71c46006e763901d8f80", size = 3898497, upload-time = "2026-03-27T17:10:27.713Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/c5/cb745866a12e854c6b140ba8ad3fb4f83cc2e5710c9c64b2cdf2b1613886/wreq-0.10.2-cp311-abi3-win_arm64.whl", hash = "sha256:54c2aa697a492d1b5fb626f1c2d41b0ddd353154c2737f0b82330a1d651c0413", size = 3581916, upload-time = "2026-03-27T17:10:22.711Z" },
+    { url = "https://files.pythonhosted.org/packages/88/bf/0cd977b086727df2c582eeb5d7951256da2bdbc393de89ef1bd667626434/wreq-0.10.2-cp314-abi3-android_21_arm64_v8a.whl", hash = "sha256:f38d1af8f95e45973fa263cd1c3cab00bddf1b22e78b93837ae60cde58fba290", size = 3930418, upload-time = "2026-03-27T17:09:33.656Z" },
+    { url = "https://files.pythonhosted.org/packages/68/7d/7e716cd27a3e81b33f0d0c5c8b4d2276c2b9b293e8fc0a01fefa2cccc6f1/wreq-0.10.2-cp314-abi3-android_21_x86_64.whl", hash = "sha256:1771894a20f64f2395cefe573eaa056ad7d434b13aaa3e3fff41c76b9746ca50", size = 4035130, upload-time = "2026-03-27T17:09:34.939Z" },
+]
+
+[[package]]
 name = "xlsxwriter"
 version = "3.2.9"
 source = { registry = "https://pypi.org/simple" }
@@ -2198,6 +2221,7 @@ dependencies = [
     { name = "uk-election-ids" },
     { name = "uk-election-timetables" },
     { name = "whitenoise" },
+    { name = "wreq" },
 ]
 
 [package.dev-dependencies]
@@ -2224,7 +2248,6 @@ dev = [
     { name = "pytest-freezegun" },
     { name = "pytest-ruff" },
     { name = "pytest-subtests" },
-    { name = "responses" },
     { name = "ruff" },
     { name = "watchdog" },
     { name = "webtest" },
@@ -2289,6 +2312,7 @@ requires-dist = [
     { name = "uk-election-ids", specifier = "==0.9.1" },
     { name = "uk-election-timetables", specifier = "==4.4.0" },
     { name = "whitenoise", specifier = "==6.5.0" },
+    { name = "wreq", specifier = "==0.10.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -2315,7 +2339,6 @@ dev = [
     { name = "pytest-freezegun", specifier = "==0.4.2" },
     { name = "pytest-ruff", specifier = "==0.2.1" },
     { name = "pytest-subtests", specifier = "==0.13.1" },
-    { name = "responses", specifier = "==0.25.0" },
     { name = "ruff", specifier = "==0.2.2" },
     { name = "watchdog", specifier = "==4.0.2" },
     { name = "webtest", specifier = "==3.0.0" },

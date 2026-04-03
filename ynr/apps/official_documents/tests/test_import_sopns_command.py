@@ -1,8 +1,8 @@
 import functools
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-import responses
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.test import TestCase
 from official_documents.management.commands.official_documents_import_sopns import (
@@ -149,14 +149,13 @@ class TestImportSOPNSCommand(UK2015ExamplesMixin, TestCase):
         self.assertIsNone(recovered)
 
     @tempdir
-    @responses.activate
     def test_get_file_path_from_source_url(self, temp_dir):
         temp_dir_path = Path(temp_dir)
         command = Command()
         command.cache_dir_path = temp_dir_path
         source_url = "https://example.com/foo.pdf"
 
-        # Make the file first, ensure it's returned
+        # Make the file first, ensure it's returned from cache
         with (temp_dir_path / "ff482e275e83289656d1ea202571a1bf").open(
             "wb"
         ) as f:
@@ -168,36 +167,46 @@ class TestImportSOPNSCommand(UK2015ExamplesMixin, TestCase):
 
         source_url = "https://example.com/bar.pdf"
         with open(EXAMPLE_PDF_FILENAME, "rb") as f:
-            rsp1 = responses.Response(
-                method="GET", url=source_url, body=f.read()
-            )
-            responses.add(rsp1)
+            pdf_bytes = f.read()
 
-        filename, ext = command.get_file_path_from_source_url(source_url)
+        mock_session = MagicMock()
+        mock_session.get.return_value.status = 200
+        mock_session.get.return_value.bytes.return_value = pdf_bytes
+
+        with patch(
+            "official_documents.management.commands.official_documents_import_sopns.session",
+            mock_session,
+        ):
+            filename, ext = command.get_file_path_from_source_url(source_url)
         self.assertEqual(filename.name, "07ca830c8241830f73170780471b790b")
         self.assertEqual(ext, ".pdf")
 
     @tempdir
-    @responses.activate
     def test_get_file_path_from_source_url_recovery(self, temp_dir):
         temp_dir_path = Path(temp_dir)
         command = Command()
         command.cache_dir_path = temp_dir_path
 
         source_url = "https://example.com/baz.pdf"
-        rsp2 = responses.Response(
-            method="GET",
-            url=source_url,
-            body="https://example.com/bar.pdf".encode(),
-        )
-        responses.add(rsp2)
 
         with open(EXAMPLE_PDF_FILENAME, "rb") as f:
-            rsp2 = responses.Response(
-                method="GET", url="https://example.com/bar.pdf", body=f.read()
-            )
-            responses.add(rsp2)
+            pdf_bytes = f.read()
 
-        filename, ext = command.get_file_path_from_source_url(source_url)
+        mock_resp1 = MagicMock()
+        mock_resp1.status = 200
+        mock_resp1.bytes.return_value = "https://example.com/bar.pdf".encode()
+
+        mock_resp2 = MagicMock()
+        mock_resp2.status = 200
+        mock_resp2.bytes.return_value = pdf_bytes
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = [mock_resp1, mock_resp2]
+
+        with patch(
+            "official_documents.management.commands.official_documents_import_sopns.session",
+            mock_session,
+        ):
+            filename, ext = command.get_file_path_from_source_url(source_url)
         self.assertEqual(filename.name, "07ca830c8241830f73170780471b790b")
         self.assertEqual(ext, ".pdf")

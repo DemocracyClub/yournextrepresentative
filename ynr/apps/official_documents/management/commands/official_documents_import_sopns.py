@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import magic
-import requests
+import wreq.exceptions
 from candidates.models import Ballot
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -19,6 +19,8 @@ from official_documents.models import (
     ElectionSOPN,
     add_ballot_sopn,
 )
+from wreq import Emulation
+from wreq.blocking import Client
 
 allowed_mime_types = {
     "application/pdf",
@@ -26,8 +28,14 @@ allowed_mime_types = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
 
-session = requests.session()
-headers = {"User-Agent": "DemocracyClub Candidates"}
+session = Client(
+    user_agent="DemocracyClub Candidates",
+)
+session_no_verify = Client(
+    user_agent="DemocracyClub Candidates",
+    verify=False,
+)
+session_browser = Client(emulation=Emulation.Safari26)
 
 
 class Command(BaseCommand):
@@ -161,15 +169,20 @@ class Command(BaseCommand):
             return filename, extension
 
         try:
-            req = session.get(source_url, headers=headers)
-        except requests.exceptions.SSLError:
-            req = session.get(source_url, verify=False)
-        except requests.exceptions.MissingSchema:
+            resp = session.get(source_url)
+        except wreq.exceptions.ConnectionError:
+            resp = session_no_verify.get(source_url)
+        except wreq.exceptions.BuilderError:
             raise ValueError(f"Not a valid URL {source_url}")
-        except requests.exceptions.RequestException:
+        except wreq.exceptions.RequestError:
             raise ValueError(f"Error downloading {source_url}")
 
-        file_content = req.content
+        if resp.status == 403:
+            resp = session_browser.get(source_url)
+
+        resp.raise_for_status()
+
+        file_content = resp.bytes()
 
         (
             sopn_mimetype,
@@ -188,7 +201,7 @@ class Command(BaseCommand):
             )
 
         with filename.open("wb") as f:
-            f.write(req.content)
+            f.write(file_content)
 
         return filename, extension
 
@@ -222,9 +235,8 @@ class Command(BaseCommand):
         csv_url = options["source_url"]
         self.delete_existing = options["delete_existing"]
 
-        r = requests.get(csv_url)
-        r.encoding = "utf-8"
-        reader = csv.DictReader(r.text.splitlines())
+        r = session.get(csv_url)
+        reader = csv.DictReader(r.text_with_charset("utf-8").splitlines())
         grouped = self.group_csv_by_source(reader)
         for url, ballot_data in grouped.items():
             if self.group_data_is_complete(ballot_data):
