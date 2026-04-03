@@ -1464,6 +1464,13 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         election.party_lists_in_use = True
         election.save()
 
+        PartyFactory(
+            ec_id="ynmp-party:2",
+            name="Independent",
+            legacy_slug="ynmp-party:2",
+            register="GB",
+        )
+
         BallotSOPN.objects.create(
             source_url="http://example.com",
             ballot=self.dulwich_post_ballot,
@@ -1480,6 +1487,11 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-party_1"] = self.green_party.ec_id
         form["form-0-party_list_position"] = "3"
 
+        form = response.forms["bulk_add_form"]
+        form["form-1-name"] = "Lisa Simpson"
+        form["form-1-party_1"] = "ynmp-party:2"
+        form["form-1-party_list_position"] = ""
+
         response = form.submit()
         self.assertEqual(response.status_code, 302)
 
@@ -1491,6 +1503,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         response = response.follow()
         form = response.forms["bulk_add_reconcile_formset"]
         form["form-0-select_person"].select("_new")
+        form["form-1-select_person"].select("_new")
 
         # Confirmation page
         response = form.submit().follow()
@@ -1502,12 +1515,20 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ],
             3,
         )
+        self.assertEqual(
+            response.context["ballot"].rawpeople.reconciled_data[1][
+                "party_list_position"
+            ],
+            None,
+        )
 
         form = response.forms["bulk-add-confirm-form"]
         form.submit()
 
         membership = Person.objects.get(name="Homer Simpson").memberships.get()
         self.assertEqual(membership.party_list_position, 3)
+        membership = Person.objects.get(name="Lisa Simpson").memberships.get()
+        self.assertEqual(membership.party_list_position, None)
 
 
 class TestOddCandidateCountWarnings(
