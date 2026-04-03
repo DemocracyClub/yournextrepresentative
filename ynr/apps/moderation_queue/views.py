@@ -21,6 +21,7 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import urlize
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -39,6 +40,7 @@ from moderation_queue.helpers import (
 )
 from people.models import TRUSTED_TO_EDIT_NAME, EditLimitationStatuses, Person
 from popolo.models import Membership, OtherName
+from utils.exceptions import PrettyError
 
 from .forms import (
     PhotoReviewForm,
@@ -311,6 +313,14 @@ class SuggestLockView(GroupRequiredMixin, TemplateView):
     required_group_name = TRUSTED_TO_LOCK_GROUP_NAME
     template_name = "moderation_queue/suggestedpostlock_review_ballot.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except PrettyError as e:
+            return TemplateResponse(
+                request, "error.html", {"message": e.message}
+            )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ballot = get_object_or_404(
@@ -341,9 +351,9 @@ class SuggestLockView(GroupRequiredMixin, TemplateView):
         )
 
         if ballot.candidates_locked:
-            raise Http404()
+            raise PrettyError("This ballot is already locked")
         if not ballot.has_lock_suggestion:
-            raise Http404()
+            raise PrettyError("Nobody has suggested locking this ballot")
 
         context["ballot"] = ballot
         return context
