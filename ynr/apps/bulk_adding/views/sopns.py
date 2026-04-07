@@ -46,6 +46,8 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         Get the ballot object with related objects prefetched where possible to
         help performance.
         """
+        if hasattr(self, "ballot"):
+            return self.ballot
         queryset = Ballot.objects.select_related(
             "post", "election", "rawpeople", "post__party_set", "sopn"
         ).annotate(membership_count=Count("membership"))
@@ -90,15 +92,19 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
     template_name = "bulk_add/sopns/add_form.html"
 
     def get(self, request, *args, **kwargs):
-        if not request.GET.get("edit"):
-            self.ballot = self.get_ballot()
-            if (
-                hasattr(self.ballot, "rawpeople")
-                and self.ballot.rawpeople.is_trusted
-            ):
-                return HttpResponseRedirect(
-                    self.ballot.get_bulk_add_reconcile_url()
-                )
+        self.ballot = self.get_ballot()
+        if not request.GET.get("edit") and (
+            hasattr(self.ballot, "rawpeople")
+            and self.ballot.rawpeople.is_trusted
+            and self.ballot.rawpeople.textract_data
+        ):
+            return HttpResponseRedirect(
+                self.ballot.get_bulk_add_reconcile_url()
+            )
+        if not hasattr(self.ballot, "rawpeople"):
+            self.ballot.rawpeople = RawPeople.objects.create(ballot=self.ballot)
+
+        self.ballot.rawpeople.lock(self.request.user)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -107,10 +113,12 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         form_kwargs = {"ballot": context["ballot"]}
 
         if hasattr(context["ballot"], "rawpeople"):
-            form_kwargs.update(context["ballot"].rawpeople.as_form_kwargs())
-            context["has_parsed_people"] = (
-                context["ballot"].rawpeople.source_type == "parsed_pdf"
-            )
+            rawpeople = context["ballot"].rawpeople
+            form_kwargs.update(rawpeople.as_form_kwargs())
+            context["has_parsed_people"] = rawpeople.source_type == "parsed_pdf"
+            if rawpeople.is_locked_for_user(self.request.user):
+                context["bulk_add_lock_warning"] = rawpeople.locked_by
+                context["bulk_add_locked_at"] = rawpeople.locked_at
 
         if "ballot_sopn" in context and context["ballot_sopn"] is not None:
             form_kwargs["source"] = context["ballot_sopn"].source_url
@@ -148,7 +156,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
 
             raw_ballot_data.append(candidate_data)
 
-        RawPeople.objects.update_or_create(
+        raw_people, _ = RawPeople.objects.update_or_create(
             ballot=context["ballot"],
             defaults={
                 "textract_data": raw_ballot_data,
@@ -158,6 +166,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 "reconciled_data": {},
             },
         )
+        raw_people.lock(self.request.user)
 
         return HttpResponseRedirect(
             context["ballot"].get_bulk_add_reconcile_url()

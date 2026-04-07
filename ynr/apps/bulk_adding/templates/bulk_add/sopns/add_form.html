@@ -66,6 +66,12 @@
 
 
 
+        {% if bulk_add_lock_warning %}
+        <div class="panel callout">
+            <p><strong>Heads up:</strong> {{ bulk_add_lock_warning.username }} started adding candidates to this ballot {{ bulk_add_locked_at|naturaltime }}.</p>
+        </div>
+        {% endif %}
+
         <form method=POST id="bulk_add_form">
             <template id="empty_quick_add_form">
                 {% include 'bulk_add/sopns/quick_add_form.html' with data=formset.empty_form counter="__prefix_display__"%}

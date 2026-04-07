@@ -1,6 +1,12 @@
+from datetime import timedelta
+
+from django.conf import settings
 from django.db import models
 from django.db.models import JSONField
+from django.utils.timezone import now
 from model_utils.models import TimeStampedModel
+
+BULK_ADD_LOCK_TIMEOUT = timedelta(minutes=5)
 
 TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
@@ -50,6 +56,14 @@ class RawPeople(TimeStampedModel):
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
     )
     reconciled_data = JSONField(default=list)
+    locked_at = models.DateTimeField(null=True, blank=True)
+    locked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
     def __str__(self):
         return "{} ({})".format(self.ballot.ballot_paper_id, self.source)
@@ -81,6 +95,24 @@ class RawPeople(TimeStampedModel):
                 }
             )
         return {"initial": initial}
+
+    def lock(self, user):
+        if not self.has_active_lock():
+            self.locked_at = now()
+            self.locked_by = user
+            self.save(update_fields=["locked_at", "locked_by"])
+
+    def has_active_lock(self):
+        if not self.locked_at:
+            return False
+        return (now() - self.locked_at) < BULK_ADD_LOCK_TIMEOUT
+
+    def is_locked_for_user(self, user):
+        if not self.locked_at or not self.locked_by_id:
+            return False
+        if self.locked_by_id == user.pk:
+            return False
+        return self.has_active_lock()
 
     @property
     def is_trusted(self):

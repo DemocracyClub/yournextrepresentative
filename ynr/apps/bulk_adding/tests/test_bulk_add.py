@@ -1,7 +1,8 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from bulk_adding.forms import BulkAddFormSet, BulkAddReconcileFormSet
-from bulk_adding.models import RawPeople
+from bulk_adding.models import BULK_ADD_LOCK_TIMEOUT, RawPeople
 from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
@@ -11,6 +12,7 @@ from candidates.tests.factories import (
 )
 from candidates.tests.test_update_view import membership_id_set
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.utils.timezone import now
 from django_webtest import WebTest
 from official_documents.models import BallotSOPN
 from parties.models import Party
@@ -133,7 +135,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(21):
+        with self.assertNumQueries(23):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -312,7 +314,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(22):
+        with self.assertNumQueries(24):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,
@@ -1529,6 +1531,145 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(membership.party_list_position, 3)
         membership = Person.objects.get(name="Lisa Simpson").memberships.get()
         self.assertEqual(membership.party_list_position, None)
+
+    def _create_sopn_and_rawpeople(
+        self, source_type=RawPeople.SOURCE_PARSED_PDF
+    ):
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        return RawPeople.objects.create(
+            ballot=self.dulwich_post_ballot,
+            textract_data=[
+                {"name": "Bart Simpson", "party_id": self.green_party.ec_id}
+            ],
+            source="http://example.com",
+            source_type=source_type,
+        )
+
+    def test_placeholder_rawpeople_created_on_first_get(self):
+        """
+        Visiting the add page with no existing RawPeople creates a placeholder
+        so the lock can be set.
+        """
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        self.assertFalse(RawPeople.objects.exists())
+        self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        )
+        raw_people = RawPeople.objects.get()
+        self.assertEqual(raw_people.locked_by, self.user)
+        self.assertIsNotNone(raw_people.locked_at)
+        self.assertEqual(raw_people.textract_data, {})
+
+    def test_placeholder_does_not_trigger_reconcile_redirect(self):
+        """
+        An empty placeholder RawPeople should not redirect to reconcile.
+        """
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        # First user creates the placeholder
+        self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        )
+        # Second user should see the add form, not be redirected to reconcile
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user_who_can_merge,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("bulk_add_form", response.forms)
+        self.assertIn("bulk_add_lock_warning", response.context)
+
+    def test_no_lock_warning_without_rawpeople(self):
+        """
+        No warning is shown on the first visit
+        """
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        )
+        self.assertNotIn("bulk_add_lock_warning", response.context)
+
+    def test_lock_set_on_get_when_rawpeople_exists(self):
+        """
+        Visiting the add page sets the lock when RawPeople exists.
+        """
+        self._create_sopn_and_rawpeople()
+        self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        )
+        raw_people = RawPeople.objects.get()
+        self.assertEqual(raw_people.locked_by, self.user)
+        self.assertIsNotNone(raw_people.locked_at)
+
+    def test_warning_shown_when_locked_by_another_user(self):
+        """
+        A warning is shown to a different user.
+        """
+        raw_people = self._create_sopn_and_rawpeople()
+        raw_people.lock(self.user)
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user_who_can_merge,
+        )
+        self.assertIn("bulk_add_lock_warning", response.context)
+        self.assertEqual(response.context["bulk_add_lock_warning"], self.user)
+        self.assertContains(response, self.user.username)
+
+    def test_no_warning_after_lock_expires(self):
+        """
+        No warning is shown once the lock timeout has passed.
+        """
+        raw_people = self._create_sopn_and_rawpeople()
+        raw_people.locked_by = self.user
+        raw_people.locked_at = (
+            now() - BULK_ADD_LOCK_TIMEOUT - timedelta(seconds=1)
+        )
+        raw_people.save()
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user_who_can_merge,
+        )
+        self.assertNotIn("bulk_add_lock_warning", response.context)
+
+    def test_lock_set_on_form_submit(self):
+        """
+        Submitting page 1 sets the lock on the created RawPeople.
+        """
+        BallotSOPN.objects.create(
+            source_url="http://example.com",
+            ballot=self.dulwich_post_ballot,
+            uploaded_file="sopn.pdf",
+        )
+        form = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user,
+        ).forms["bulk_add_form"]
+        form["form-0-name"] = "Homer Simpson"
+        form["form-0-party_1"] = self.green_party.ec_id
+        form.submit()
+
+        raw_people = RawPeople.objects.get()
+        self.assertEqual(raw_people.locked_by, self.user)
+        self.assertIsNotNone(raw_people.locked_at)
 
 
 class TestOddCandidateCountWarnings(
