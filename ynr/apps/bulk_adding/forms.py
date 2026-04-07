@@ -51,6 +51,16 @@ class BaseBulkAddFormSet(forms.BaseFormSet):
             form.fields["source"].initial = self.source
             form.fields["source"].widget = forms.HiddenInput()
 
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                label="Position in party list ('1' for first, '2' for second, etc.)",
+                min_value=1,
+                # Not required here, but we'll validate it later
+                required=False,
+                initial=None,
+                widget=forms.NumberInput(attrs={"class": "party-position"}),
+            )
+
     def clean(self):
         if (
             not self.initial_form_count()
@@ -273,6 +283,10 @@ class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
             widget=forms.HiddenInput(attrs={"readonly": "readonly"}),
             required=False,
         )
+        if self.ballot.election.party_lists_in_use:
+            form.fields["party_list_position"] = forms.IntegerField(
+                min_value=1, required=False, widget=forms.HiddenInput()
+            )
 
     def clean(self):
         errors = []
@@ -383,6 +397,13 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
             return False
         return super().has_changed(*args, **kwargs)
 
+    def clean_party_list_position(self, *args, **kwargs):
+        if self.cleaned_data["party"]["party_id"] == "ynmp-party:2":
+            return None
+        if not self.cleaned_data["party_list_position"]:
+            raise ValidationError("List position required")
+        return self.cleaned_data["party_list_position"]
+
     def clean(self):
         if (
             not self.cleaned_data["ballot"].is_welsh_run
@@ -391,6 +412,7 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
             raise ValidationError(
                 "Previous party affiliations are invalid for this ballot"
             )
+
         return super().clean()
 
 

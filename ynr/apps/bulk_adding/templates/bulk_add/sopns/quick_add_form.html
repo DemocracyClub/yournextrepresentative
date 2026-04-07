@@ -27,6 +27,12 @@
             <td {% if not form.name.initial %}colspan="2"{% endif %}>
                 {{ form.party }}
                 <p>If the party is blank on the SOPN, enter "Independent"</p>
+                {% if form.party_list_position %}
+                    <label for="{{ form.party_list_position.id_for_label }}">{{ form.party_list_position.label }}</label>
+                    {{ form.party_list_position.errors }}
+                    {{ form.party_list_position }}
+
+                {% endif %}
 
                 {% if ballot.is_welsh_run %}
                     <details>
