@@ -1,10 +1,10 @@
-import random
 import re
 from typing import Any, Dict
 from urllib.parse import quote
 
 import nh3
 from auth_helpers.views import GroupRequiredMixin
+from bulk_adding.models import BULK_ADD_LOCK_TIMEOUT
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
@@ -25,6 +25,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import urlize
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.timezone import now
 from django.views.generic import (
     ListView,
     TemplateView,
@@ -477,11 +478,10 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if "random" in self.request.GET:
-            qs = self.get_queryset()
-            count = qs.count()
-            if count:
-                random_offset = random.randrange(count)
-                ballot = qs[random_offset]
+            cutoff = now() - BULK_ADD_LOCK_TIMEOUT
+            qs = self.get_queryset().exclude(rawpeople__locked_at__gt=cutoff)
+            if qs.exists():
+                ballot = qs.order_by("?").first()
                 url = ballot.get_bulk_add_url()
                 return HttpResponseRedirect(url)
         return super().get(*args, **kwargs)
