@@ -14,6 +14,7 @@ from django.db import transaction
 from django.db.models import Count, F, Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.views.generic import FormView, RedirectView, TemplateView
 from moderation_queue.models import SuggestedPostLock
@@ -42,6 +43,27 @@ def sort_tables(key):
 
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
+    def dispatch(self, request, *args, **kwargs):
+        self.ballot = self.get_ballot()
+        if not hasattr(self.ballot, "rawpeople"):
+            self.ballot.rawpeople = RawPeople.objects.create(ballot=self.ballot)
+        try:
+            self.ballot.rawpeople.claim(self.request.user)
+        except RawPeople.AlreadyClaimedError:
+            # Another user holds an active claim
+            context = {}
+            context["bulk_add_claim_warning"] = self.ballot.rawpeople.claimed_by
+            context["bulk_add_claimed_at"] = self.ballot.rawpeople.claimed_at
+
+            if not self.request.user.is_staff:
+                return TemplateResponse(
+                    request,
+                    "bulk_add/sopns/ballot-already-claimed.html",
+                    context,
+                )
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get_ballot(self):
         """
         Get the ballot object with related objects prefetched where possible to
@@ -94,6 +116,9 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(self.add_election_and_post_to_context(context))
+        if self.ballot.rawpeople.is_claimed_by_another_user(self.request.user):
+            context["bulk_add_claim_warning"] = self.ballot.rawpeople.claimed_by
+            context["bulk_add_claimed_at"] = self.ballot.rawpeople.claimed_at
         return context
 
     def remaining_posts_for_sopn(self):
@@ -124,10 +149,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             return HttpResponseRedirect(
                 self.ballot.get_bulk_add_reconcile_url()
             )
-        if not hasattr(self.ballot, "rawpeople"):
-            self.ballot.rawpeople = RawPeople.objects.create(ballot=self.ballot)
 
-        self.ballot.rawpeople.claim(self.request.user)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -139,9 +161,6 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             rawpeople = context["ballot"].rawpeople
             form_kwargs.update(rawpeople.as_form_kwargs())
             context["has_parsed_people"] = rawpeople.source_type == "parsed_pdf"
-            if rawpeople.is_claimed_by_another_user(self.request.user):
-                context["bulk_add_claim_warning"] = rawpeople.claimed_by
-                context["bulk_add_claimed_at"] = rawpeople.claimed_at
 
         if "ballot_sopn" in context and context["ballot_sopn"] is not None:
             form_kwargs["source"] = context["ballot_sopn"].source_url

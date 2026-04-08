@@ -12,6 +12,9 @@ TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
 
 class RawPeople(TimeStampedModel):
+    class AlreadyClaimedError(Exception):
+        pass
+
     """
     Store a JSON representation of a ballot.
 
@@ -103,11 +106,14 @@ class RawPeople(TimeStampedModel):
             .filter(
                 models.Q(claimed_at__isnull=True)
                 | models.Q(claimed_at__lte=cutoff)
+                # Allow users to update a claim for each page they visit
+                | models.Q(claimed_by=user)
             )
             .update(claimed_at=now(), claimed_by=user)
         )
-        if updated:
-            self.refresh_from_db(fields=["claimed_at", "claimed_by"])
+        self.refresh_from_db(fields=["claimed_at", "claimed_by"])
+        if not updated and self.claimed_by_id != user.pk:
+            raise RawPeople.AlreadyClaimedError()
 
     def has_active_claim(self):
         if not self.claimed_at:

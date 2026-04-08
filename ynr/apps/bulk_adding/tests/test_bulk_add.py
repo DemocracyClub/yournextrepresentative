@@ -1569,28 +1569,29 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertIsNotNone(raw_people.claimed_at)
         self.assertEqual(raw_people.textract_data, {})
 
-    def test_placeholder_does_not_trigger_reconcile_redirect(self):
+    def test_already_claimed_page_shown_to_second_user(self):
         """
-        An empty placeholder RawPeople should not redirect to reconcile.
+        When a second user visits a ballot already claimed by another user,
+        they get the already-claimed page rather than the add form.
         """
         BallotSOPN.objects.create(
             source_url="http://example.com",
             ballot=self.dulwich_post_ballot,
             uploaded_file="sopn.pdf",
         )
-        # First user creates the placeholder
+        # First user creates and claims the placeholder
         self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user,
         )
-        # Second user should see the add form, not be redirected to reconcile
+        # Second user should see the already-claimed page, not the add form
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user_who_can_merge,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("bulk_add_form", response.forms)
-        self.assertIn("bulk_add_claim_warning", response.context)
+        self.assertNotIn("bulk_add_form", response.forms)
+        self.assertEqual(response.context["bulk_add_claim_warning"], self.user)
 
     def test_no_lock_warning_without_rawpeople(self):
         """

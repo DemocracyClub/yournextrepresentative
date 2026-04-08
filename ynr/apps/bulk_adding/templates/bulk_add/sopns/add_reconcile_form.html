@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load pipeline %}
+{% load humanize %}
+
 
 {% block title %}Add candidates from nomination paper{% endblock %}
 
@@ -15,6 +17,13 @@
 {% block content %}
 <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
     <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
+
+{% if bulk_add_claim_warning %}
+    <div class="panel callout">
+        <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
+    </div>
+{% endif %}
+
 <h2>Reconcile candidates to existing people</h2>
   {% if official_document %}
   <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
