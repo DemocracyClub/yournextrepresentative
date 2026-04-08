@@ -135,7 +135,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             description="Green Party Stop Fracking Now", party=self.green_party
         )
 
-        with self.assertNumQueries(23):
+        with self.assertNumQueries(24):
             response = self.app.get(
                 "/bulk_adding/sopn/parl.65808.2015-05-07/", user=self.user
             )
@@ -314,7 +314,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             ballot=self.senedd_ballot,
             uploaded_file="sopn.pdf",
         )
-        with self.assertNumQueries(24):
+        with self.assertNumQueries(25):
             response = self.app.get(
                 f"/bulk_adding/sopn/{self.senedd_ballot.ballot_paper_id}/",
                 user=self.user,

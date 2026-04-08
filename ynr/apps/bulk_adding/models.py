@@ -97,10 +97,17 @@ class RawPeople(TimeStampedModel):
         return {"initial": initial}
 
     def lock(self, user):
-        if not self.has_active_lock():
-            self.locked_at = now()
-            self.locked_by = user
-            self.save(update_fields=["locked_at", "locked_by"])
+        cutoff = now() - BULK_ADD_LOCK_TIMEOUT
+        updated = (
+            RawPeople.objects.filter(pk=self.pk)
+            .filter(
+                models.Q(locked_at__isnull=True)
+                | models.Q(locked_at__lte=cutoff)
+            )
+            .update(locked_at=now(), locked_by=user)
+        )
+        if updated:
+            self.refresh_from_db(fields=["locked_at", "locked_by"])
 
     def has_active_lock(self):
         if not self.locked_at:
