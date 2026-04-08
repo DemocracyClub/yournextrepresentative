@@ -589,3 +589,23 @@ class AddByPartyForm(forms.Form):
 
 class DeleteRawPeopleForm(forms.Form):
     ballot_paper_id = forms.CharField(required=True, widget=forms.HiddenInput)
+
+
+class ConfirmCandidacyRemovalForm(forms.Form):
+    """
+    Shown on the bulk-add confirm page for existing candidacies that will be
+    removed. The user must check a box next to every candidacy to be removed.
+    """
+
+    def __init__(self, *args, candidacies_to_remove=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        for candidacy in candidacies_to_remove or []:
+            field = forms.BooleanField(
+                label=f"{candidacy.person.name} ({candidacy.party.name})",
+                required=True,
+                error_messages={
+                    "required": f"You must confirm the removal of {candidacy.person.name} from this ballot"
+                },
+            )
+            field.candidacy = candidacy
+            self.fields[f"confirm_remove_{candidacy.pk}"] = field
