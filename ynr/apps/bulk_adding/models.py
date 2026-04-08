@@ -12,9 +12,6 @@ TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
 
 class RawPeople(TimeStampedModel):
-    class AlreadyClaimedError(Exception):
-        pass
-
     """
     Store a JSON representation of a ballot.
 
@@ -37,6 +34,9 @@ class RawPeople(TimeStampedModel):
     candidacy.
 
     """
+
+    class AlreadyClaimedError(Exception):
+        pass
 
     SOURCE_COUNCIL_CSV = "council_csv"
     SOURCE_BULK_ADD_FORM = "bulk_add_form"

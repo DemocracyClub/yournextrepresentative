@@ -45,6 +45,19 @@ def sort_tables(key):
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         self.ballot = self.get_ballot()
+        if self.ballot.has_lock_suggestion:
+            # We don't want someone doing this again, so just set a
+            # message and redirect them to the ballot page
+            self.ballot_sopn = self.ballot.sopn
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                get_add_from_document_cta_flash_message(
+                    self.ballot_sopn, self.remaining_posts_for_sopn()
+                ),
+                extra_tags="safe do-something-else",
+            )
+            return HttpResponseRedirect(self.ballot.get_absolute_url())
         if not hasattr(self.ballot, "rawpeople"):
             self.ballot.rawpeople = RawPeople.objects.create(ballot=self.ballot)
         try:
