@@ -10,6 +10,12 @@
     <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
     <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
 
+    {% if bulk_add_claim_warning %}
+        <div class="panel callout">
+            <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
+        </div>
+        {% endif %}
+
     <h2>Review ballot</h2>
     <p>When finished, this is what the final ballot will look like. If something looks wrong, please <a
             href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a></p>

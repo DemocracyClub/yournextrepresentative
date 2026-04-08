@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load pipeline %}
+
+{% block title %}Someone else is editing this ballot{% endblock %}
+
+
+{% block content %}
+    <div class="panel callout">
+        <h2>Someone else is editing this ballot</h2>
+
+        <p>{{ bulk_add_claim_warning.username }} started adding candidates to this
+            ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
+    </div>
+{% endblock %}
