@@ -2,7 +2,10 @@ from collections import Counter
 from typing import Dict
 
 from bulk_adding import forms, helpers
-from bulk_adding.forms import QuickAddSinglePersonForm
+from bulk_adding.forms import (
+    ConfirmCandidacyRemovalForm,
+    QuickAddSinglePersonForm,
+)
 from bulk_adding.models import RawPeople
 from candidates.models import Ballot, LoggedAction, raise_if_unsafe_to_delete
 from candidates.models.db import ActionType, EditType
@@ -304,6 +307,14 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
             context["ballot"], context["ballot"].rawpeople.reconciled_data
         )
 
+        if context["candidacies_to_remove"].exists():
+            form_kwargs = {
+                "candidacies_to_remove": list(context["candidacies_to_remove"])
+            }
+            if self.request.method == "POST":
+                form_kwargs["data"] = self.request.POST
+            context["removal_form"] = ConfirmCandidacyRemovalForm(**form_kwargs)
+
         return context
 
     def odd_candidate_count_warnings(
@@ -353,6 +364,9 @@ class BulkAddSOPNConfirmView(BaseSOPNBulkAddView):
         rawpeople = getattr(ballot, "rawpeople", None)
         if not rawpeople or not rawpeople.reconciled_data:
             return HttpResponseRedirect(ballot.get_bulk_add_reconcile_url())
+        removal_form = context.get("removal_form")
+        if removal_form and not removal_form.is_valid():
+            return self.render_to_response(context)
         return self.form_valid(context)
 
     def form_valid(self, context):

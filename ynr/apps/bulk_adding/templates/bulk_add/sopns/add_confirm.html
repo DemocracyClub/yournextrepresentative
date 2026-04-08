@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load pipeline %}
 
+{% block extra_css %}
+    {% stylesheet 'bulk_adding' %}
+{% endblock %}
 
 {% block content %}
     <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
@@ -72,33 +76,49 @@
     {% endif %}
 
 
-    {% if candidacies_to_remove %}
-        <h2>Existing {{ candidacies_to_remove|pluralize:"person,people" }} to be removed</h2>
-        <p>The following {{ candidacies_to_remove|pluralize:"person,people" }} were listed on the ballot before the SOPN
-            was published
-            and will be removed. If they were not listed on the SOPN then it's likely they were added in error or the
-            {{ candidacies_to_remove|pluralize:"person,people" }} failed to be nominated.</p>
-        <table>
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for candidacy in candidacies_to_remove %}
-                <tr>
-                    <td><a href="{{ candidacy.person.get_absolute_url }}">{{ candidacy.person.name }}</a></td>
-                    <td>{{ candidacy.party.name }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-
-
     <form id="bulk-add-confirm-form" method="post">
         {% csrf_token %}
+
+        {% if candidacies_to_remove %}
+            <h2>Existing {{ candidacies_to_remove|pluralize:"person,people" }} to be removed</h2>
+            <p>The following {{ candidacies_to_remove|pluralize:"person,people" }} were listed on the ballot before the
+                SOPN was published and will be removed. If they were not listed on the SOPN then it's likely they were
+                added in error or the {{ candidacies_to_remove|pluralize:"person,people" }} were not nominated.</p>
+            <p><strong>Check the box next to each person you want to remove to confirm the deletion.</strong></p>
+            {% if removal_form.errors %}
+                <ul class="errorlist">
+                    {% for error in removal_form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    {% for field in removal_form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <table class="cta-row-table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Remove candidacy?</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for field in removal_form %}
+                    <tr>
+                        <td><a href="{{ field.field.candidacy.person.get_absolute_url }}" target="_blank">{{ field.field.candidacy.person.name }}</a></td>
+                        <td>{{ field.field.candidacy.party.name }}</td>
+                        <td>{{ field }}
+                            <label for="{{ field.id_for_label }}" class="cta">Remove from ballot</label>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
         <button type="submit">Confirm</button>
     </form>
 {% endblock %}

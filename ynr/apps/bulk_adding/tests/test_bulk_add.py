@@ -1289,8 +1289,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["form-0-select_person"].select(str(person_a.pk))
         response = form.submit().follow()
 
-        # Confirm page: submit
+        # Confirm page: check the removal checkbox and submit
         form = response.forms["bulk-add-confirm-form"]
+        form[f"confirm_remove_{membership_to_remove.pk}"] = True
         form.submit()
 
         # person_b's membership on this ballot should be gone
