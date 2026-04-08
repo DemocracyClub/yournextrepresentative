@@ -1,3 +1,4 @@
+import random
 import re
 from typing import Any, Dict
 from urllib.parse import quote
@@ -481,7 +482,9 @@ class SOPNReviewRequiredView(ListView):
             cutoff = now() - BULK_ADD_LOCK_TIMEOUT
             qs = self.get_queryset().exclude(rawpeople__locked_at__gt=cutoff)
             if qs.exists():
-                ballot = qs.order_by("?").first()
+                ballot = qs.filter(
+                    pk__gte=random.randint(qs.first().pk, qs.last().pk)
+                ).first()
                 url = ballot.get_bulk_add_url()
                 return HttpResponseRedirect(url)
         return super().get(*args, **kwargs)
