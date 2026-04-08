@@ -1,6 +1,7 @@
 from collections import Counter
 from typing import Dict
 
+import sentry_sdk
 from bulk_adding import forms, helpers
 from bulk_adding.forms import QuickAddSinglePersonForm
 from bulk_adding.models import RawPeople
@@ -66,7 +67,29 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         except BallotSOPN.DoesNotExist:
             context["ballot_sopn"] = None
         self.ballot_sopn = context["ballot_sopn"]
+        self._set_sentry_claim_context()
         return context
+
+    def _set_sentry_claim_context(self):
+        rawpeople = getattr(self.ballot, "rawpeople", None)
+        sentry_sdk.set_context(
+            "bulk_add_claim",
+            {
+                "ballot": self.ballot.ballot_paper_id,
+                "claimed_by_id": rawpeople.claimed_by_id if rawpeople else None,
+                "claimed_at": str(rawpeople.claimed_at)
+                if rawpeople and rawpeople.claimed_at
+                else None,
+                "active_claim": rawpeople.has_active_claim()
+                if rawpeople
+                else False,
+                "claimed_by_another_user": rawpeople.is_claimed_by_another_user(
+                    self.request.user
+                )
+                if rawpeople
+                else False,
+            },
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
