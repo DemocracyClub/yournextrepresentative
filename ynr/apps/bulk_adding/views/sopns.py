@@ -104,7 +104,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
         if not hasattr(self.ballot, "rawpeople"):
             self.ballot.rawpeople = RawPeople.objects.create(ballot=self.ballot)
 
-        self.ballot.rawpeople.lock(self.request.user)
+        self.ballot.rawpeople.claim(self.request.user)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -116,9 +116,9 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
             rawpeople = context["ballot"].rawpeople
             form_kwargs.update(rawpeople.as_form_kwargs())
             context["has_parsed_people"] = rawpeople.source_type == "parsed_pdf"
-            if rawpeople.is_locked_for_user(self.request.user):
-                context["bulk_add_lock_warning"] = rawpeople.locked_by
-                context["bulk_add_locked_at"] = rawpeople.locked_at
+            if rawpeople.is_claimed_by_another_user(self.request.user):
+                context["bulk_add_claim_warning"] = rawpeople.claimed_by
+                context["bulk_add_claimed_at"] = rawpeople.claimed_at
 
         if "ballot_sopn" in context and context["ballot_sopn"] is not None:
             form_kwargs["source"] = context["ballot_sopn"].source_url
@@ -166,7 +166,7 @@ class BulkAddSOPNView(BaseSOPNBulkAddView):
                 "reconciled_data": {},
             },
         )
-        raw_people.lock(self.request.user)
+        raw_people.claim(self.request.user)
 
         return HttpResponseRedirect(
             context["ballot"].get_bulk_add_reconcile_url()

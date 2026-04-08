@@ -5,7 +5,7 @@ from urllib.parse import quote
 
 import nh3
 from auth_helpers.views import GroupRequiredMixin
-from bulk_adding.models import BULK_ADD_LOCK_TIMEOUT
+from bulk_adding.models import BULK_ADD_CLAIM_TIMEOUT
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.models.db import ActionType
 from candidates.views.version_data import get_client_ip
@@ -479,8 +479,8 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if "random" in self.request.GET:
-            cutoff = now() - BULK_ADD_LOCK_TIMEOUT
-            qs = self.get_queryset().exclude(rawpeople__locked_at__gt=cutoff)
+            cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
+            qs = self.get_queryset().exclude(rawpeople__claimed_at__gt=cutoff)
             if qs.exists():
                 ballot = qs.filter(
                     pk__gte=random.randint(qs.first().pk, qs.last().pk)

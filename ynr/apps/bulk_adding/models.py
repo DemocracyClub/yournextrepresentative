@@ -6,7 +6,7 @@ from django.db.models import JSONField
 from django.utils.timezone import now
 from model_utils.models import TimeStampedModel
 
-BULK_ADD_LOCK_TIMEOUT = timedelta(minutes=5)
+BULK_ADD_CLAIM_TIMEOUT = timedelta(minutes=5)
 
 TRUSTED_TO_BULK_ADD_GROUP_NAME = "Trusted to bulk add"
 
@@ -56,8 +56,8 @@ class RawPeople(TimeStampedModel):
         choices=SOURCE_TYPES, default=SOURCE_BULK_ADD_FORM, max_length=255
     )
     reconciled_data = JSONField(default=list)
-    locked_at = models.DateTimeField(null=True, blank=True)
-    locked_by = models.ForeignKey(
+    claimed_at = models.DateTimeField(null=True, blank=True)
+    claimed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
@@ -96,30 +96,30 @@ class RawPeople(TimeStampedModel):
             )
         return {"initial": initial}
 
-    def lock(self, user):
-        cutoff = now() - BULK_ADD_LOCK_TIMEOUT
+    def claim(self, user):
+        cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
         updated = (
             RawPeople.objects.filter(pk=self.pk)
             .filter(
-                models.Q(locked_at__isnull=True)
-                | models.Q(locked_at__lte=cutoff)
+                models.Q(claimed_at__isnull=True)
+                | models.Q(claimed_at__lte=cutoff)
             )
-            .update(locked_at=now(), locked_by=user)
+            .update(claimed_at=now(), claimed_by=user)
         )
         if updated:
-            self.refresh_from_db(fields=["locked_at", "locked_by"])
+            self.refresh_from_db(fields=["claimed_at", "claimed_by"])
 
-    def has_active_lock(self):
-        if not self.locked_at:
+    def has_active_claim(self):
+        if not self.claimed_at:
             return False
-        return (now() - self.locked_at) < BULK_ADD_LOCK_TIMEOUT
+        return (now() - self.claimed_at) < BULK_ADD_CLAIM_TIMEOUT
 
-    def is_locked_for_user(self, user):
-        if not self.locked_at or not self.locked_by_id:
+    def is_claimed_by_another_user(self, user):
+        if not self.claimed_at or not self.claimed_by_id:
             return False
-        if self.locked_by_id == user.pk:
+        if self.claimed_by_id == user.pk:
             return False
-        return self.has_active_lock()
+        return self.has_active_claim()
 
     @property
     def is_trusted(self):

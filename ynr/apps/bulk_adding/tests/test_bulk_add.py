@@ -2,7 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from bulk_adding.forms import BulkAddFormSet, BulkAddReconcileFormSet
-from bulk_adding.models import BULK_ADD_LOCK_TIMEOUT, RawPeople
+from bulk_adding.models import BULK_ADD_CLAIM_TIMEOUT, RawPeople
 from candidates.models.db import ActionType, EditType, LoggedAction
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
@@ -1565,8 +1565,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user,
         )
         raw_people = RawPeople.objects.get()
-        self.assertEqual(raw_people.locked_by, self.user)
-        self.assertIsNotNone(raw_people.locked_at)
+        self.assertEqual(raw_people.claimed_by, self.user)
+        self.assertIsNotNone(raw_people.claimed_at)
         self.assertEqual(raw_people.textract_data, {})
 
     def test_placeholder_does_not_trigger_reconcile_redirect(self):
@@ -1590,7 +1590,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn("bulk_add_form", response.forms)
-        self.assertIn("bulk_add_lock_warning", response.context)
+        self.assertIn("bulk_add_claim_warning", response.context)
 
     def test_no_lock_warning_without_rawpeople(self):
         """
@@ -1605,7 +1605,7 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user,
         )
-        self.assertNotIn("bulk_add_lock_warning", response.context)
+        self.assertNotIn("bulk_add_claim_warning", response.context)
 
     def test_lock_set_on_get_when_rawpeople_exists(self):
         """
@@ -1617,21 +1617,21 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             user=self.user,
         )
         raw_people = RawPeople.objects.get()
-        self.assertEqual(raw_people.locked_by, self.user)
-        self.assertIsNotNone(raw_people.locked_at)
+        self.assertEqual(raw_people.claimed_by, self.user)
+        self.assertIsNotNone(raw_people.claimed_at)
 
-    def test_warning_shown_when_locked_by_another_user(self):
+    def test_warning_shown_when_claimed_by_another_user(self):
         """
         A warning is shown to a different user.
         """
         raw_people = self._create_sopn_and_rawpeople()
-        raw_people.lock(self.user)
+        raw_people.claim(self.user)
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user_who_can_merge,
         )
-        self.assertIn("bulk_add_lock_warning", response.context)
-        self.assertEqual(response.context["bulk_add_lock_warning"], self.user)
+        self.assertIn("bulk_add_claim_warning", response.context)
+        self.assertEqual(response.context["bulk_add_claim_warning"], self.user)
         self.assertContains(response, self.user.username)
 
     def test_no_warning_after_lock_expires(self):
@@ -1639,16 +1639,16 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         No warning is shown once the lock timeout has passed.
         """
         raw_people = self._create_sopn_and_rawpeople()
-        raw_people.locked_by = self.user
-        raw_people.locked_at = (
-            now() - BULK_ADD_LOCK_TIMEOUT - timedelta(seconds=1)
+        raw_people.claimed_by = self.user
+        raw_people.claimed_at = (
+            now() - BULK_ADD_CLAIM_TIMEOUT - timedelta(seconds=1)
         )
         raw_people.save()
         response = self.app.get(
             "/bulk_adding/sopn/parl.65808.2015-05-07/",
             user=self.user_who_can_merge,
         )
-        self.assertNotIn("bulk_add_lock_warning", response.context)
+        self.assertNotIn("bulk_add_claim_warning", response.context)
 
     def test_lock_set_on_form_submit(self):
         """
@@ -1668,8 +1668,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form.submit()
 
         raw_people = RawPeople.objects.get()
-        self.assertEqual(raw_people.locked_by, self.user)
-        self.assertIsNotNone(raw_people.locked_at)
+        self.assertEqual(raw_people.claimed_by, self.user)
+        self.assertIsNotNone(raw_people.claimed_at)
 
 
 class TestOddCandidateCountWarnings(

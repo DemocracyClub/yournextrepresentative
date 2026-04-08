@@ -66,9 +66,9 @@
 
 
 
-        {% if bulk_add_lock_warning %}
+        {% if bulk_add_claim_warning %}
         <div class="panel callout">
-            <p><strong>Heads up:</strong> {{ bulk_add_lock_warning.username }} started adding candidates to this ballot {{ bulk_add_locked_at|naturaltime }}.</p>
+            <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
         </div>
         {% endif %}
 
