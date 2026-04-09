@@ -101,7 +101,41 @@ class ElectionView(DetailView):
 
         context["ballots"] = ballots
 
+        context["sopn_progress"] = self.sopn_progress()
+
         return context
+
+    def sopn_progress(self):
+        """
+        Returns a dict of SOPN/lock progress stats for the election, or None
+        if the progress tracker should not be shown (past election, no SOPNs
+        yet, or all ballots already locked).
+        """
+        if self.object.in_past:
+            return None
+
+        stats = Ballot.objects.filter(
+            election=self.object, cancelled=False
+        ).aggregate(
+            total=Count("pk"),
+            sopn_count=Count("pk", filter=Q(sopn__isnull=False)),
+            locked_count=Count("pk", filter=Q(candidates_locked=True)),
+        )
+
+        total = stats["total"] or 0
+        sopn_count = stats["sopn_count"] or 0
+        locked_count = stats["locked_count"] or 0
+
+        if total == 0 or sopn_count == 0 or locked_count >= total:
+            return None
+
+        return {
+            "ballots_total": total,
+            "sopns_imported": sopn_count,
+            "sopns_imported_percent": round(sopn_count / total * 100),
+            "ballots_locked": locked_count,
+            "ballots_locked_percent": round(locked_count / total * 100),
+        }
 
 
 class ElectionListView(TemplateView):

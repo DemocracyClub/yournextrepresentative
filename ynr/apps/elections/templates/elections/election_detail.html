@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}
     {% if ballot.candidates_locked %}
@@ -18,7 +19,31 @@
     <div class="row">
         <div class="columns large-9">
 
-            {% for ballot in ballots %}
+            {% if sopn_progress %}
+            <h2>Candidate double-checking progress</h2>
+            <p>The nomination papers (SOPNs) are currently being imported for this election.</p>
+            <strong>{{ sopn_progress.sopns_imported|intcomma }}</strong>
+                of {{ sopn_progress.ballots_total|intcomma }}
+                ballot{{ sopn_progress.ballots_total|pluralize }} with SOPNs
+            <div class="radius progress success large-12" role="progressbar"
+                 aria-valuenow="{{ sopn_progress.sopns_imported }}"
+                 aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
+                <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span>
+            </div>
+
+            <strong>{{ sopn_progress.ballots_locked|intcomma }}</strong>
+                of {{ sopn_progress.ballots_total|intcomma }}
+                ballot{{ sopn_progress.ballots_total|pluralize }} locked
+            <div class="radius progress success large-12" role="progressbar"
+                 aria-valuenow="{{ sopn_progress.ballots_locked }}"
+                 aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
+                <span class="meter" style="width: {{ sopn_progress.ballots_locked_percent }}%"></span>
+            </div>
+            <hr>
+            <h2>Ballots</h2>
+        {% endif %}
+
+        {% for ballot in ballots %}
                 <h3>
                     <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}
                         on {{ object.election_date|date:"j F Y" }}</a>
@@ -67,7 +92,7 @@
                 {% endif %}
 
                 {% if not ballot.cancelled and user.is_authenticated %}
-                    {% if not ballot.candidates_locked and user_can_lock and not ballot.current_user_suggested_lock %}
+                    {% if ballot.has_lock_suggestions and not ballot.candidates_locked and user_can_lock and not ballot.current_user_suggested_lock %}
                         <p>{{ ballot.suggested_lock_html }}</p>
                         <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
                     {% endif %}
