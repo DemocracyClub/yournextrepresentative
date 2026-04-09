@@ -479,8 +479,7 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if "random" in self.request.GET:
-            cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
-            qs = self.get_queryset().exclude(rawpeople__claimed_at__gt=cutoff)
+            qs = self.get_queryset()
             if qs.exists():
                 ballot = qs.filter(
                     pk__gte=random.randint(qs.first().pk, qs.last().pk)
@@ -493,6 +492,8 @@ class SOPNReviewRequiredView(ListView):
         """
         Ballot objects with a document but no lock suggestion
         """
+        cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
+
         return (
             Ballot.objects.filter(
                 suggestedpostlock__isnull=True,
@@ -502,6 +503,7 @@ class SOPNReviewRequiredView(ListView):
             .exclude(sopn=None)
             .select_related("post", "election", "sopn")
             .order_by("election", "post__label")
+            .exclude(rawpeople__claimed_at__gt=cutoff)
         )
 
 
