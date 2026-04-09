@@ -1,4 +1,3 @@
-import random
 import re
 from typing import Any, Dict
 from urllib.parse import quote
@@ -491,9 +490,7 @@ class SOPNReviewRequiredView(ListView):
                 if successfully_parsed.exists():
                     qs = successfully_parsed
 
-                ballot = qs.filter(
-                    pk__gte=random.randint(qs.first().pk, qs.last().pk)
-                ).first()
+                ballot = qs.order_by("?").first()
                 url = ballot.get_bulk_add_url()
                 return HttpResponseRedirect(url)
         return super().get(*args, **kwargs)
