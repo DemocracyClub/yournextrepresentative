@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import magic
+import requests
 import wreq.exceptions
 from candidates.models import Ballot
 from django.conf import settings
@@ -235,8 +236,8 @@ class Command(BaseCommand):
         csv_url = options["source_url"]
         self.delete_existing = options["delete_existing"]
 
-        r = session.get(csv_url)
-        reader = csv.DictReader(r.text_with_charset("utf-8").splitlines())
+        r = requests.get(csv_url)
+        reader = csv.DictReader(r.text.splitlines())
         grouped = self.group_csv_by_source(reader)
         for url, ballot_data in grouped.items():
             if self.group_data_is_complete(ballot_data):
