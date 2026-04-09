@@ -485,7 +485,8 @@ class SOPNReviewRequiredView(ListView):
                 # Additionally filter the QS by SOPNs that have been
                 # successfully parsed
                 successfully_parsed = qs.filter(
-                    sopn__awstextractparsedsopn__status=AWSTextractParsedSOPNStatus.SUCCEEDED
+                    sopn__awstextractparsedsopn__status=AWSTextractParsedSOPNStatus.SUCCEEDED,
+                    sopn__awstextractparsedsopn__parsed_data__isnull=False,
                 )
                 if successfully_parsed.exists():
                     qs = successfully_parsed
