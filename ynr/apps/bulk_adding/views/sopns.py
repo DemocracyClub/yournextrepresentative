@@ -47,6 +47,9 @@ def sort_tables(key):
 
 class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
         self.ballot = self.get_ballot()
         if self.ballot.has_lock_suggestion:
             # We don't want someone doing this again, so just set a
