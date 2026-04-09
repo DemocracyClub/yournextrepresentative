@@ -51,7 +51,7 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
             return self.handle_no_permission()
 
         self.ballot = self.get_ballot()
-        if self.ballot.has_lock_suggestion:
+        if self.ballot.has_lock_suggestion or self.ballot.candidates_locked:
             # We don't want someone doing this again, so just set a
             # message and redirect them to the ballot page
             self.ballot_sopn = self.ballot.sopn
