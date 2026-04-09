@@ -42,6 +42,7 @@ from moderation_queue.helpers import (
 )
 from people.models import TRUSTED_TO_EDIT_NAME, EditLimitationStatuses, Person
 from popolo.models import Membership, OtherName
+from sopn_parsing.models import AWSTextractParsedSOPNStatus
 from utils.exceptions import PrettyError
 
 from .forms import (
@@ -479,9 +480,17 @@ class SOPNReviewRequiredView(ListView):
 
     def get(self, *args, **kwargs):
         if "random" in self.request.GET:
-            cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
-            qs = self.get_queryset().exclude(rawpeople__claimed_at__gt=cutoff)
+            qs = self.get_queryset()
             if qs.exists():
+                # Additionally filter the QS by SOPNs that have been
+                # successfully parsed
+                successfully_parsed = qs.filter(
+                    sopn__awstextractparsedsopn__status=AWSTextractParsedSOPNStatus.SUCCEEDED,
+                    sopn__awstextractparsedsopn__parsed_data__isnull=False,
+                )
+                if successfully_parsed.exists():
+                    qs = successfully_parsed
+
                 ballot = qs.filter(
                     pk__gte=random.randint(qs.first().pk, qs.last().pk)
                 ).first()
@@ -493,6 +502,8 @@ class SOPNReviewRequiredView(ListView):
         """
         Ballot objects with a document but no lock suggestion
         """
+        cutoff = now() - BULK_ADD_CLAIM_TIMEOUT
+
         return (
             Ballot.objects.filter(
                 suggestedpostlock__isnull=True,
@@ -502,6 +513,7 @@ class SOPNReviewRequiredView(ListView):
             .exclude(sopn=None)
             .select_related("post", "election", "sopn")
             .order_by("election", "post__label")
+            .exclude(rawpeople__claimed_at__gt=cutoff)
         )
 
 

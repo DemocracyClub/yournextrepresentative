@@ -90,9 +90,13 @@ class BaseSOPNBulkAddView(LoginRequiredMixin, TemplateView):
         """
         if hasattr(self, "ballot"):
             return self.ballot
-        queryset = Ballot.objects.select_related(
-            "post", "election", "rawpeople", "post__party_set", "sopn"
-        ).annotate(membership_count=Count("membership"))
+        queryset = (
+            Ballot.objects.select_related(
+                "post", "election", "rawpeople", "post__party_set", "sopn"
+            )
+            .annotate(membership_count=Count("membership"))
+            .annotate(parse_state=F("sopn__awstextractparsedsopn__status"))
+        )
         return get_object_or_404(
             queryset, ballot_paper_id=self.kwargs["ballot_paper_id"]
         )
