@@ -63,6 +63,15 @@
                 </details>
             </div>
         {% endif %}
+        {% if ballot.parse_state == "IN_PROGRESS" or ballot.parse_state == "NOT_STARTED" %}
+          <div class="panel callout">
+          <p>🤖 Our bot is currently working on parsing this SOPN.</p>
+          </div>
+        {% elif ballot.parse_state == "FAILED" %}
+          <div class="panel callout">
+          <p>🤖 Our bot failed to parse this SOPN</p>
+          </div>
+        {% endif %}
 
         {% if bulk_add_claim_warning %}
         <div class="panel callout">
