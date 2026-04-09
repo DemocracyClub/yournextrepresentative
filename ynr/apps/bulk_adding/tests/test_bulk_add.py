@@ -263,8 +263,8 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_submitting_form_when_candidates_locked(self):
         """
         Tests that if candidates have been locked whilst another user
-        is completing the bulk add process to create a lock suggestion
-        that the lock suggestion is not created
+        is completing the bulk add process, navigating to the reconcile
+        page redirects them away and no lock suggestion is created.
         """
         BallotSOPN.objects.create(
             source_url="http://example.com",
@@ -293,14 +293,12 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.dulwich_post_ballot.save()
 
         response = response.follow()
-        form = response.forms["bulk_add_reconcile_formset"]
-        form["form-0-select_person"].select("_new")
-        response = form.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.location, self.dulwich_post_ballot.get_absolute_url()
+        )
         self.assertEqual(
             self.dulwich_post_ballot.suggestedpostlock_set.count(), 0
-        )
-        self.assertContains(
-            response, "Candidates have already been locked for this ballot"
         )
 
     def test_submitting_form_with_previous_party_affiliations(self):
