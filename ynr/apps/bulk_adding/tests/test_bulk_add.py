@@ -849,7 +849,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(resp.status_code, 302)
         resp = resp.follow()
         self.assertContains(resp, "Reconcile candidates")
-        resp = form.submit()
+        reconcile_form = resp.forms["bulk_add_reconcile_formset"]
+        reconcile_form["form-0-select_person"].select("_new")
+        resp = reconcile_form.submit().follow()
         self.assertContains(resp, "Bart Simpson")
 
     def test_existing_ballot_member_is_top_suggestion_on_reconcile_form(self):
@@ -1670,6 +1672,32 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         raw_people = RawPeople.objects.get()
         self.assertEqual(raw_people.claimed_by, self.user)
         self.assertIsNotNone(raw_people.claimed_at)
+
+    def test_longer_rawpeople_than_initial_forms(self):
+        """
+        Regression test: previously if the number of items
+        in a raw_people object was more than the initial forms
+        an AttributeError error would be raised.
+
+        """
+        raw_people = self._create_sopn_and_rawpeople()
+
+        raw_people.textract_data = [
+            {
+                "name": "Husam Alharahsheh",
+                "party_id": "PP63",
+                "sopn_last_name": "ALHARAHSHEH",
+                "sopn_first_names": "Husam",
+            }
+            for i in range(20)
+        ]
+        raw_people.save()
+        response = self.app.get(
+            "/bulk_adding/sopn/parl.65808.2015-05-07/",
+            user=self.user_who_can_merge,
+        )
+        response = response.forms["bulk_add_form"].submit()
+        self.assertEqual(response.status_code, 302)
 
 
 class TestOddCandidateCountWarnings(

@@ -392,8 +392,22 @@ class QuickAddSinglePersonForm(PopulatePartiesMixin, NameOnlyPersonForm):
             "previous_party_affiliations"
         ].choices = previous_party_affiliations_choices
 
+    def full_clean(self):
+        """
+        Consider a form as empty if there's no name.
+
+        Remove any other errors from other fields.
+        """
+        name_key = self.add_prefix("name")
+        if self.is_bound and not (self.data.get(name_key, "")).strip():
+            self._errors = forms.utils.ErrorDict()
+            self.cleaned_data = {}
+            return
+        super().full_clean()
+
     def has_changed(self, *args, **kwargs):
-        if "name" not in self.changed_data:
+        name_key = self.add_prefix("name")
+        if not (self.data.get(name_key) or "").strip():
             return False
         return super().has_changed(*args, **kwargs)
 
