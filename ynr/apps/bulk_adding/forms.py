@@ -112,7 +112,7 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         if self.is_bound:
             form_counts.append(super().total_form_count())
 
-        if hasattr(self.ballot, "raw_people"):
+        if hasattr(self.ballot, "rawpeople"):
             form_counts.append(len(self.ballot.rawpeople.textract_data))
 
         form_counts.append(self.ballot.membership_count)
