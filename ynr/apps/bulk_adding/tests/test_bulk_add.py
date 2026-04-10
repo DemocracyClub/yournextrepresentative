@@ -851,7 +851,9 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(resp.status_code, 302)
         resp = resp.follow()
         self.assertContains(resp, "Reconcile candidates")
-        resp = form.submit()
+        reconcile_form = resp.forms["bulk_add_reconcile_formset"]
+        reconcile_form["form-0-select_person"].select("_new")
+        resp = reconcile_form.submit().follow()
         self.assertContains(resp, "Bart Simpson")
 
     def test_existing_ballot_member_is_top_suggestion_on_reconcile_form(self):
