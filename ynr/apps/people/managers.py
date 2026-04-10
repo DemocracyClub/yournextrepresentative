@@ -116,7 +116,7 @@ ELSE (
         SELECT
             (elem->>'timestamp')::timestamptz AS ts,
             elem->'data'->>'biography' AS bio
-        FROM jsonb_array_elements(versions) AS elem
+        FROM jsonb_array_elements(people_person.versions) AS elem
     ),
     ordered AS (
         SELECT
