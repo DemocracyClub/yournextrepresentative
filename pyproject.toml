@@ -68,7 +68,7 @@ dependencies = [
 cdk = [
     "aws-cdk-lib==2.178.0",
     "constructs==10.4.2",
-    "pytest==7.2.2",
+    "pytest==9.0.3",
 ]
 production = [
     "aws-xray-sdk==2.14.0",
@@ -84,7 +84,7 @@ dev = [
     "ipython==8.12.3",
     "mock==5.0.1", # TODO: bin and replace with unittest.mock
     "moto[s3]==4.2.11",
-    "pytest==7.2.2",
+    "pytest==9.0.3",
     "pytest-dotenv==0.5.2",
     "pytest-cov==4.0.0",
     "pytest-django==4.5.2",
