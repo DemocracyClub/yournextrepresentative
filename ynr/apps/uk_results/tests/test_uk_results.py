@@ -126,7 +126,10 @@ class TestUKResults(TestUserMixin, UK2015ExamplesMixin, TestCase):
             ResultSet(num_turnout_reported=None, total_electorate=5000),
         ]
         for result in results:
-            with self.subTest(msg=result):
+            with self.subTest(
+                num_turnout_reported=result.num_turnout_reported,
+                total_electorate=result.total_electorate,
+            ):
                 result.set_turnout_percentage()
                 self.assertIsNone(result.turnout_percentage)
 
