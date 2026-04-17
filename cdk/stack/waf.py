@@ -64,17 +64,41 @@ KNOWN_BOT_PATTERNS = [
 ]
 
 
+def _chunk(lst, size):
+    return [lst[i : i + size] for i in range(0, len(lst), size)]
+
+
 class WafStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        known_bots_pattern_set = wafv2.CfnRegexPatternSet(
-            self,
-            "KnownBotsPatternSet",
-            name="KnownBotsPatternSet",
-            scope="CLOUDFRONT",
-            regular_expression_list=KNOWN_BOT_PATTERNS,
-        )
+        # WAF regex pattern sets are capped at 10 patterns each
+        pattern_sets = [
+            wafv2.CfnRegexPatternSet(
+                self,
+                f"KnownBotsPatternSet{i}",
+                name=f"KnownBotsPatternSet{i}",
+                scope="CLOUDFRONT",
+                regular_expression_list=chunk,
+            )
+            for i, chunk in enumerate(_chunk(KNOWN_BOT_PATTERNS, 10))
+        ]
+
+        def _ref_statement(pattern_set):
+            return wafv2.CfnWebACL.StatementProperty(
+                regex_pattern_set_reference_statement=wafv2.CfnWebACL.RegexPatternSetReferenceStatementProperty(
+                    arn=pattern_set.attr_arn,
+                    field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
+                        single_header={"Name": "user-agent"},
+                    ),
+                    text_transformations=[
+                        wafv2.CfnWebACL.TextTransformationProperty(
+                            priority=0,
+                            type="LOWERCASE",
+                        )
+                    ],
+                )
+            )
 
         web_acl = wafv2.CfnWebACL(
             self,
@@ -142,17 +166,10 @@ class WafStack(Stack):
                         )
                     ),
                     statement=wafv2.CfnWebACL.StatementProperty(
-                        regex_pattern_set_reference_statement=wafv2.CfnWebACL.RegexPatternSetReferenceStatementProperty(
-                            arn=known_bots_pattern_set.attr_arn,
-                            field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
-                                single_header={"Name": "user-agent"},
-                            ),
-                            text_transformations=[
-                                wafv2.CfnWebACL.TextTransformationProperty(
-                                    priority=0,
-                                    type="LOWERCASE",
-                                )
-                            ],
+                        or_statement=wafv2.CfnWebACL.OrStatementProperty(
+                            statements=[
+                                _ref_statement(ps) for ps in pattern_sets
+                            ]
                         )
                     ),
                     visibility_config=wafv2.CfnWebACL.VisibilityConfigProperty(
