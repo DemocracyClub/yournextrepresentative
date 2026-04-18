@@ -1,11 +1,16 @@
 import json
-from io import BytesIO
 
 import boto3
 import sorl
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+from moderation_queue.helpers import convert_image_to_png
 from moderation_queue.models import QueuedImage
 from PIL import Image, ImageOps
+
+try:
+    from storages.backends.s3 import S3Storage
+except ImportError:
+    S3Storage = None
 
 # These magic values are because the AWS API crops faces quite tightly by
 # default, meaning we literally just get the face. These values are about
@@ -18,7 +23,6 @@ class Command(BaseCommand):
     def handle(self, **options):
         rekognition = boto3.client("rekognition", region_name="eu-west-1")
         attributes = ["ALL"]
-        any_failed = False
 
         qs = QueuedImage.objects.filter(decision="undecided").exclude(
             face_detection_tried=True
@@ -26,35 +30,39 @@ class Command(BaseCommand):
 
         for qi in qs:
             try:
-                bytes_obj = qi.image.file.read()
-                pil_img = Image.open(BytesIO(bytes_obj))
+                pil_img = Image.open(qi.image.file)
                 pil_img = ImageOps.exif_transpose(pil_img)
             except Exception as e:
                 msg = "Skipping QueuedImage{id}: {error}"
                 self.stdout.write(msg.format(id=qi.id, error=e))
                 continue
 
+            png_buffer = convert_image_to_png(pil_img)
+            qi.image.save(qi.image.name, png_buffer)
+            sorl.thumbnail.delete(qi.image.name, delete_file=False)
+
             try:
+                storage = qi.image.storage
+                if S3Storage and isinstance(storage, S3Storage):
+                    rekognition_image = {
+                        "S3Object": {
+                            "Bucket": storage.bucket_name,
+                            "Name": storage._normalize_name(qi.image.name),
+                        }
+                    }
+                else:
+                    rekognition_image = {"Bytes": png_buffer.getvalue()}
                 detected = rekognition.detect_faces(
-                    Image={"Bytes": bytes_obj}, Attributes=attributes
+                    Image=rekognition_image, Attributes=attributes
                 )
                 self.set_x_y_from_response(qi, detected, options["verbosity"])
             except Exception as e:
                 msg = "Skipping QueuedImage{id}: {error}"
-                self.stdout.write(msg.format(id=qi.id, error=e))
-                any_failed = True
+                self.stderr.write(msg.format(id=qi.id, error=e))
 
             qi.face_detection_tried = True
             qi.rotation_tried = True
-
-            buffer = BytesIO()
-            pil_img.save(buffer, format="PNG")
-            qi.image.save(qi.image.name, buffer)
-            sorl.thumbnail.delete(qi.image.name, delete_file=False)
             qi.save()
-
-        if any_failed:
-            raise CommandError("Broken images found (see above)")
 
     def get_bound(self, bound, im_size, scaling_factor):
         """
