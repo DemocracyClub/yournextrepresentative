@@ -46,6 +46,10 @@ def image_form_valid_response(request, person, image_form):
     )
 
 
+# 15MB — Rekognition's S3 object size limit
+MAX_IMAGE_BYTES = 15 * 1024 * 1024
+
+
 def convert_image_to_png(photo):
     # Some uploaded images are CYMK, which gives you an error when
     # you try to write them as PNG, so convert to RGBA (this is
@@ -60,11 +64,32 @@ def convert_image_to_png(photo):
         photo = PillowImage.open(photo).convert("RGBA")
     else:
         photo = photo.convert("RGBA")
+    converted = photo.copy().convert("RGB")
+    w, h = converted.size
+
+    # Render at full size first; return immediately if already within the limit.
     bytes_obj = BytesIO()
-    converted = photo.copy()
-    converted = converted.convert("RGB")
     converted.save(bytes_obj, "PNG")
-    return bytes_obj
+    if bytes_obj.tell() <= MAX_IMAGE_BYTES:
+        return bytes_obj
+
+    # Binary search over scale factors (0–1) to find the largest image that
+    # still encodes to <= MAX_IMAGE_BYTES.
+    lo, hi = 0.0, 1.0
+    best = bytes_obj  # fallback; always replaced within a couple of iterations
+    for _ in range(20):
+        mid = (lo + hi) / 2
+        resized = converted.resize(
+            (max(1, int(w * mid)), max(1, int(h * mid))), PillowImage.LANCZOS
+        )
+        buf = BytesIO()
+        resized.save(buf, "PNG")
+        if buf.tell() <= MAX_IMAGE_BYTES:
+            lo = mid  # this scale fits — search higher
+            best = buf
+        else:
+            hi = mid  # too large — search lower
+    return best
 
 
 class ImageDownloadException(Exception):
