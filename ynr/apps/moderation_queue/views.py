@@ -219,8 +219,12 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         context["email"] = email
         person = Person.objects.get(id=self.queued_image.person.id)
         context["has_crop_bounds"] = int(self.queued_image.has_crop_bounds)
-        max_x = self.queued_image.image.width - 1
-        max_y = self.queued_image.image.height - 1
+        try:
+            max_x = self.queued_image.image.width - 1
+            max_y = self.queued_image.image.height - 1
+        except ValueError:
+            max_x = None
+            max_y = None
         guessed_crop_bounds = [
             value_if_none(self.queued_image.crop_min_x, 0),
             value_if_none(self.queued_image.crop_min_y, 0),
