@@ -24,7 +24,7 @@ dependencies = [
     "django-sesame==3.2.3",
     "django-storages==1.14.6",
     "django-svelte==0.2.1",
-    "django==5.2.12",
+    "django==5.2.13",
     "djangorestframework-jsonp==1.0.2",
     "djangorestframework-csv==3.0.2",
     "djangorestframework==3.16.1",
@@ -45,7 +45,7 @@ dependencies = [
     # for compatibility with openai==1.30.3
     # TODO: review/remove when we upgrade openai package
     "httpx==0.27.0",
-    "Pillow==12.1.1",
+    "pillow==12.2.0",
     "psycopg==3.1.12",
     "python-dateutil==2.8.2",
     "python-magic==0.4.27",
@@ -68,7 +68,7 @@ dependencies = [
 cdk = [
     "aws-cdk-lib==2.178.0",
     "constructs==10.4.2",
-    "pytest==7.2.2",
+    "pytest==9.0.3",
 ]
 production = [
     "aws-xray-sdk==2.14.0",
@@ -84,7 +84,7 @@ dev = [
     "ipython==8.12.3",
     "mock==5.0.1", # TODO: bin and replace with unittest.mock
     "moto[s3]==4.2.11",
-    "pytest==7.2.2",
+    "pytest==9.0.3",
     "pytest-dotenv==0.5.2",
     "pytest-cov==4.0.0",
     "pytest-django==4.5.2",
