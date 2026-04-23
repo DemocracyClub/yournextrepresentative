@@ -31,7 +31,6 @@ from django.views.generic import (
     TemplateView,
     View,
 )
-from django_q.tasks import async_task
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
@@ -118,7 +117,7 @@ def upload_photo_url(request, person_id):
         source=url_form.cleaned_data["justification_for_use_url"],
     )
 
-    async_task("moderation_queue.tasks.normalise_queued_image", queued_image.id)
+    queued_image.start_image_processing()
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
     )
@@ -620,7 +619,7 @@ def image_form_valid_response(request, person, image_form):
         person=person,
         source=image_form.cleaned_data["justification_for_use"],
     )
-    async_task("moderation_queue.tasks.normalise_queued_image", queued_image.id)
+    queued_image.start_image_processing()
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
     )
