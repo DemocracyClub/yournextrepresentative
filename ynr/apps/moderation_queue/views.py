@@ -7,7 +7,6 @@ from auth_helpers.views import GroupRequiredMixin
 from bulk_adding.models import BULK_ADD_CLAIM_TIMEOUT
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.models.db import ActionType
-from candidates.views import get_client_ip
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -32,6 +31,7 @@ from django.views.generic import (
     TemplateView,
     View,
 )
+from django_q.tasks import async_task
 from elections.models import Election
 from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
@@ -117,6 +117,8 @@ def upload_photo_url(request, person_id):
         person=person,
         source=url_form.cleaned_data["justification_for_use_url"],
     )
+
+    async_task("moderation_queue.tasks.normalise_queued_image", queued_image.id)
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
     )
@@ -618,6 +620,7 @@ def image_form_valid_response(request, person, image_form):
         person=person,
         source=image_form.cleaned_data["justification_for_use"],
     )
+    async_task("moderation_queue.tasks.normalise_queued_image", queued_image.id)
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
     )

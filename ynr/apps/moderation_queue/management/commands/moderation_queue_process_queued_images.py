@@ -1,11 +1,8 @@
 import json
 
 import boto3
-import sorl
 from django.core.management.base import BaseCommand
-from moderation_queue.helpers import convert_image_to_png
 from moderation_queue.models import QueuedImage
-from PIL import Image, ImageOps
 
 try:
     from storages.backends.s3 import S3Storage
@@ -29,17 +26,6 @@ class Command(BaseCommand):
         )
 
         for qi in qs:
-            try:
-                pil_img = Image.open(qi.image.file)
-                pil_img = ImageOps.exif_transpose(pil_img)
-            except Exception as e:
-                msg = "Skipping QueuedImage{id}: {error}"
-                self.stdout.write(msg.format(id=qi.id, error=e))
-                continue
-
-            png_buffer = convert_image_to_png(pil_img)
-            qi.image.save(qi.image.name, png_buffer)
-            sorl.thumbnail.delete(qi.image.name, delete_file=False)
 
             try:
                 storage = qi.image.storage
@@ -51,7 +37,8 @@ class Command(BaseCommand):
                         }
                     }
                 else:
-                    rekognition_image = {"Bytes": png_buffer.getvalue()}
+                    with qi.image.open("rb") as f:
+                        rekognition_image = {"Bytes": f.read()}
                 detected = rekognition.detect_faces(
                     Image=rekognition_image, Attributes=attributes
                 )

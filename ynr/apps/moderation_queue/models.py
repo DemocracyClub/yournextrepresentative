@@ -4,10 +4,14 @@ from datetime import date
 from os.path import join, splitext
 from tempfile import NamedTemporaryFile
 
+import sorl.thumbnail
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from PIL import Image as PillowImage
+from PIL import ImageOps
+
+from .helpers import convert_image_to_png
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"
@@ -125,6 +129,13 @@ class QueuedImage(models.Model):
         if self.user:
             return self.user.username
         return "a robot 🤖"
+
+    def normalise_image(self):
+        pil_img = PillowImage.open(self.image.file)
+        pil_img = ImageOps.exif_transpose(pil_img)
+        png_buffer = convert_image_to_png(pil_img)
+        self.image.save(self.image.name, png_buffer, save=False)
+        sorl.thumbnail.delete(self.image.name, delete_file=False)
 
     def crop_image(self):
         """
