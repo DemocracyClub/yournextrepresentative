@@ -1,13 +1,18 @@
 import ast
+import json
 import uuid
 from datetime import date
 from os.path import join, splitext
 from tempfile import NamedTemporaryFile
 
+import sorl.thumbnail
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from PIL import Image as PillowImage
+from PIL import ImageOps
+
+from .helpers import convert_image_to_png
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"
@@ -125,6 +130,84 @@ class QueuedImage(models.Model):
         if self.user:
             return self.user.username
         return "a robot 🤖"
+
+    def start_image_processing(self):
+        from django_q.tasks import async_chain
+
+        async_chain(
+            [
+                (
+                    "moderation_queue.tasks.normalise_queued_image",
+                    (self.id,),
+                ),
+                (
+                    "moderation_queue.tasks.detect_faces_for_queued_image",
+                    (self.id,),
+                ),
+            ]
+        )
+
+    def normalise_image(self):
+        pil_img = PillowImage.open(self.image.file)
+        pil_img = ImageOps.exif_transpose(pil_img)
+        png_buffer = convert_image_to_png(pil_img)
+        self.image.save(self.image.name, png_buffer, save=False)
+        sorl.thumbnail.delete(self.image.name, delete_file=False)
+
+    def _face_crop_bound(self, bound, im_size, scaling_factor):
+        return max(0, bound * im_size * scaling_factor)
+
+    def _apply_face_detection(self, detected):
+        if not (detected and detected.get("FaceDetails")):
+            return
+        # AWS crops faces tightly by default. these scaling factors give a
+        # slightly wider crop that includes more context around the face.
+        MIN_SCALING_FACTOR = 0.7
+        MAX_SCALING_FACTOR = 1.3
+        bb = detected["FaceDetails"][0]["BoundingBox"]
+        self.crop_min_x = self._face_crop_bound(
+            bb["Left"], self.image.width, MIN_SCALING_FACTOR
+        )
+        self.crop_min_y = self._face_crop_bound(
+            bb["Top"], self.image.height, MIN_SCALING_FACTOR
+        )
+        self.crop_max_x = self._face_crop_bound(
+            bb["Width"], self.image.width, MAX_SCALING_FACTOR
+        )
+        self.crop_max_y = self._face_crop_bound(
+            bb["Height"], self.image.height, MAX_SCALING_FACTOR
+        )
+        self.detection_metadata = json.dumps(detected, indent=4)
+
+    def detect_faces(self):
+        import boto3
+
+        try:
+            from storages.backends.s3 import S3Storage
+        except ImportError:
+            S3Storage = None
+
+        try:
+            rekognition = boto3.client("rekognition", region_name="eu-west-1")
+            storage = self.image.storage
+            if S3Storage and isinstance(storage, S3Storage):
+                rekognition_image = {
+                    "S3Object": {
+                        "Bucket": storage.bucket_name,
+                        "Name": storage._normalize_name(self.image.name),
+                    }
+                }
+            else:
+                with self.image.open("rb") as f:
+                    rekognition_image = {"Bytes": f.read()}
+            detected = rekognition.detect_faces(
+                Image=rekognition_image, Attributes=["ALL"]
+            )
+            self._apply_face_detection(detected)
+        finally:
+            self.face_detection_tried = True
+            self.rotation_tried = True
+            self.save()
 
     def crop_image(self):
         """
