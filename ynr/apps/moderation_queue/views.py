@@ -7,6 +7,7 @@ from auth_helpers.views import GroupRequiredMixin
 from bulk_adding.models import BULK_ADD_CLAIM_TIMEOUT
 from candidates.models import TRUSTED_TO_LOCK_GROUP_NAME, Ballot, LoggedAction
 from candidates.models.db import ActionType
+from candidates.views import get_client_ip
 from candidates.views.version_data import get_client_ip
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,7 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import urlize
@@ -36,8 +37,6 @@ from moderation_queue.filters import QueuedImageFilter
 from moderation_queue.helpers import (
     ImageDownloadException,
     download_image_from_url,
-    image_form_valid_response,
-    upload_photo_response,
 )
 from people.models import TRUSTED_TO_EDIT_NAME, EditLimitationStatuses, Person
 from popolo.models import Membership, OtherName
@@ -588,3 +587,37 @@ class RemoveSuggestedLocksView(LoginRequiredMixin, GroupRequiredMixin, View):
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"removed": True})
         return HttpResponseRedirect(ballot.get_absolute_url())
+
+
+def upload_photo_response(request, person, image_form, url_form):
+    return render(
+        request,
+        "moderation_queue/photo-upload-new.html",
+        {
+            "image_form": image_form,
+            "url_form": url_form,
+            "queued_images": QueuedImage.objects.filter(
+                person=person, decision="undecided"
+            ).order_by("created"),
+            "person": person,
+        },
+    )
+
+
+def image_form_valid_response(request, person, image_form):
+    # Make sure that we save the user that made the upload
+    queued_image = image_form.save(commit=False)
+    queued_image.user = request.user
+    queued_image.save()
+    # Record that action:
+    LoggedAction.objects.create(
+        user=request.user,
+        action_type=ActionType.PHOTO_UPLOAD,
+        ip_address=get_client_ip(request),
+        popit_person_new_version="",
+        person=person,
+        source=image_form.cleaned_data["justification_for_use"],
+    )
+    return HttpResponseRedirect(
+        reverse("photo-upload-success", kwargs={"person_id": person.id})
+    )
