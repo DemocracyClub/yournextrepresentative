@@ -5,10 +5,12 @@ from datetime import date
 from os.path import join, splitext
 from tempfile import NamedTemporaryFile
 
+import boto3
 import sorl.thumbnail
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django_q.tasks import async_chain
 from PIL import Image as PillowImage
 from PIL import ImageOps
 
@@ -132,8 +134,6 @@ class QueuedImage(models.Model):
         return "a robot 🤖"
 
     def start_image_processing(self):
-        from django_q.tasks import async_chain
-
         async_chain(
             [
                 (
@@ -180,8 +180,6 @@ class QueuedImage(models.Model):
         self.detection_metadata = json.dumps(detected, indent=4)
 
     def detect_faces(self):
-        import boto3
-
         try:
             from storages.backends.s3 import S3Storage
         except ImportError:
