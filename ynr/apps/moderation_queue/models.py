@@ -151,7 +151,10 @@ class QueuedImage(models.Model):
         pil_img = PillowImage.open(self.image.file)
         pil_img = ImageOps.exif_transpose(pil_img)
         png_buffer = convert_image_to_png(pil_img)
-        self.image.save(self.image.name, png_buffer, save=False)
+        filename = self.image.name
+        extension = filename.split(".")[-1]
+        filename = filename.replace(extension, "png")
+        self.image.save(filename, png_buffer, save=True)
         sorl.thumbnail.delete(self.image.name, delete_file=False)
 
     def _face_crop_bound(self, bound, im_size, scaling_factor):
