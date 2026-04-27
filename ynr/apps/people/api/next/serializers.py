@@ -122,7 +122,7 @@ class PersonSerializer(MinimalPersonSerializer):
         source="biography", allow_blank=True
     )
     statement_to_voters_last_updated = serializers.DateTimeField(
-        source="biography_last_updated", read_only=True
+        source="biography_last_updated"
     )
     favourite_biscuit = serializers.CharField(allow_null=True, allow_blank=True)
     thumbnail = serializers.SerializerMethodField()
