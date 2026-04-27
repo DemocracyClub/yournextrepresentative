@@ -11,9 +11,6 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from django.urls import reverse
-from moderation_queue.helpers import (
-    convert_image_to_png,
-)
 from people.forms.forms import StrippedCharField
 from PIL import Image as PILImage
 from utils.mail import send_mail
@@ -53,21 +50,6 @@ class UploadPersonPhotoImageForm(forms.ModelForm):
             )
             raise ValidationError(message)
         return cleaned_data
-
-    def save(self, commit):
-        """
-        Before saving, resize and rotate the image as needed
-        and convert the image to a PNG. This is done while the
-        image is still an InMemoryUpload object.
-        """
-
-        original_image = self.instance.image
-        png_image = convert_image_to_png(original_image)
-        filename = self.instance.image.name
-        extension = filename.split(".")[-1]
-        filename = filename.replace(extension, "png")
-        self.instance.image.save(filename, png_image, save=commit)
-        return super().save(commit=commit)
 
 
 class UploadPersonPhotoURLForm(forms.Form):
