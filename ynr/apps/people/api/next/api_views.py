@@ -29,6 +29,7 @@ class PersonViewSet(viewsets.ReadOnlyModelViewSet):
                 "memberships__previous_party_affiliations",
             )
             .select_related("image", "image__uploading_user")
+            .with_biography_last_updated()
             .order_by("id")
         )
 
