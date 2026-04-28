@@ -48,6 +48,13 @@
                 {% results_progress %}
             </div>
         </div>
+        {% if show_data_download %}
+            <div class="finder__forms cta-{{ front_page_cta }}">
+                <div class="finder__forms__container">
+                    {% data_download %}
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 
 
@@ -85,15 +92,6 @@
     </div>
   </div>
 
-
-
-  {% if show_data_download %}
-    <div class="finder__forms cta-{{ front_page_cta }}">
-      <div class="finder__forms__container">
-        {% data_download %}
-      </div>
-    </div>
-  {% endif %}
 
   {% if front_page_cta == "BY_ELECTIONS" %}
     <div class="finder__forms cta-{{ front_page_cta }}">
