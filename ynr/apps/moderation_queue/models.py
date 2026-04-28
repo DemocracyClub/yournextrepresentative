@@ -12,7 +12,6 @@ from django.db import models
 from django.urls import reverse
 from django_q.tasks import async_chain
 from PIL import Image as PillowImage
-from PIL import ImageOps
 
 from .helpers import convert_image_to_png
 
@@ -149,7 +148,6 @@ class QueuedImage(models.Model):
 
     def normalise_image(self):
         pil_img = PillowImage.open(self.image.file)
-        pil_img = ImageOps.exif_transpose(pil_img)
         png_buffer = convert_image_to_png(pil_img)
         filename = self.image.name
         extension = filename.split(".")[-1]
