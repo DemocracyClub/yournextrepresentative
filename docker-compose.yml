@@ -37,6 +37,11 @@ services:
         'auto-restart',
         '--directory=/dc/ynr/code/ynr',
         '--patterns', '*.py;*.html;*.csv;*.json;*.md;*.txt',
+        # Ignore writes into ynr/static/.
+        # Otherwise, you get a 500 without running collectstatic
+        # N.B. watchdog uses pathlib.PurePath.match which doesn't support recursive globbing.
+        # This will be fixed in next release (https://github.com/gorakhargosh/watchdog/pull/1101)
+        '--ignore-patterns', '/dc/ynr/code/ynr/static;/dc/ynr/code/ynr/static/*;/dc/ynr/code/ynr/static/*/*;/dc/ynr/code/ynr/static/*/*/*;/dc/ynr/code/ynr/static/*/*/*/*;/dc/ynr/code/ynr/static/*/*/*/*/*;/dc/ynr/code/ynr/static/*/*/*/*/*/*',
         '--recursive',
         '--',
         # Whilst runnning gunicorn
