@@ -172,16 +172,9 @@ class BallotSerializer(serializers.HyperlinkedModelSerializer):
         lookup_field="ballot_paper_id",
         lookup_url_kwarg="ballot_paper_id",
     )
-    last_updated = serializers.SerializerMethodField()
+    last_updated = serializers.DateTimeField()
     cancelled = serializers.SerializerMethodField()
     tags = TagsField()
-
-    def get_last_updated(self, instance):
-        """
-        If the last_updated value has been annoated, return that, otherwise use
-        the modified date on the ballot instance
-        """
-        return getattr(instance, "last_updated", instance.modified)
 
     @swagger_serializer_method(serializer_or_field=BallotSOPNSerializer)
     def get_sopn(self, instance):
