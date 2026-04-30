@@ -110,16 +110,17 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """
-        Checks if this is a last_updated request and if so annotates and orders
-        the queryset by the last_updated field so that the ballots with oldest
-        changes appear first.
+        Annotates the queryset with a `last_updated` field which is the latest modified date of
+        the ballot, its election, post, sopn and resultset.
+
+        Also checks if the last_updated query param is used, and if so, orders the queryset by that field.
         This is to help the importer from WCIVF deal with situations where a
         large number of ballots have been updated at the same time e.g. through
         a data migration which saves many or all objects.
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().with_last_updated()
         if self.request.query_params.get("last_updated"):
-            queryset = queryset.with_last_updated()
+            queryset = queryset.order_by("last_updated")
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
