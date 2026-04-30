@@ -266,6 +266,7 @@ class BallotQueryset(models.QuerySet):
                     "election__modified",
                     "post__modified",
                     "membership_modified_max",
+                    "resultset__modified",
                 ),
             )
             .distinct()

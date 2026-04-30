@@ -410,6 +410,7 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
                 "election__modified",
                 "post__modified",
                 "membership_modified_max",
+                "resultset__modified",
             ),
         )
         mock_annotate.return_value.distinct.assert_called_once()
