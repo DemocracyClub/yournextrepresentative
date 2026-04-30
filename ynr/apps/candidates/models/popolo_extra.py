@@ -255,23 +255,19 @@ class BallotQueryset(models.QuerySet):
     def with_last_updated(self):
         """
         Annotates the last_updated field to objects, which represents the most
-        recent modified timstamp out of the ballot, related election, post or
-        the most recently updated related candidate
+        recent modified timstamp out of the ballot, related election, post, resultset,
+        or the most recently updated related candidate
         """
-        return (
-            self.annotate(
-                membership_modified_max=Max("membership__modified"),
-                last_updated=Greatest(
-                    "modified",
-                    "election__modified",
-                    "post__modified",
-                    "membership_modified_max",
-                    "resultset__modified",
-                ),
-            )
-            .distinct()
-            .order_by("last_updated")
-        )
+        return self.annotate(
+            membership_modified_max=Max("membership__modified"),
+            last_updated=Greatest(
+                "modified",
+                "election__modified",
+                "post__modified",
+                "membership_modified_max",
+                "resultset__modified",
+            ),
+        ).distinct()
 
     def last_updated(self, datetime):
         """

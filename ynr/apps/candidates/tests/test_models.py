@@ -414,9 +414,6 @@ class TestHasResultsOrNoResults(BallotsWithResultsMixin, TestCase):
             ),
         )
         mock_annotate.return_value.distinct.assert_called_once()
-        mock_annotate.return_value.distinct.return_value.order_by.assert_called_once_with(
-            "last_updated"
-        )
 
     def test_ordered_by_latest_ee_modified(self):
         """
