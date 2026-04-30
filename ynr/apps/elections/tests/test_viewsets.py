@@ -16,6 +16,9 @@ class TestBallotViewSet:
 
         view.get_queryset()
         view.queryset.with_last_updated.assert_called_once()
+        view.queryset.with_last_updated.return_value.order_by.assert_called_once_with(
+            "last_updated"
+        )
 
     def test_get_queryset_last_updated_not_ordered(self):
         factory = APIRequestFactory()
@@ -26,4 +29,5 @@ class TestBallotViewSet:
         view.queryset = mock.MagicMock()
 
         view.get_queryset()
-        view.queryset.with_last_updated.assert_not_called()
+        view.queryset.with_last_updated.assert_called_once()
+        view.queryset.with_last_updated.return_value.order_by.assert_not_called()
