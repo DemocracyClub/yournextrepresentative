@@ -425,7 +425,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def cancelled_status_text(self):
         if self.cancelled:
-            return "(❌ cancelled)"
+            return "❌ cancelled"
         return None
 
     @property
@@ -441,7 +441,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @property
     def locked_status_text(self):
         if self.candidates_locked:
-            return mark_safe("🔐 Locked")
+            return "🔐 Locked"
         return None
 
     @property

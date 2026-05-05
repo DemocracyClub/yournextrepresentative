@@ -45,6 +45,14 @@
 <div class="row">
   <div class="columns large-9">
     <div class="ballot_status">
+        {% if ballot.cancelled %}
+          <p>
+            ❌ The poll for this election was cancelled
+            {% if ballot.replaced_by %}
+            and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
+          </p>
+          {% endif %}
+        {% endif %}
         {% if candidates.exists %}
             {% if ballot.candidates_locked %}
                 <p>
