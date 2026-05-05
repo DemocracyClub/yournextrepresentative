@@ -83,31 +83,6 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
 
         return queryset
 
-    def list(self, request, *args, **kwargs):
-        """
-        If the last_updated filter param is used objects are ordered oldest
-        changes first, and in maximum chunks of 200
-        """
-        return super().list(request, *args, **kwargs)
-        # TEMP return a paginated response to increase speed 2022 elections imported
-        # is_last_updated_query = self.request.query_params.get("last_updated")
-        # if not is_last_updated_query:
-        #     return super().list(request, *args, **kwargs)
-
-        # queryset = self.filter_queryset(self.get_queryset())
-        # queryset = queryset[:200]
-        # serializer = self.get_serializer(queryset, many=True)
-        # return Response(
-        #     OrderedDict(
-        #         [
-        #             ("count", len(serializer.data)),
-        #             ("next", None),
-        #             ("previous", None),
-        #             ("results", serializer.data),
-        #         ]
-        #     )
-        # )
-
     def get_queryset(self):
         """
         Annotates the queryset with a `last_updated` field which is the latest modified date of
