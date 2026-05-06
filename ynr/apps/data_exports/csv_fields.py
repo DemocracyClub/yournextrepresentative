@@ -18,6 +18,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Callable, Dict, Literal, Optional, Union
 
+from django.contrib.postgres.aggregates import StringAgg
 from django.core.files.storage import default_storage
 from django.db.models import BooleanField, CharField, Expression
 from django.db.models.expressions import (
@@ -235,7 +236,9 @@ csv_fields["organisation_name"] = CSVField(
 )
 csv_fields["previous_party_affiliations"] = CSVField(
     type="expr",
-    value=F("membership__previous_party_affiliations"),
+    value=StringAgg(
+        "membership__previous_party_affiliations__name", delimiter=";"
+    ),
     value_group="candidacy",
     label="Previous party affiliations (Welsh candidacies only)",
 )
