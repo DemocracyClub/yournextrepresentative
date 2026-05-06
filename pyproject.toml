@@ -13,7 +13,7 @@ dependencies = [
     "boto3==1.34.105",
     "django-cors-headers==4.9.0",
     "django-date-extensions==3.1.2",
-    "python-dotenv==1.0.1",
+    "python-dotenv==1.2.2",
     "django-extensions==4.1",
     "django-filter==25.1",
     "django-hCaptcha==0.2.0",
@@ -36,7 +36,7 @@ dependencies = [
     "jsonpatch==1.32",
     "jsonpointer==2.3",
     "libsass==0.22.0", # TODO: remove when we migrate to dc_django_utils
-    "lxml==6.0.2",
+    "lxml==6.1.0",
     "Markdown==3.8.1",
     "markdown-it-py==4.0.0",
     "nameparser==1.1.2",
