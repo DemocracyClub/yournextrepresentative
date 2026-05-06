@@ -548,7 +548,9 @@ class BallotsForSelectAjaxView(View):
 
             ballot_label = ballot.post.label
             if ballot.cancelled:
-                ballot_label = f"{ballot_label} {ballot.cancelled_status_text}"
+                ballot_label = (
+                    f"{ballot_label} ({ballot.cancelled_status_text})"
+                )
             if ballot.candidates_locked:
                 ballot_label = f"{ballot_label} ({ballot.locked_status_text})"
                 option_attrs["disabled"] = True

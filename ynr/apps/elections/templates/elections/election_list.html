@@ -124,7 +124,7 @@
                 {% endif %}
             {% else %}
                 {% if ballot.cancelled %}
-                  {{ ballot.cancelled }}
+                  {{ ballot.cancelled_status_html }}
                 {% elif ballot.candidates_locked %}
                   {{ ballot.locked_status_html }}
                 {% else %}
