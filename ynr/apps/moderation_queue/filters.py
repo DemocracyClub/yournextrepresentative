@@ -139,16 +139,15 @@ class QueuedImageFilter(django_filters.FilterSet):
             ),
         )
         super().__init__(*args, **kwargs)
-        if self.request.user.is_staff:
-            f = django_filters.CharFilter(
-                label="Exclude username",
-                method="exclude_username",
-            )
-            # required so the `exclude_username` method string can be
-            # resolved on this FilterSet
-            f.parent = self
-            self.filters["username_exclude_filter"] = f
-            self.form.fields["username_exclude_filter"] = f.field
+        f = django_filters.CharFilter(
+            label="Exclude username",
+            method="exclude_username",
+        )
+        # required so the `exclude_username` method string can be
+        # resolved on this FilterSet
+        f.parent = self
+        self.filters["username_exclude_filter"] = f
+        self.form.fields["username_exclude_filter"] = f.field
 
     @property
     def shortcuts(self):
