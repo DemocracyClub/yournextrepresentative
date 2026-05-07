@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
         found_elections = self.get_found_elections(path)
 
-        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJT-XOl2ryx0crgPLj5phgeLmJ2C_jRxVJ0WQdiGNUjguQ4xgTIe_cNTNc7VIELt4XaRy6RyCJSoAo/pub?output=csv"
+        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKx6HfJfcWMcAiYRceNxGk32lyxxL1wMgrqeoVENvJIT_9SsnOcrEqSC-ZYdIHZZ--8cAWXCdF8BJZ/pub?gid=0&single=true&output=csv"
         data = []
         for row in read_csv_from_url(url):
             # uses_mg = row.get("Uses MG?") or ""
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             #     continue
 
             election_id = row["Election ID"]
-            url = row["ModGov Install"]
+            url = row["Modgov URL"]
             print(repr(election_id))
             if not election_id or election_id in found_elections:
                 continue
@@ -53,7 +53,7 @@ class Command(BaseCommand):
         for election_id, url in data:
             if election_id in id_to_url:
                 continue
-            print(election_id)
+            print(f"Trying to find ModGov elections for {election_id}")
             matcher = ModGovElectionMatcher(
                 base_domain=url, election_id=election_id
             )
@@ -85,6 +85,8 @@ class Command(BaseCommand):
             with open(path) as f:
                 csv_file = csv.reader(f)
                 for line in csv_file:
+                    if not line:
+                        continue
                     found_elections.append(line[0])
 
         except FileNotFoundError:
