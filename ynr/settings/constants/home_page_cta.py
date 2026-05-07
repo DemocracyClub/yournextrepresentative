@@ -9,7 +9,7 @@ from datetime import date
 FRONT_PAGE_CTA = "BY_ELECTIONS"
 
 if os.environ.get("DC_ENVIRONMENT", "local") in ("local", "production"):
-    FRONT_PAGE_CTA = "ELECTION_STATS"
+    FRONT_PAGE_CTA = "RESULTS_PROGRESS"
     SHOW_DATA_DOWNLOAD = True
     SOPN_TRACKER_INFO = {
         "election_date": "2026-05-07",
