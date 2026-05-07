@@ -11,6 +11,7 @@ from people.data_removal_helpers import DataRemover
 from people.models import (
     EditLimitationStatuses,
     Person,
+    PersonIdentifier,
     PersonImage,
     PersonNameSynonym,
 )
@@ -90,6 +91,44 @@ class PersonImageInline(admin.TabularInline):
     fields = ("id", "image")
 
 
+def get_pi_choices():
+    return [
+        (v, v)
+        for v in PersonIdentifier.objects.order_by("value_type")
+        .values_list("value_type", flat=True)
+        .distinct()
+    ]
+
+
+class PersonIdentifierInlineForm(forms.ModelForm):
+    value_type = forms.ChoiceField(
+        choices=get_pi_choices,
+        required=True,
+    )
+
+    class Meta:
+        model = PersonIdentifier
+        fields = ("value", "value_type")
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        value = cleaned_data.get("value")
+
+        if not value:
+            cleaned_data["DELETE"] = True
+            cleaned_data.pop("value_type", None)
+
+        return cleaned_data
+
+
+class PersonIdentifierInline(admin.StackedInline):
+    model = PersonIdentifier
+    form = PersonIdentifierInlineForm
+    fields = ("value", "value_type")
+    classes = ["collapse"]
+
+
 class PersonAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("name", "gender", "birth_date", "death_date")}),
@@ -132,7 +171,7 @@ class PersonAdmin(admin.ModelAdmin):
         "image_preview",
         "image_filetype",
     )
-    inlines = [PersonImageInline, MembershipInline]
+    inlines = [PersonIdentifierInline, PersonImageInline, MembershipInline]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
