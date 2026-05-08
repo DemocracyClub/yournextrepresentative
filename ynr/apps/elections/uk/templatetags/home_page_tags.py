@@ -1,4 +1,5 @@
 from candidates.models import Ballot
+from dateutil.parser import parse
 from django import template
 from django.conf import settings
 from django.db.models import Count, F, Func, Q, Sum, TextField, Value
@@ -170,8 +171,8 @@ def results_progress(context):
     )
 
     if context["SHOW_RESULTS_PROGRESS"]:
-        election_date = settings.SOPN_TRACKER_INFO["election_date"]
-
+        election_date = parse(settings.SOPN_TRACKER_INFO["election_date"])
+        context["ELECTION_DATE"] = election_date
         context["election_name"] = settings.SOPN_TRACKER_INFO["election_name"]
         ballot_qs = Ballot.objects.filter(
             election__election_date=election_date,
