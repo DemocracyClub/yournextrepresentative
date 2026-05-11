@@ -111,7 +111,7 @@ class CandidateMatcher(object):
                     split_person_name, split_candidate_name
                 )
             )
-            return None
+            continue
         return None
 
     def _manual_matcher(self, qs):

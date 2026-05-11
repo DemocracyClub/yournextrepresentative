@@ -364,3 +364,14 @@ local.west-lancashire.2026-05-07,https://democracy.westlancs.gov.uk/mgWebService
 local.west-northamptonshire.2026-05-07,https://westnorthants.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=11
 local.west-oxfordshire.2026-05-07,https://meetings.westoxon.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=6
 local.west-sussex.2026-05-07,https://westsussex.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=30
+local.cheltenham.2026-05-07,https://democracy.cheltenham.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=24
+local.tameside.2026-05-07,https://tameside.moderngov.co.uk/mgWebService.asmx/GetElectionResults?lElectionId=67
+mayor.tower-hamlets.2026-05-07,https://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=57
+local.tower-hamlets.2026-05-07,https://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=57
+local.basildon.2026-05-07,https://www.basildonmeetings.info/mgWebService.asmx/GetElectionResults?lElectionId=61
+local.lambeth.2026-05-07,https://moderngov.lambeth.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=55
+local.richmond-upon-thames.2026-05-07,https://cabnet.richmond.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=500000006
+local.rochdale.2026-05-07,https://democracy.rochdale.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=49
+local.sutton.2026-05-07,https://moderngov.sutton.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=32
+local.kirklees.2026-05-07,https://democracy.kirklees.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=35
+local.tower-hamlets.2026-05-07,https://democracy.towerhamlets.gov.uk/mgWebService.asmx/GetElectionResults?lElectionId=56
