@@ -2,21 +2,34 @@ from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.contrib.syndication.views import Feed
+from django.contrib.syndication.views import Feed, add_domain
+from django.core.paginator import Paginator
 from django.utils.feedgenerator import Atom1Feed
 
 from .models import ResultEvent
 
+PAGE_SIZE = 300
 
-class BasicResultEventsFeed(Feed):
-    feed_type = Atom1Feed
-    title = "Election results from {site_name}".format(
-        site_name=settings.SITE_NAME
-    )
-    link = "/"
-    description = "A basic feed of election results"
 
-    def items(self):
+class RFC5005PagingMixin:
+    """
+    Mixin adding RFC 5005 (Feed Paging and Archiving) support.
+
+    Adds first/last/next/previous link elements to the feed root and
+    slices the queryset to PAGE_SIZE items per page, selected via ?page=N.
+    """
+
+    page_size = PAGE_SIZE
+
+    def get_object(self, request, *args, **kwargs):
+        try:
+            page_number = max(1, int(request.GET.get("page", 1)))
+        except (ValueError, TypeError):
+            page_number = 1
+        paginator = Paginator(self._base_queryset(), self.page_size)
+        return paginator.get_page(page_number)
+
+    def _base_queryset(self):
         return (
             ResultEvent.objects.filter(election__current=True)
             .select_related("user")
@@ -25,7 +38,54 @@ class BasicResultEventsFeed(Feed):
             .select_related("winner")
             .select_related("winner_party")
             .select_related("winner__image")
+            .order_by("-created")
         )
+
+    def items(self, page_obj):
+        return page_obj
+
+    def get_feed(self, obj, request):
+        feed = super().get_feed(obj, request)
+        page_obj = obj
+        base_url = add_domain(
+            Site.objects.get_current().domain, request.path, request.is_secure()
+        )
+
+        feed.feed["feed_url"] = f"{base_url}?page={page_obj.number}"
+
+        paging_links = [
+            ("first", f"{base_url}?page=1"),
+            ("last", f"{base_url}?page={page_obj.paginator.num_pages}"),
+        ]
+        if page_obj.has_previous():
+            paging_links.append(
+                (
+                    "previous",
+                    f"{base_url}?page={page_obj.previous_page_number()}",
+                )
+            )
+        if page_obj.has_next():
+            paging_links.append(
+                ("next", f"{base_url}?page={page_obj.next_page_number()}")
+            )
+        feed.feed["paging_links"] = paging_links
+        return feed
+
+
+class PagingAtom1Feed(Atom1Feed):
+    def add_root_elements(self, handler):
+        super().add_root_elements(handler)
+        for rel, href in self.feed.get("paging_links", []):
+            handler.addQuickElement("link", "", {"rel": rel, "href": href})
+
+
+class BasicResultEventsFeed(RFC5005PagingMixin, Feed):
+    feed_type = PagingAtom1Feed
+    title = "Election results from {site_name}".format(
+        site_name=settings.SITE_NAME
+    )
+    link = "/"
+    description = "A basic feed of election results"
 
     def item_title(self, item):
         if item.retraction:
@@ -63,8 +123,6 @@ class BasicResultEventsFeed(Feed):
         )
 
     def item_link(self, item):
-        # Assuming we're only going to show these events on the front
-        # page for the moment:
         return "/#{}".format(item.id)
 
     def item_updateddate(self, item):
@@ -79,7 +137,7 @@ class BasicResultEventsFeed(Feed):
         return "unknown"
 
 
-class ResultEventsAtomFeedGenerator(Atom1Feed):
+class ResultEventsAtomFeedGenerator(PagingAtom1Feed):
     def add_item_elements(self, handler, item):
         super().add_item_elements(handler, item)
         keys = [
