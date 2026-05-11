@@ -70,9 +70,7 @@ cdk = [
     "constructs==10.4.2",
     "pytest==9.0.3",
 ]
-production = [
-    "aws-xray-sdk==2.14.0",
-]
+production = []
 dev = [
     "django-debug-toolbar-template-timings==0.9",
     "django-debug-toolbar==4.2.0",
