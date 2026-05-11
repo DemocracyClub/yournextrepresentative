@@ -38,6 +38,7 @@ class RFC5005PagingMixin:
             .select_related("winner")
             .select_related("winner_party")
             .select_related("winner__image")
+            .order_by("-created")
         )
 
     def items(self, page_obj):

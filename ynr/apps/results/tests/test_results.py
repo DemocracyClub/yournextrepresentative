@@ -73,7 +73,7 @@ class TestResultsFeed(
         root = etree.XML(response.content)
         xml_pretty = etree.tounicode(root, pretty_print=True)
 
-        result_event = ResultEvent.objects.first()
+        result_event = ResultEvent.objects.order_by("-created").first()
         expected = """<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb">
   <title>Election results from example.com (with extra data)</title>
   <link href="http://example.com/" rel="alternate"/>
@@ -206,29 +206,30 @@ class TestResultsFeedWithRetraction(
   <updated>{updated[2]}</updated>
   <link href="http://example.com/results/all.atom?page=1" rel="first"/>
   <link href="http://example.com/results/all.atom?page=1" rel="last"/>
+  
+  
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
-    <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
-    <published>{updated[0]}</published>
-    <updated>{updated[0]}</updated>
+    <title>James Barber (Liberal Democrats) won in Dulwich and West Norwood</title>
+    <link href="http://example.com/#{item_id[2]}" rel="alternate"/>
+    <published>{updated[2]}</published>
+    <updated>{updated[2]}</updated>
     <author>
       <name>john</name>
     </author>
-    <id>http://example.com/#{item_id[0]}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated[0]} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <id>http://example.com/#{item_id[2]}</id>
+    <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
     <retraction>0</retraction>
     <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
-    <winner_person_id>4322</winner_person_id>
-    <winner_person_name>Tessa Jowell</winner_person_name>
-    <winner_party_id>party:53</winner_party_id>
-    <winner_party_name>Labour Party</winner_party_name>
+    <winner_person_id>4493</winner_person_id>
+    <winner_person_name>James Barber</winner_person_name>
+    <winner_party_id>party:90</winner_party_id>
+    <winner_party_name>Liberal Democrats</winner_party_name>
     <user_id>{user_id}</user_id>
     <post_name>Dulwich and West Norwood</post_name>
-    <information_source>Seen on the BBC news</information_source>
-    <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
+    <information_source>Seen on Sky News</information_source>
   </entry>
   <entry>
     <title>Correction: retracting the statement that Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
@@ -255,27 +256,28 @@ class TestResultsFeedWithRetraction(
     <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
   <entry>
-    <title>James Barber (Liberal Democrats) won in Dulwich and West Norwood</title>
-    <link href="http://example.com/#{item_id[2]}" rel="alternate"/>
-    <published>{updated[2]}</published>
-    <updated>{updated[2]}</updated>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
+    <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
+    <published>{updated[0]}</published>
+    <updated>{updated[0]}</updated>
     <author>
       <name>john</name>
     </author>
-    <id>http://example.com/#{item_id[2]}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
+    <id>http://example.com/#{item_id[0]}</id>
+    <summary type="html">A example.com volunteer recorded at {space_separated[0]} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
     <retraction>0</retraction>
     <election_slug>parl.2015-05-07</election_slug>
     <election_name>2015 General Election</election_name>
     <election_date>{election_date}</election_date>
     <post_id>65808</post_id>
-    <winner_person_id>4493</winner_person_id>
-    <winner_person_name>James Barber</winner_person_name>
-    <winner_party_id>party:90</winner_party_id>
-    <winner_party_name>Liberal Democrats</winner_party_name>
+    <winner_person_id>4322</winner_person_id>
+    <winner_person_name>Tessa Jowell</winner_person_name>
+    <winner_party_id>party:53</winner_party_id>
+    <winner_party_name>Labour Party</winner_party_name>
     <user_id>{user_id}</user_id>
     <post_name>Dulwich and West Norwood</post_name>
-    <information_source>Seen on Sky News</information_source>
+    <information_source>Seen on the BBC news</information_source>
+    <parlparse_id>uk.org.publicwhip/person/123456</parlparse_id>
   </entry>
 </feed>
 """.format(
@@ -307,15 +309,15 @@ class TestResultsFeedWithRetraction(
   <link href="http://example.com/results/all-basic.atom?page=1" rel="first"/>
   <link href="http://example.com/results/all-basic.atom?page=1" rel="last"/>
   <entry>
-    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
-    <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
-    <published>{updated[0]}</published>
-    <updated>{updated[0]}</updated>
+    <title>James Barber (Liberal Democrats) won in Dulwich and West Norwood</title>
+    <link href="http://example.com/#{item_id[2]}" rel="alternate"/>
+    <published>{updated[2]}</published>
+    <updated>{updated[2]}</updated>
     <author>
       <name>john</name>
     </author>
-    <id>http://example.com/#{item_id[0]}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated[0]} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+    <id>http://example.com/#{item_id[2]}</id>
+    <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
   </entry>
   <entry>
     <title>Correction: retracting the statement that Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
@@ -329,16 +331,16 @@ class TestResultsFeedWithRetraction(
     <summary type="html">At {space_separated[1]}, a example.com volunteer retracted the previous assertion that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Result recorded in error, retracting'.</summary>
   </entry>
   <entry>
-    <title>James Barber (Liberal Democrats) won in Dulwich and West Norwood</title>
-    <link href="http://example.com/#{item_id[2]}" rel="alternate"/>
-    <published>{updated[2]}</published>
-    <updated>{updated[2]}</updated>
+    <title>Tessa Jowell (Labour Party) won in Dulwich and West Norwood</title>
+    <link href="http://example.com/#{item_id[0]}" rel="alternate"/>
+    <published>{updated[0]}</published>
+    <updated>{updated[0]}</updated>
     <author>
       <name>john</name>
     </author>
-    <id>http://example.com/#{item_id[2]}</id>
-    <summary type="html">A example.com volunteer recorded at {space_separated[2]} that James Barber (Liberal Democrats) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on Sky News'.</summary>
-  </entry>
+    <id>http://example.com/#{item_id[0]}</id>
+    <summary type="html">A example.com volunteer recorded at {space_separated[0]} that Tessa Jowell (Labour Party) won the ballot in Dulwich and West Norwood, quoting the source 'Seen on the BBC news'.</summary>
+  </entry>  
 </feed>
 """.format(
             updated=[
