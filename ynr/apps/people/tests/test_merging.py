@@ -677,7 +677,7 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def test_person_attrs_to_merge(self):
         """
         Regression test to ensure that 'name' is not included in standard attrs
-        to be merged, as it is handled seperately
+        to be merged, as it is handled separately
         """
         merger = PersonMerger(self.dest_person, self.source_person)
         assert "name" not in merger.person_attrs_to_merge
