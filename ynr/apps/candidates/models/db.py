@@ -270,11 +270,25 @@ class LoggedAction(models.Model):
             output = f"{prefix} {desc}"
         return mark_safe(output)
 
+    PHOTO_ACTION_TYPES = frozenset(
+        {
+            ActionType.PHOTO_UPLOAD,
+            ActionType.PHOTO_APPROVE,
+            ActionType.PHOTO_REJECT,
+            ActionType.PHOTO_IGNORE,
+        }
+    )
+
     @property
     def diff_html(self):
         from popolo.models import VersionNotFound
 
         if not self.person:
+            return ""
+        if self.action_type in self.PHOTO_ACTION_TYPES:
+            # Photo actions don't write a Person version (the photo lives on a
+            # separate moderation queue) so there's nothing to diff - showing
+            # "Couldn't find version" here is just noise (see #2734).
             return ""
         try:
             return self.person.diff_for_version(
