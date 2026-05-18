@@ -267,7 +267,7 @@ class YnrStack(Stack):
 
         worker_desired_count = 1
         if self.dc_environment == "production":
-            worker_desired_count = 2
+            worker_desired_count = 1
 
         worker_service = ecs.FargateService(
             self,
@@ -287,7 +287,7 @@ class YnrStack(Stack):
 
         web_desired_count = 1
         if self.dc_environment == "production":
-            web_desired_count = 6
+            web_desired_count = 3
 
         web_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
