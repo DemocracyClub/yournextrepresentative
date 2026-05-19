@@ -152,9 +152,9 @@
                 No
               {% endif %}
             </td>
-            <td>{% if ballot.resultset.total_electorate %}{{ ballot.resultset.total_electorate }}{% else %}No{% endif %}</td>
-            <td>{% if ballot.resultset.num_turnout_reported %}{{ ballot.resultset.num_turnout_reported }}{% else %}No{% endif %}</td>
-            <td>{% if ballot.resultset.num_spoilt_ballots %}{{ ballot.resultset.num_spoilt_ballots }}{% else %}No{% endif %}</td>
+            <td>{% if ballot.resultset.total_electorate is not None %}{{ ballot.resultset.total_electorate }}{% else %}No{% endif %}</td>
+            <td>{% if ballot.resultset.num_turnout_reported is not None %}{{ ballot.resultset.num_turnout_reported }}{% else %}No{% endif %}</td>
+            <td>{% if ballot.resultset.num_spoilt_ballots is not None %}{{ ballot.resultset.num_spoilt_ballots }}{% else %}No{% endif %}</td>
           {% endif %}
         </tr>
       {% endfor %}
