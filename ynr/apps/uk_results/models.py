@@ -50,13 +50,13 @@ class ResultSet(TimeStampedModel):
         if (
             all(
                 [
-                    self.num_turnout_reported,
-                    self.total_electorate,
-                    self.num_spoilt_ballots,
-                    self.turnout_percentage,
+                    self.num_turnout_reported is not None,
+                    self.total_electorate is not None,
+                    self.num_spoilt_ballots is not None,
+                    self.turnout_percentage is not None,
                 ]
             )
-            and self.ballot.elected_count
+            and self.ballot.elected_count is not None
         ):
             return True
         return False
