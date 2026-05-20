@@ -56,3 +56,20 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             action.subject_html,
             '<a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham (65913)</a>',
         )
+
+    def test_diff_html_blank_for_photo_upload(self):
+        # Photo upload doesn't write a Person version (the photo lives on a
+        # separate moderation queue), so diff_html should stay quiet rather
+        # than complaining "Couldn't find version" (see #2734).
+        person = people.tests.factories.PersonFactory.create(
+            id="9876", name="Test Candidate"
+        )
+        action = LoggedAction.objects.create(
+            user=self.user,
+            action_type=ActionType.PHOTO_UPLOAD,
+            ip_address="127.0.0.1",
+            person=person,
+            popit_person_new_version="not-a-real-version",
+            source="Just for tests...",
+        )
+        self.assertEqual(action.diff_html, "")
