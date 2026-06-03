@@ -86,6 +86,16 @@ class ByElectionReason(models.TextChoices):
     The choices here are in part based on:
         UK Electoral Commission guidance on casual vacancies:
         https://www.electoralcommission.org.uk/guidance-returning-officers-administering-local-government-elections-england/casual-vacancies-and-elections/how-casual-vacancies-occur
+
+    'Disqualification' can be caused by an elected member being elected to another position.
+    Since 'DISQUALIFICATION' sounds bad, we've made special cases for by-elections triggered
+    because the member was elected to another position and is disqualified from holding both.
+    In these cases the legislation is:
+        https://www.legislation.gov.uk/ukpga/2000/22/section/9HA (ELECTED_COUNCIL_MAYOR)
+        https://commonslibrary.parliament.uk/research-briefings/cbp-10853/ (ELECTED_PARLIAMENT)
+        https://commonslibrary.parliament.uk/research-briefings/cbp-10853/ (ELECTED_STRATEGIC_AUTHORITY_MAYOR)
+        https://www.legislation.gov.uk/ukpga/2006/32/part/1/crossheading/disqualification (ELECTED_SENEDD)
+        https://www.legislation.gov.uk/ukpga/1998/46/part/I/crossheading/disqualification (ELECTED_SCOTTISH_PARLIAMENT)
     """
 
     DEATH = "DEATH", "The elected member died"
@@ -110,6 +120,26 @@ class ByElectionReason(models.TextChoices):
     RECALL_PETITION = (
         "RECALL_PETITION",
         "The elected member was recalled by a successful recall petition",
+    )
+    ELECTED_COUNCIL_MAYOR = (
+        "ELECTED_COUNCIL_MAYOR",
+        "This by-election was called because the elected member was elected mayor of the council, and cannot hold both positions.",
+    )
+    ELECTED_PARLIAMENT = (
+        "ELECTED_PARLIAMENT",
+        "This by-election was called because the elected member was elected Member of the UK Parliament, and cannot hold both positions.",
+    )
+    ELECTED_STRATEGIC_AUTHORITY_MAYOR = (
+        "ELECTED_STRATEGIC_AUTHORITY_MAYOR",
+        "This by-election was called because the elected member was elected mayor of a strategic authority, and cannot hold both positions.",
+    )
+    ELECTED_SENEDD = (
+        "ELECTED_SENEDD",
+        "This by-election was called because the elected member was elected Member of the Senedd, and cannot hold both positions.",
+    )
+    ELECTED_SCOTTISH_PARLIAMENT = (
+        "ELECTED_SCOTTISH_PARLIAMENT",
+        "This by-election was called because the elected member was elected Member of the Scottish Parliament, and cannot hold both positions.",
     )
     OTHER = "OTHER", "Other"
     UNKNOWN = "UNKNOWN", "Unknown"
@@ -334,7 +364,7 @@ class Ballot(EEModifiedMixin, models.Model):
     tags = JSONField(default=dict, blank=True)
 
     by_election_reason = models.CharField(
-        max_length=30,
+        max_length=40,
         null=False,
         blank=True,
         choices=ByElectionReason.choices,
