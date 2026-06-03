@@ -1945,11 +1945,11 @@ wheels = [
 
 [[package]]
 name = "uk-election-ids"
-version = "0.9.1"
+version = "0.10.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/62/04/eb27f5a6056630b59f51de527b057aff04236ecded3b4e6c3d4b49a4c654/uk_election_ids-0.9.1.tar.gz", hash = "sha256:504d04005ef8eff3100b0f1ad26bd8d4a23fac790cbceb98ae68081470cd413e", size = 10774, upload-time = "2024-11-12T13:16:42.729Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/90/3d8e1a6f854ef1985835f25efa25625c9237a2ecc1064e8c4924d9d84859/uk_election_ids-0.10.1.tar.gz", hash = "sha256:80d2a737eea3b3ea9ba38d047efe70aa369ec9777f01152108664f5be62b5a45", size = 11140, upload-time = "2026-06-03T09:51:12.846Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a0/d3/1aef018bac9cb3f4a10e972f8a26e25e9647c442e0f09975c9978c23145d/uk_election_ids-0.9.1-py3-none-any.whl", hash = "sha256:0f0fbd08189dde1c1588588dfefb272afef175f7da1ee9a46aea38c801fed09f", size = 11981, upload-time = "2024-11-12T13:16:41.115Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/bb/e6ea1d9e3900598d71bb9189e41eca0d2b51228ec88f2e49dd92105bbd44/uk_election_ids-0.10.1-py3-none-any.whl", hash = "sha256:121fa5fa7df02a51f2c94660c4982b7a481242ab15937158d7490ea519672b54", size = 12321, upload-time = "2026-06-03T09:51:11.799Z" },
 ]
 
 [[package]]
@@ -2258,7 +2258,7 @@ requires-dist = [
     { name = "slacker2", git = "https://github.com/symroe/slacker.git?rev=447cc8ca" },
     { name = "sorl-thumbnail", specifier = "==12.11.0" },
     { name = "sorl-thumbnail-serializer-field", git = "https://github.com/dessibelle/sorl-thumbnail-serializer-field.git?tag=0.2" },
-    { name = "uk-election-ids", specifier = "==0.9.1" },
+    { name = "uk-election-ids", specifier = "==0.10.1" },
     { name = "uk-election-timetables", specifier = "==4.4.0" },
     { name = "whitenoise", specifier = "==6.5.0" },
     { name = "wreq", specifier = "==0.10.2" },
