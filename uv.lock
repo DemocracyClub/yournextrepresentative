@@ -24,56 +24,6 @@ wheels = [
 ]
 
 [[package]]
-name = "amazon-textract-helper"
-version = "0.0.35"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "amazon-textract-caller" },
-    { name = "amazon-textract-overlayer" },
-    { name = "amazon-textract-prettyprinter" },
-    { name = "amazon-textract-response-parser" },
-    { name = "boto3" },
-    { name = "botocore" },
-    { name = "pillow" },
-    { name = "pypdf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8c/2b/e6b0aca31d5504bac5d4f9b47b8ba6cbb816c0bc787f3839456aa61138a8/amazon-textract-helper-0.0.35.tar.gz", hash = "sha256:e5dc1afc4ade3cb5aa247ca556ee26a2e8e2b5e3aa7e176f3449df445262a53d", size = 1419526, upload-time = "2023-11-14T16:47:31.73Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/a6/a16de3e84d357a68357dcda378bc80cd2def24e0065dfc0e692128f8d056/amazon_textract_helper-0.0.35-py2.py3-none-any.whl", hash = "sha256:4f727e480da17d5cf8060a5b1f1c045f61331f782c90cbd0084b20fd92808ab9", size = 298117, upload-time = "2023-11-14T16:47:29.034Z" },
-]
-
-[[package]]
-name = "amazon-textract-overlayer"
-version = "0.0.12"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "amazon-textract-caller" },
-    { name = "boto3" },
-    { name = "botocore" },
-    { name = "pillow" },
-    { name = "pypdf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/be/41/cdfc5dcab9eaf3c2b3aedc7d49bfa18cecae06d0f87e2732bf39ce2f5aa7/amazon-textract-overlayer-0.0.12.tar.gz", hash = "sha256:f6b7f87381d62a84aa8f159c218600f7e6742771a58e6126515b1849a105e288", size = 9100, upload-time = "2023-11-14T16:44:58.594Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/d6/65dd95f8807c7bba6f6ace217ae00c505504b09ca39d2c7559a2f4edff18/amazon_textract_overlayer-0.0.12-py2.py3-none-any.whl", hash = "sha256:68ac82fbee1fa8080a79cb2cba304d94e07862b856fbbaebe50fc2f23195926c", size = 9400, upload-time = "2023-11-14T16:44:57.077Z" },
-]
-
-[[package]]
-name = "amazon-textract-prettyprinter"
-version = "0.1.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "amazon-textract-response-parser" },
-    { name = "boto3" },
-    { name = "botocore" },
-    { name = "tabulate" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ae/08/3657fa43e40205729774eccebfc1b1b81c9d0a80d70c2926cca211c7fc46/amazon-textract-prettyprinter-0.1.4.tar.gz", hash = "sha256:3da1f01a05f450674ef592a9a1d77293db84818c39b704203ad50f80da46534a", size = 12039, upload-time = "2023-09-19T15:38:02.499Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1f/f9/d4229a13515f157a8d04e6178300672d0c846846a532ecf8d9b383c6c2f7/amazon_textract_prettyprinter-0.1.4-py2.py3-none-any.whl", hash = "sha256:bcfe3677e056f38acddb462d3fcd8b2621c8c3dc325f5dd96ba1e38ebb17d496", size = 13417, upload-time = "2023-09-19T15:38:00.417Z" },
-]
-
-[[package]]
 name = "amazon-textract-response-parser"
 version = "1.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1532,20 +1482,11 @@ wheels = [
 
 [[package]]
 name = "pypdf"
-version = "3.17.4"
+version = "6.12.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6a/28/81460a77a64bb1e5254e37d4fa855e0a0549634a717bd4e407cba5fc92c6/pypdf-3.17.4.tar.gz", hash = "sha256:ec96e2e4fc9648ac609d19c00d41e9d606e0ae2ce5a0bbe7691426f5f157166a", size = 276323, upload-time = "2023-12-24T10:41:09.674Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/6d/20879428577c1e57ecd41b69dc86beabf43db9287ad2e702207f8b48c751/pypdf-6.12.2.tar.gz", hash = "sha256:111669eb6680c04495ae0c113a1476e3bf93a95761d23c7406b591c80a6490b1", size = 6468184, upload-time = "2026-05-26T13:31:26.911Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/10/055b649e914ad8c5d07113c22805014988825abbeff007b0e89255b481fa/pypdf-3.17.4-py3-none-any.whl", hash = "sha256:6aa0f61b33779b64486de3f42835d3668badd48dac4a536aeb87da187a5eacd2", size = 278159, upload-time = "2023-12-24T10:41:06.79Z" },
-]
-
-[[package]]
-name = "pypdf2"
-version = "2.12.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/77/d6/afcbdb452c335bccf22ec8ac5ac27b03222f9be8b96043bcce87ba1ce32a/PyPDF2-2.12.1.tar.gz", hash = "sha256:e03ef18abcc75da741a0acc1a7749253496887be38cd9887bcce1cee393da45e", size = 218096, upload-time = "2022-12-10T18:28:53.225Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2e/40/4f997b7cf72d89bb5aafd57b01dfa0be4e9560c8e5b993fde3986b3904f9/pypdf2-2.12.1-py3-none-any.whl", hash = "sha256:41ff16ee122bad9790d57a4235281a838002d7f1cc8d631d91b6f65d709bd825", size = 222844, upload-time = "2022-12-10T18:28:49.6Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/44/fee070a16639d9869bb6a7e0f3a1b3946da1d66f32b9260b4d19cb90d7b2/pypdf-6.12.2-py3-none-any.whl", hash = "sha256:67b2699357a1f3f4c945940ea80826349ee507c9e2577724a14b4941982c104d", size = 343865, upload-time = "2026-05-26T13:31:25.068Z" },
 ]
 
 [[package]]
@@ -2120,8 +2061,6 @@ name = "yournextrepresentative"
 version = "0.0.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "amazon-textract-helper" },
-    { name = "amazon-textract-response-parser" },
     { name = "amazon-textract-textractor", extra = ["pdf"] },
     { name = "beautifulsoup4" },
     { name = "blessed" },
@@ -2161,7 +2100,7 @@ dependencies = [
     { name = "pillow" },
     { name = "psycopg" },
     { name = "pypandoc-binary" },
-    { name = "pypdf2" },
+    { name = "pypdf" },
     { name = "python-dateutil" },
     { name = "python-dotenv" },
     { name = "python-magic" },
@@ -2207,8 +2146,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "amazon-textract-helper", specifier = "==0.0.35" },
-    { name = "amazon-textract-response-parser", specifier = "==1.0.3" },
     { name = "amazon-textract-textractor", extras = ["pdf"], specifier = "==1.9.2" },
     { name = "beautifulsoup4", specifier = "==4.12.0" },
     { name = "blessed", specifier = "==1.20.0" },
@@ -2248,7 +2185,7 @@ requires-dist = [
     { name = "pillow", specifier = "==12.2.0" },
     { name = "psycopg", specifier = "==3.1.12" },
     { name = "pypandoc-binary", specifier = "==1.14" },
-    { name = "pypdf2", specifier = "==2.12.1" },
+    { name = "pypdf", specifier = "==6.12.2" },
     { name = "python-dateutil", specifier = "==2.8.2" },
     { name = "python-dotenv", specifier = "==1.2.2" },
     { name = "python-magic", specifier = "==0.4.27" },

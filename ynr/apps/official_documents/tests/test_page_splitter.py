@@ -14,8 +14,8 @@ from official_documents.extract_pages import (
     PDFProcessingError,
 )
 from official_documents.models import BallotSOPN, ElectionSOPN
-from PyPDF2 import PdfReader, PdfWriter
-from PyPDF2.errors import DependencyError, PdfReadError
+from pypdf import PdfReader, PdfWriter
+from pypdf.errors import DependencyError, PdfReadError
 
 
 class ElectionSOPNPageSplitterTestCase(UK2015ExamplesMixin, TestCase):

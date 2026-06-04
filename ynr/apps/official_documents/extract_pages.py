@@ -10,8 +10,8 @@ from official_documents.models import (
     PageMatchingMethods,
     add_ballot_sopn,
 )
-from PyPDF2 import PdfReader, PdfWriter
-from PyPDF2.errors import DependencyError, PdfReadError
+from pypdf import PdfReader, PdfWriter
+from pypdf.errors import DependencyError, PdfReadError
 
 
 class PDFProcessingError(ValueError):
