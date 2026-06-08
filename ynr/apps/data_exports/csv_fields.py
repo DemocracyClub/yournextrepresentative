@@ -309,7 +309,6 @@ for identifier in PersonIdentifierFields:
         label=identifier.value,
     )
 
-
 csv_fields["mnis_id"] = CSVField(
     type="expr",
     value=F("identifiers__mnis_id"),
@@ -336,6 +335,13 @@ csv_fields["birth_date"] = CSVField(
     value=F("person__birth_date"),
     value_group="person",
     label="Year of birth",
+)
+
+csv_fields["death_date"] = CSVField(
+    type="expr",
+    value=F("person__death_date"),
+    value_group="person",
+    label="Date of death",
 )
 
 csv_fields["favourite_biscuit"] = CSVField(
@@ -366,7 +372,6 @@ csv_fields["person_last_updated"] = CSVField(
     value_group="person",
     label="Person last updated",
 )
-
 
 storages_url = default_storage.url("")
 
