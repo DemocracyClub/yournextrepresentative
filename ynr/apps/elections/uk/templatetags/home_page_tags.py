@@ -231,7 +231,8 @@ def by_election_ctas(context):
 
         all_ballots = (
             Ballot.objects.filter(
-                election__current=True, ballot_paper_id__contains=".by."
+                Q(ballot_paper_id__contains=".by.") | Q(replaces__isnull=False),
+                election__current=True,
             )
             .exclude(election__election_date__in=dates_to_ignore)
             .order_by("election__election_date", "election")
