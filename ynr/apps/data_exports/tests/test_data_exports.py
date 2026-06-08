@@ -255,6 +255,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "twfy_id",
                 "gender",
                 "birth_date",
+                "death_date",
                 "favourite_biscuit",
                 "statement_to_voters",
                 "statement_last_updated",
