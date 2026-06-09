@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile
 
 import requests
 from candidates.models.db import ActionType, LoggedAction
-from candidates.views.version_data import get_client_ip
+from candidates.views.version_data import get_change_metadata, get_client_ip
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -32,14 +32,23 @@ def image_form_valid_response(request, person, image_form):
     queued_image = image_form.save(commit=False)
     queued_image.user = request.user
     queued_image.save()
-    # Record that action:
+    # TODO: Record this action and update the person versions.
+    # this needs a separate path than the usual record_version
+    change_metadata = get_change_metadata(
+        request, information_source=image_form.cleaned_data["why_allowed"]
+    )
+    change_metadata.update({"photo-upload": True})
+
+    person.record_version(change_metadata)
+    person.save()
+
     LoggedAction.objects.create(
         user=request.user,
         action_type=ActionType.PHOTO_UPLOAD,
         ip_address=get_client_ip(request),
         popit_person_new_version="",
         person=person,
-        source=image_form.cleaned_data["justification_for_use"],
+        source=image_form.cleaned_data["why_allowed"],
     )
     return HttpResponseRedirect(
         reverse("photo-upload-success", kwargs={"person_id": person.id})
