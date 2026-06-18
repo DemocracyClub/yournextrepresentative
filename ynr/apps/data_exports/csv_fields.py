@@ -72,6 +72,22 @@ csv_fields["person_name"] = CSVField(
     label="Person name",
 )
 
+csv_fields["honorific_prefix"] = CSVField(
+    value=F("person__honorific_prefix"),
+    type="expr",
+    core=True,
+    value_group="person",
+    label="Honorific Prefix",
+)
+
+csv_fields["honorific_suffix"] = CSVField(
+    value=F("person__honorific_suffix"),
+    type="expr",
+    core=True,
+    value_group="person",
+    label="Honorific Suffix",
+)
+
 csv_fields["election_id"] = CSVField(
     value=F("ballot_paper__election__slug"),
     type="expr",
