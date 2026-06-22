@@ -15,6 +15,7 @@ from moderation_queue.review_required_helper import (
     REVIEW_TYPES,
 )
 from moderation_queue.slack import post_action_to_slack
+from popolo.models import VersionNotFound
 
 
 class LoggedActionQuerySet(models.QuerySet):
@@ -271,9 +272,16 @@ class LoggedAction(models.Model):
         return mark_safe(output)
 
     @property
-    def diff_html(self):
-        from popolo.models import VersionNotFound
+    def version_dict(self):
+        if not self.person:
+            return ""
+        try:
+            return self.person.version_dict(self.popit_person_new_version)
+        except VersionNotFound:
+            return None
 
+    @property
+    def diff_html(self):
         if not self.person:
             return ""
         try:

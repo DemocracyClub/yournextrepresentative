@@ -640,17 +640,18 @@ class Person(TimeStampedModel, models.Model):
             versions = []
         return get_version_diffs(versions)
 
-    def diff_for_version(self, version_id, inline_style=False):
+    def version_dict(self, version_id):
         versions = self.versions or []
-        all_version_diffs = get_version_diffs(versions)
-        right_version_diff = None
-        for version_diff in all_version_diffs:
+        if not hasattr(self, "_version_diff_cache"):
+            self._version_diff_cache = get_version_diffs(versions)
+        for version_diff in self._version_diff_cache:
             if version_diff["version_id"] == version_id:
-                right_version_diff = version_diff
-                break
-        if not right_version_diff:
-            msg = "Couldn't find version {0} for person with ID {1}"
-            raise VersionNotFound(msg.format(version_id, self.id))
+                return version_diff
+        msg = "Couldn't find version {0} for person with ID {1}"
+        raise VersionNotFound(msg.format(version_id, self.id))
+
+    def diff_for_version(self, version_id, inline_style=False):
+        right_version_diff = self.version_dict(version_id)
         template = loader.get_template("candidates/_diffs_against_parents.html")
         rendered = template.render(
             {
