@@ -325,7 +325,7 @@ class LoggedAction(models.Model):
 
     def save(self, **kwargs):
         has_initial_pk = self.pk
-        if not kwargs.get("review_not_required", False):
+        if not kwargs.pop("review_not_required", False):
             self.set_review_required()
 
         if self.person:

@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from candidates.models import LoggedAction
+from candidates.models.db import ActionType, EditType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
@@ -85,6 +87,24 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             },
         ]
 
+    def create_logged_actions_from_versions(self, person: Person):
+        """
+        A helper function to create logged actions from a pre-defined
+         version dict
+
+        :return:
+        """
+        for version in reversed(person.versions):
+            action = LoggedAction(
+                edit_type=EditType.USER,
+                action_type=ActionType.PERSON_UPDATE,
+                person=person,
+                popit_person_new_version=version["version_id"],
+                user=self.user,
+                created=version["timestamp"],
+            )
+            action.save(review_not_required=True)
+
     def setUp(self):
         super().setUp()
         person = PersonFactory.create(
@@ -92,6 +112,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             name="Tessa Jowell",
             versions=self.version_template(party_slug=self.labour_party.ec_id),
         )
+        self.create_logged_actions_from_versions(person)
         PersonIdentifier.objects.create(
             person=person, value="jowell@example.com", value_type="email"
         )
