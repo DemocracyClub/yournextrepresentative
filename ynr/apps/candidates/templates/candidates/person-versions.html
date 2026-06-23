@@ -32,7 +32,9 @@
                     <dd>{{ action.created }}</dd>
                     <dt>Source</dt>
                     <dd>{{ action.source }}</dd>
-                    {% if person_edits_allowed and action.popit_person_new_version and not forloop.first %}
+                    {% if action.popit_person_new_version %}
+                        {{ action.diff_html }}
+                    	{% if person_edits_allowed and not forloop.first %}
                         <dt>Revert to this</dt>
                         <dd>
                             <form id="revert-form-{{ action.popit_person_new_version }}"
@@ -45,7 +47,9 @@
                                 <input type="submit" class="button tiny alert" value="Revert"/>
                             </form>
                         </dd>
+                        {% endif %}
                     {% endif %}
+
                 </dl>
             </div>
         {% endfor %}

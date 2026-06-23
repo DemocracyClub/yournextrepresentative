@@ -289,7 +289,7 @@ class LoggedAction(models.Model):
                 self.popit_person_new_version, inline_style=True
             )
         except VersionNotFound as e:
-            return "<p>{}</p>".format(escape(str(e)))
+            return mark_safe("<p>{}</p>".format(escape(str(e))))
 
     def changed_version_fields(self):
         if not self.version_fields:

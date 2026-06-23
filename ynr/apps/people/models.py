@@ -24,7 +24,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html
-from django.utils.safestring import SafeString
+from django.utils.safestring import SafeString, mark_safe
 from django_extensions.db.models import TimeStampedModel
 from people.helpers import person_names_equal
 from people.managers import (
@@ -661,7 +661,7 @@ class Person(TimeStampedModel, models.Model):
         )
         from people.helpers import squash_whitespace
 
-        return squash_whitespace("<dl>{}</dl>".format(rendered))
+        return mark_safe(squash_whitespace("<dl>{}</dl>".format(rendered)))
 
     def update_complex_field(self, location, new_value):
         existing_info_types = [location.info_type]
