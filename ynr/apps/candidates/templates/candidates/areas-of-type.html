@@ -19,13 +19,13 @@
     {% if forloop.first %}
       <ul>
     {% endif %}
-      <li><a href="{{ area_url }}">{{ area_name }}</a></li>
+    <li><a href="{{ area_url }}">{{ area_name }}</a></li>
     {% if forloop.last %}
       </ul>
     {% endif %}
   {% empty %}
     <p>
-        No areas found of type {{ area_type.name }}.
+      No areas found of type {{ area_type.name }}.
     </p>
   {% endfor %}
 

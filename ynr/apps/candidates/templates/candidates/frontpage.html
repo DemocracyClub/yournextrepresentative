@@ -5,26 +5,26 @@
 
 {% block extra_head %}
     <!-- Open Graph and Twitter card data -->
-    <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" name="twitter:title" content="{{ site.name }}" />
-    <meta property="og:description" name="twitter:description" content="{{ site.name }} - {{ election_data.name}} candidates">
+  <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
+  <meta property="og:title" name="twitter:title" content="{{ site.name }}" />
+  <meta property="og:description" name="twitter:description" content="{{ site.name }} - {{ election_data.name}} candidates">
 
     <!-- Open Graph data -->
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="og:image:height" content="80" />
-    <meta property="og:image:width" content="80" />
-    <meta property="og:site_name" content="{{ site.name }}" />
-    <meta property="og:locale" content="en-gb" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
+  <meta property="og:image:height" content="80" />
+  <meta property="og:image:width" content="80" />
+  <meta property="og:site_name" content="{{ site.name }}" />
+  <meta property="og:locale" content="en-gb" />
 
     <!-- Twitter card data -->
-    <meta name="twitter:card" content="summary" />
-    {% if settings.TWITTER_USERNAME %}
-      <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
-    {% endif %}
-    <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="twitter:image:height" content="120" />
-    <meta property="twitter:image:width" content="120" />
+  <meta name="twitter:card" content="summary" />
+  {% if settings.TWITTER_USERNAME %}
+    <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
+  {% endif %}
+  <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
+  <meta property="twitter:image:height" content="120" />
+  <meta property="twitter:image:width" content="120" />
 {% endblock %}
 
 {% block body_class %}finder{% endblock %}
@@ -39,124 +39,124 @@
 
 {% block content %}
 
-<div class="finder__forms">
+  <div class="finder__forms">
 
-  {% block finder_forms %}
-    <form id="form-address" action="{% url 'lookup-address' %}" method="post">
-      {{ form.as_p }}
-      <div class="js-geolocation-link" data-link-text="Use my current location" data-loading-text="Getting location…"></div>
-      <input type="submit" class="button" value="Show candidates">
-    </form>
-  {% endblock %}
-
-</div>
-
-</div><!-- close .container so we can go full width with .finder__description -->
-
-<div class="finder__description">
-  <div class="container">
-    {% block description %}
-    <p>This is a crowd-sourced database of election candidates.
-    </p>
-    {% url 'api-home' as api_url %}
-    <p>The database is transparently sourced and
-      available as structured data, suitable for building other election
-      websites. <a href="{{ api_url }}">Get the data now</a>, or
-      help by contributing new candidate details.
-    </p>
+    {% block finder_forms %}
+      <form id="form-address" action="{% url 'lookup-address' %}" method="post">
+        {{ form.as_p }}
+        <div class="js-geolocation-link" data-link-text="Use my current location" data-loading-text="Getting location…"></div>
+        <input type="submit" class="button" value="Show candidates">
+      </form>
     {% endblock %}
+
   </div>
-</div>
 
-<div class="container"><!-- reopen new .container -->
+  </div><!-- close .container so we can go full width with .finder__description -->
 
-<div class="finder__activity">
-  {% block recent_changes %}
-    <div class="finder__activity__changes">
-      <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
-      <ol>
-        {% for action in recent_actions %}
-          <li>{% with username=action.user.username when=action.created|timesince person_id=action.person.id person_name=action.person.name %}
-            {% url 'person-view' person_id=person_id as person_url %}
-            {% if action.action_type == 'person-create' %}
-              {% if person_id %}
-                User <strong>{{ username }}</strong>
-                created <a href="{{ person_url }}">a new candidate</a>
-                <span class="when">{{ when }} ago</span>
-              {% else %}
-                User <strong>{{ username }}</strong> is creating a new candidate
-                <span class="when">{{ when }} ago</span>
-              {% endif %}
-            {% elif action.action_type == 'person-merge' %}
-              User <strong>{{ username }}</strong>
-              merged another candidate into <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'photo-upload' %}
-              User <strong>{{ username }}</strong>
-              uploaded a photo of <a href="{{ person_url }}">{{ person_name }}</a> for moderation
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'photo-approve' %}
-              User <strong>{{ username }}</strong>
-              approved an uploaded photo of <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'photo-reject' %}
-              User <strong>{{ username }}</strong>
-              rejected an uploaded photo of <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'person-revert' %}
-              User <strong>{{ username }}</strong>
-              reverted to an earlier version of <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'candidacy-create' %}
-              User <strong>{{ username }}</strong>
-              confirmed candidacy for <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'candidacy-delete' %}
-              User <strong>{{ username }}</strong>
-              removed candidacy for <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'constituency-lock' %}
-              User <strong>{{ username }}</strong> locked a constituency <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'constituency-unlock' %}
-              User <strong>{{ username }}</strong> unlocked a constituency <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'set-candidate-elected' %}
-              User <strong>{{ username }}</strong>
-              marked <a href="{{ person_url }}">{{ person_name }}</a> as the winner
-              <span class="when">{{ when }} ago</span>
-            {% elif action.action_type == 'person-other-name-create' %}
-              User <strong>{{ username }}</strong>
-              added an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
-            {% elif action.action_type == 'person-other-name-delete' %}
-              User <strong>{{ username }}</strong>
-              removed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
-            {% elif action.action_type == 'person-other-name-update' %}
-              User <strong>{{ username }}</strong>
-              changed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
-            {% else %}
-              User <strong>{{ username }}</strong>
-              updated <a href="{{ person_url }}">{{ person_name }}</a>
-              <span class="when">{{ when }} ago</span>
-            {% endif %}
-          {% endwith %}</li>
-        {% endfor %}
-      </ol>
-      <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+  <div class="finder__description">
+    <div class="container">
+      {% block description %}
+        <p>This is a crowd-sourced database of election candidates.
+        </p>
+        {% url 'api-home' as api_url %}
+        <p>The database is transparently sourced and
+          available as structured data, suitable for building other election
+          websites. <a href="{{ api_url }}">Get the data now</a>, or
+          help by contributing new candidate details.
+        </p>
+      {% endblock %}
     </div>
-  {% endblock %}
-  {% block leaderboard %}
-    <div class="finder__activity__leaderboard">
-      <h2><a href="{% url 'leaderboard' %}">Top users this week</a></h2>
-      <ol>
-        {% for row in top_users %}
-          <li><strong>{{ row.username }}</strong>
-          <span class="edits">
-             {{ row.edit_count}} edits
-          </span></li>
-        {% endfor %}
-      </ol>
-      <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
+  </div>
+
+  <div class="container"><!-- reopen new .container -->
+
+    <div class="finder__activity">
+      {% block recent_changes %}
+        <div class="finder__activity__changes">
+          <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
+          <ol>
+            {% for action in recent_actions %}
+              <li>{% with username=action.user.username when=action.created|timesince person_id=action.person.id person_name=action.person.name %}
+                {% url 'person-view' person_id=person_id as person_url %}
+                {% if action.action_type == 'person-create' %}
+                  {% if person_id %}
+                    User <strong>{{ username }}</strong>
+                    created <a href="{{ person_url }}">a new candidate</a>
+                    <span class="when">{{ when }} ago</span>
+                  {% else %}
+                    User <strong>{{ username }}</strong> is creating a new candidate
+                    <span class="when">{{ when }} ago</span>
+                  {% endif %}
+                {% elif action.action_type == 'person-merge' %}
+                  User <strong>{{ username }}</strong>
+                  merged another candidate into <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'photo-upload' %}
+                  User <strong>{{ username }}</strong>
+                  uploaded a photo of <a href="{{ person_url }}">{{ person_name }}</a> for moderation
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'photo-approve' %}
+                  User <strong>{{ username }}</strong>
+                  approved an uploaded photo of <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'photo-reject' %}
+                  User <strong>{{ username }}</strong>
+                  rejected an uploaded photo of <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'person-revert' %}
+                  User <strong>{{ username }}</strong>
+                  reverted to an earlier version of <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'candidacy-create' %}
+                  User <strong>{{ username }}</strong>
+                  confirmed candidacy for <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'candidacy-delete' %}
+                  User <strong>{{ username }}</strong>
+                  removed candidacy for <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'constituency-lock' %}
+                  User <strong>{{ username }}</strong> locked a constituency <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'constituency-unlock' %}
+                  User <strong>{{ username }}</strong> unlocked a constituency <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'set-candidate-elected' %}
+                  User <strong>{{ username }}</strong>
+                  marked <a href="{{ person_url }}">{{ person_name }}</a> as the winner
+                  <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'person-other-name-create' %}
+                  User <strong>{{ username }}</strong>
+                  added an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
+                {% elif action.action_type == 'person-other-name-delete' %}
+                  User <strong>{{ username }}</strong>
+                  removed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
+                {% elif action.action_type == 'person-other-name-update' %}
+                  User <strong>{{ username }}</strong>
+                  changed an alternate name for <a href="{{ person_url }}">{{ person_name }}</a>
+                {% else %}
+                  User <strong>{{ username }}</strong>
+                  updated <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
+                {% endif %}
+              {% endwith %}</li>
+            {% endfor %}
+          </ol>
+          <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
+        </div>
+      {% endblock %}
+      {% block leaderboard %}
+        <div class="finder__activity__leaderboard">
+          <h2><a href="{% url 'leaderboard' %}">Top users this week</a></h2>
+          <ol>
+            {% for row in top_users %}
+              <li><strong>{{ row.username }}</strong>
+                <span class="edits">
+                  {{ row.edit_count}} edits
+                </span></li>
+            {% endfor %}
+          </ol>
+          <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>
+        </div>
+      {% endblock %}
     </div>
-  {% endblock %}
-</div>
 
 {% endblock %}

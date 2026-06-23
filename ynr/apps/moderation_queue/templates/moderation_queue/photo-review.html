@@ -5,11 +5,11 @@
 {% load thumbnail %}
 
 {% block extra_css %}
-{% stylesheet 'image-review' %}
+  {% stylesheet 'image-review' %}
 {% endblock %}
 
 {% block extra_js %}
-{% javascript 'image-review' %}
+  {% javascript 'image-review' %}
 {% endblock %}
 
 {% block body_class %}{% endblock %}
@@ -22,125 +22,125 @@
 
 {% block content %}
 
-<div class="photo-review__primary">
+  <div class="photo-review__primary">
 
-  <p>{{ form.errors }}</p>
+    <p>{{ form.errors }}</p>
 
-  {% include 'moderation_queue/_photo-policy.html' %}
+    {% include 'moderation_queue/_photo-policy.html' %}
 
-  {% url 'person-view' person.id person.name|slugify as url %}
-  <p>
-    Please check that this is really <a href="{{ url }}">{{ person.name }}</a>
-    (<a href="{{ person.last_candidacy.ballot.get_absolute_url }}">
-      {{ person.last_party.name }}, {{ person.last_candidacy.ballot.ballot_paper_id }}
-    </a>) before approving the upload.<br>This
-    <a href="{{ google_image_search_url }}" target="_blank" >Google Image search for candidate
-    details</a> may be a good start.
-  </p>
-
-  <p>
-  If you're trying to find the likely <em>source</em> of this image, you can
-  also do a <a href="{{ google_reverse_image_search_url }}" target="_blank" >reverse image
-  search</a> on the uploaded image.</p>
-
-  <h4>Click and drag in the image to crop</h4>
-
-  <p>Please crop to just around the candidate's head, since
-  they're displayed in thumbnail form on the site.</p>
-
-  <div class="image-for-review-container">
-    <img id="image-for-review"
-      data-has-crop-bounds="{{ has_crop_bounds }}"
-      data-default-min-x="{{ guessed_crop_bounds.0 }}"
-      data-default-min-y="{{ guessed_crop_bounds.1 }}"
-      data-default-max-x="{{ guessed_crop_bounds.2 }}"
-      data-default-max-y="{{ guessed_crop_bounds.3 }}"
-      src="{{ queued_image.image.url }}">
-  </div>
-
-  <form id="photo-review-form" method="post">
-
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-
+    {% url 'person-view' person.id person.name|slugify as url %}
     <p>
-        {{ form.queued_image_id }}
+      Please check that this is really <a href="{{ url }}">{{ person.name }}</a>
+      (<a href="{{ person.last_candidacy.ballot.get_absolute_url }}">
+        {{ person.last_party.name }}, {{ person.last_candidacy.ballot.ballot_paper_id }}
+      </a>) before approving the upload.<br>This
+      <a href="{{ google_image_search_url }}" target="_blank" >Google Image search for candidate
+        details</a> may be a good start.
     </p>
 
-    <div class="crop-coordinates">
-      <p>
-        {{ form.x_min.errors }}
-        <label for="{{ form.x_min.id_for_label }}">Minimum X co-ordinate:</label>
-        {{ form.x_min }}
-      </p>
-      <p>
-        {{ form.x_max.errors }}
-        <label for="{{ form.x_max.id_for_label }}">Maximum X co-ordinate:</label>
-        {{ form.x_max }}
-      </p>
-      <p>
-        {{ form.y_min.errors }}
-        <label for="{{ form.y_min.id_for_label }}">Minimum Y co-ordinate:</label>
-        {{ form.y_min }}
-      </p>
-      <p>
-        {{ form.y_max.errors }}
-        <label for="{{ form.y_max.id_for_label }}">Maximum Y co-ordinate:</label>
-        {{ form.y_max }}
-      </p>
+    <p>
+      If you're trying to find the likely <em>source</em> of this image, you can
+      also do a <a href="{{ google_reverse_image_search_url }}" target="_blank" >reverse image
+        search</a> on the uploaded image.</p>
+
+    <h4>Click and drag in the image to crop</h4>
+
+    <p>Please crop to just around the candidate's head, since
+      they're displayed in thumbnail form on the site.</p>
+
+    <div class="image-for-review-container">
+      <img id="image-for-review"
+           data-has-crop-bounds="{{ has_crop_bounds }}"
+           data-default-min-x="{{ guessed_crop_bounds.0 }}"
+           data-default-min-y="{{ guessed_crop_bounds.1 }}"
+           data-default-max-x="{{ guessed_crop_bounds.2 }}"
+           data-default-max-y="{{ guessed_crop_bounds.3 }}"
+           src="{{ queued_image.image.url }}">
     </div>
-    
-   
-    <h4>Your decision</h4>
 
-    <div id="moderator-photo-decision">
+    <form id="photo-review-form" method="post">
 
-      <fieldset id="id_decision">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <p>
+        {{ form.queued_image_id }}
+      </p>
+
+      <div class="crop-coordinates">
+        <p>
+          {{ form.x_min.errors }}
+          <label for="{{ form.x_min.id_for_label }}">Minimum X co-ordinate:</label>
+          {{ form.x_min }}
+        </p>
+        <p>
+          {{ form.x_max.errors }}
+          <label for="{{ form.x_max.id_for_label }}">Maximum X co-ordinate:</label>
+          {{ form.x_max }}
+        </p>
+        <p>
+          {{ form.y_min.errors }}
+          <label for="{{ form.y_min.id_for_label }}">Minimum Y co-ordinate:</label>
+          {{ form.y_min }}
+        </p>
+        <p>
+          {{ form.y_max.errors }}
+          <label for="{{ form.y_max.id_for_label }}">Maximum Y co-ordinate:</label>
+          {{ form.y_max }}
+        </p>
+      </div>
+
+
+      <h4>Your decision</h4>
+
+      <div id="moderator-photo-decision">
+
+        <fieldset id="id_decision">
           {{ form.decision.errors }}
           {% for radio in form.decision %}
-          <div class="multiple-choice">
-            {{ radio.tag }}
-            <label for="id_{{ form.decision.html_name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
-          </div>
+            <div class="multiple-choice">
+              {{ radio.tag }}
+              <label for="id_{{ form.decision.html_name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+            </div>
           {% endfor %}
-      </fieldset>
+        </fieldset>
 
-      <fieldset class="moderator-reason">
-        <h4>Why <em>you</em> think it's allowed</h4>
+        <fieldset class="moderator-reason">
+          <h4>Why <em>you</em> think it's allowed</h4>
           {{ form.moderator_why_allowed.errors }}
           {# <label for="{{ moderator_why_allowed.id_for_label }}"> #}
           {# </label> #}
           {% for radio in form.moderator_why_allowed %}
-          <div class="multiple-choice">
-            {{ radio.tag }}
-            <label for="id_{{ form.moderator_why_allowed.html_name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
-          </div>
+            <div class="multiple-choice">
+              {{ radio.tag }}
+              <label for="id_{{ form.moderator_why_allowed.html_name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+            </div>
           {% endfor %}
 
-      </fieldset>
+        </fieldset>
 
-      {% if queued_image.user %}
-        <fieldset class="rejection_reason">
+        {% if queued_image.user %}
+          <fieldset class="rejection_reason">
             {{ form.rejection_reason.errors }}
             <label for="{{ form.rejection_reason.id_for_label }}">
               Reason for rejection (<strong>Warning:</strong> this will be
               emailed to the user):
             </label>
             {{ form.rejection_reason }}
-        </fieldset>
-      {% else %}
-        <input type="hidden" id="id_rejection_reason" name="rejection_reason" value="">
-      {% endif %}
+          </fieldset>
+        {% else %}
+          <input type="hidden" id="id_rejection_reason" name="rejection_reason" value="">
+        {% endif %}
 
-      <input type="submit" id="decision-submit" class="button" value="Submit">
+        <input type="submit" id="decision-submit" class="button" value="Submit">
 
-      <a href="{% url 'photo-review-list' %}" class="button">Cancel</a>
-    </div>
+        <a href="{% url 'photo-review-list' %}" class="button">Cancel</a>
+      </div>
 
-    <p>
-    {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
-      <details>
-        <summary>Facial recognition data (click to expand)</summary>
+      <p>
+        {% if queued_image.detection_metadata and queued_image.user.is_superuser %}
+          <details>
+            <summary>Facial recognition data (click to expand)</summary>
         <pre>{{ queued_image.detection_metadata | pprint}}<pre>
       </details>
     {% elif not queued_image.detection_metadata %}

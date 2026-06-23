@@ -4,36 +4,36 @@
   {% if ballot.has_lock_suggestion %}
     {% if not current_user_suggested_lock %}
       <form method=post action="{% url 'remove-lock-suggestion-ajax' %}">
-      {% csrf_token %}
-      <input type="hidden" name="ballot" value="{{ ballot.ballot_paper_id }}">
-      <button type="submit" class="button small alert">Remove suggested lock</button>
+        {% csrf_token %}
+        <input type="hidden" name="ballot" value="{{ ballot.ballot_paper_id }}">
+        <button type="submit" class="button small alert">Remove suggested lock</button>
       </form>
     {% endif %}
   {% elif candidates.exists %}
     <button class="button small" aria-expanded="false" aria-controls="suggest_lock_form" data-toggle>Suggest locking</button>
     <form class="source-confirmation" method=post id="suggest_lock_form" action="{% url 'suggest-lock-create' ballot_paper_id=ballot.ballot_paper_id %}" hidden>
-    {% csrf_token %}
-    <p>
-      If you think the candidates for this ballot is complete,
-      please suggest that we lock it.
-    </p>
-    <p>
-      Please only do this with good reason, for example if you have reviewed
-      the official lists of candidates ("Nomination papers" or
-      "Statement of Persons Nominated") linked to above.
-    </p>
+      {% csrf_token %}
+      <p>
+        If you think the candidates for this ballot is complete,
+        please suggest that we lock it.
+      </p>
+      <p>
+        Please only do this with good reason, for example if you have reviewed
+        the official lists of candidates ("Nomination papers" or
+        "Statement of Persons Nominated") linked to above.
+      </p>
 
-    <p>
-      Locking a list means that candidates can't be added or removed, but
-      their details can still be edited. This is useful when we know that
-      the list is final.
-    </p>
+      <p>
+        Locking a list means that candidates can't be added or removed, but
+        their details can still be edited. This is useful when we know that
+        the list is final.
+      </p>
 
 
-    {{ suggest_lock_form.justification.label_tag }}
-    <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>
-    {{ suggest_lock_form.justification }}
-        <button type="submit" class="button small secondary">Suggest locking</button>
+      {{ suggest_lock_form.justification.label_tag }}
+      <label for="{{ suggest_lock_form.justification.id_for_label }}">{{ suggest_lock_form.justification.help_text }}</label>
+      {{ suggest_lock_form.justification }}
+      <button type="submit" class="button small secondary">Suggest locking</button>
     </form>
   {% endif %}
 

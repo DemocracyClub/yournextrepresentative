@@ -29,12 +29,12 @@
 
             {% if user_can_upload_documents %}
                 <p>
-                  If there are problems with the page splitting, you can
-                  <a
-                    href="{% url "election_sopn_match_pages_view" election_id=object.election.slug pk=object.sopn.election_sopn.pk %}"
-                  >
-                    fix them here
-                  </a>.
+                    If there are problems with the page splitting, you can
+                    <a
+                        href="{% url "election_sopn_match_pages_view" election_id=object.election.slug pk=object.sopn.election_sopn.pk %}"
+                    >
+                        fix them here
+                    </a>.
                 </p>
             {% endif %}
         {% endif %}

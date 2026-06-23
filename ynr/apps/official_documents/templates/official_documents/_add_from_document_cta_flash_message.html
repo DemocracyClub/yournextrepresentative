@@ -4,12 +4,12 @@
 {% if remaining_posts.exists and remaining_posts.count > 1 %}
   <p>The document you have open has information on
     <strong>{{ remaining_posts.count }}
-    more ward{{ remaining_posts.count|pluralize }}</strong>.</p>
+      more ward{{ remaining_posts.count|pluralize }}</strong>.</p>
   <p><a href="{{ remaining_posts.0.ballot.get_bulk_add_url }}" class="button">
-  Continue adding candidates</a></p>
+    Continue adding candidates</a></p>
 {% else %}
-<p>There are still more documents that need verifying!</p>
-<a class="button" href="{% url "sopn-review-required" %}?random">Continue adding candidates</a>
+  <p>There are still more documents that need verifying!</p>
+  <a class="button" href="{% url "sopn-review-required" %}?random">Continue adding candidates</a>
 {% endif %}
 
 

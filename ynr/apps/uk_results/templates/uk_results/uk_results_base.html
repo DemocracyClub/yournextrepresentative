@@ -5,25 +5,25 @@
 {% endblock %}
 
 {% block content %}
-{% if show_results_feature %}
-<nav class="top-bar" data-topbar role="navigation">
-  <section class="top-bar-section">
-    <ul class="left">
-      <li><a href="{% url 'results-home' %}">Results Home</a></li>
-      <li><a href="{% url 'latest-votes-view' %}">Vote results</a></li>
-    </ul>
-  </section>
-</nav>
-{% endif %}
+  {% if show_results_feature %}
+    <nav class="top-bar" data-topbar role="navigation">
+      <section class="top-bar-section">
+        <ul class="left">
+          <li><a href="{% url 'results-home' %}">Results Home</a></li>
+          <li><a href="{% url 'latest-votes-view' %}">Vote results</a></li>
+        </ul>
+      </section>
+    </nav>
+  {% endif %}
 
-{% block results_content %}
-{% endblock results_content %}
+  {% block results_content %}
+  {% endblock results_content %}
 
-<style>
-.highlight {
-  font-weight:bold;
-}
+  <style>
+    .highlight {
+      font-weight:bold;
+    }
 
-</style>
+  </style>
 
 {% endblock content %}

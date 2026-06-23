@@ -20,30 +20,30 @@
         <div class="columns large-9">
 
             {% if sopn_progress %}
-            <h2>Candidate double-checking progress</h2>
-            <p>The nomination papers (SOPNs) are currently being imported for this election.</p>
-            <strong>{{ sopn_progress.sopns_imported|intcomma }}</strong>
+                <h2>Candidate double-checking progress</h2>
+                <p>The nomination papers (SOPNs) are currently being imported for this election.</p>
+                <strong>{{ sopn_progress.sopns_imported|intcomma }}</strong>
                 of {{ sopn_progress.ballots_total|intcomma }}
                 ballot{{ sopn_progress.ballots_total|pluralize }} with SOPNs
-            <div class="radius progress success large-12" role="progressbar"
-                 aria-valuenow="{{ sopn_progress.sopns_imported }}"
-                 aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
-                <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span>
-            </div>
+                <div class="radius progress success large-12" role="progressbar"
+                     aria-valuenow="{{ sopn_progress.sopns_imported }}"
+                     aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
+                    <span class="meter" style="width: {{ sopn_progress.sopns_imported_percent }}%"></span>
+                </div>
 
-            <strong>{{ sopn_progress.ballots_locked|intcomma }}</strong>
+                <strong>{{ sopn_progress.ballots_locked|intcomma }}</strong>
                 of {{ sopn_progress.ballots_total|intcomma }}
                 ballot{{ sopn_progress.ballots_total|pluralize }} locked
-            <div class="radius progress success large-12" role="progressbar"
-                 aria-valuenow="{{ sopn_progress.ballots_locked }}"
-                 aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
-                <span class="meter" style="width: {{ sopn_progress.ballots_locked_percent }}%"></span>
-            </div>
-            <hr>
-            <h2>Ballots</h2>
-        {% endif %}
+                <div class="radius progress success large-12" role="progressbar"
+                     aria-valuenow="{{ sopn_progress.ballots_locked }}"
+                     aria-valuemin="0" aria-valuemax="{{ sopn_progress.ballots_total }}">
+                    <span class="meter" style="width: {{ sopn_progress.ballots_locked_percent }}%"></span>
+                </div>
+                <hr>
+                <h2>Ballots</h2>
+            {% endif %}
 
-        {% for ballot in ballots %}
+            {% for ballot in ballots %}
                 <h3>
                     <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}
                         on {{ object.election_date|date:"j F Y" }}</a>
@@ -58,35 +58,35 @@
                 {% if ballot.membership_set.exists %}
                     <table>
                         <thead>
-                        <tr>
-                            <th>Name</th>
-                            {% if object.party_lists_in_use %}
-                                <th>List position</th>
-                            {% endif %}
-                            <th>Party</th>
-                            {% if ballot.resultset %}
-                                <th>Votes</th>
-                                <th>Elected?</th>
-                            {% endif %}
+                            <tr>
+                                <th>Name</th>
+                                {% if object.party_lists_in_use %}
+                                    <th>List position</th>
+                                {% endif %}
+                                <th>Party</th>
+                                {% if ballot.resultset %}
+                                    <th>Votes</th>
+                                    <th>Elected?</th>
+                                {% endif %}
 
-                        </tr>
+                            </tr>
                         </thead>
                         <tbody>
-                        {% for membership in ballot.membership_set.all %}
-                            <tr>
-                                <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
-                                </td>
-                                {% if object.party_lists_in_use %}
-                                    <td>{{ membership.party_list_position }}</td>
-                                {% endif %}
+                            {% for membership in ballot.membership_set.all %}
+                                <tr>
+                                    <td><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                                    </td>
+                                    {% if object.party_lists_in_use %}
+                                        <td>{{ membership.party_list_position }}</td>
+                                    {% endif %}
 
-                                <td>{{ membership.party.name }}</td>
-                                {% if ballot.resultset %}
-                                    <td>{{ membership.result.num_ballots }}</td>
-                                    <td>{{ membership.elected|yesno|title }}</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
+                                    <td>{{ membership.party.name }}</td>
+                                    {% if ballot.resultset %}
+                                        <td>{{ membership.result.num_ballots }}</td>
+                                        <td>{{ membership.elected|yesno|title }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 {% endif %}
@@ -98,7 +98,7 @@
                     {% endif %}
 
                     {% if not ballot.candidates_locked %}
-                      <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
+                        <a class="button tiny" href="{{ ballot.get_absolute_url }}">Add candidates</a>
                     {% endif %}
 
                     {% if ballot.election.in_past and user_can_record_results %}
@@ -146,16 +146,16 @@
                 {% endif %}
 
                 {% if object.electionsopn_set.all.count > 0 %}
-                  <li>
-                      <a href="{% url "election_sopns_summary" object.slug %}" class="button small">View SOPNs</a>
-                  </li>
+                    <li>
+                        <a href="{% url "election_sopns_summary" object.slug %}" class="button small">View SOPNs</a>
+                    </li>
                 {% endif %}
                 {% if user_can_upload_documents %}
-                  <li>
-                      <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
-                          class="button small">
-                          Upload SOPN</a>
-                  </li>
+                    <li>
+                        <a href="{% url "upload_election_sopn_view" election_id=object.slug %}"
+                           class="button small">
+                            Upload SOPN</a>
+                    </li>
                 {% endif %}
 
             </ul>

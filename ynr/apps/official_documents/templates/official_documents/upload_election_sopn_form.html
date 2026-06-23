@@ -22,7 +22,7 @@
     {% else %}
         <p>There is only one ballot for this election. This means the SOPN will only contain information for a
             single ballot, meaning you need to <a
-                    href="{% url "upload_ballot_sopn_view" ballot_paper_id=election.ballot_set.first.ballot_paper_id %}">
+                href="{% url "upload_ballot_sopn_view" ballot_paper_id=election.ballot_set.first.ballot_paper_id %}">
                 upload to that ballot directly</a></p>
     {% endif %}
 {% endblock content %}

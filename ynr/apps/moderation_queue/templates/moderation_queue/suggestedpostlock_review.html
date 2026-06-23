@@ -15,37 +15,37 @@
 {% endblock %}
 
 {% block content %}
-<script src="{% static "official_documents/js/pdf.min.js" %}"></script>
-<script>
+  <script src="{% static "official_documents/js/pdf.min.js" %}"></script>
+  <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = '{% static "official_documents/js/pdf.worker.min.js" %}'
-</script>
-{% javascript 'sopn_viewer' %}
-{% include "moderation_queue/includes/ajax_lock_button_js.html" %}
+  </script>
+  {% javascript 'sopn_viewer' %}
+  {% include "moderation_queue/includes/ajax_lock_button_js.html" %}
 
 
 
-{% if ballots %}
-  <p>Suggestions are grouped by nomination paper</p>
-  <p>Showing {{ ballots.count }} of {{ total_ballots|intcomma }} ballots with suggested locks. Reload this page to get another random set.</p>
+  {% if ballots %}
+    <p>Suggestions are grouped by nomination paper</p>
+    <p>Showing {{ ballots.count }} of {{ total_ballots|intcomma }} ballots with suggested locks. Reload this page to get another random set.</p>
 
-  {% regroup ballots by sopn.election_sopn as ballots_by_election_sopn %}
+    {% regroup ballots by sopn.election_sopn as ballots_by_election_sopn %}
 
-  {% for ballots_by_source in ballots_by_election_sopn  %}
-    <h3>{{ ballots_by_source.list.0.election.name }}</h3>
+    {% for ballots_by_source in ballots_by_election_sopn  %}
+      <h3>{{ ballots_by_source.list.0.election.name }}</h3>
 
-    {% if ballots_by_source.grouper %}
+      {% if ballots_by_source.grouper %}
         <p>
-            Source: <a href="{{ ballots_by_source.grouper.get_absolute_url }}">{{ ballots_by_source.grouper.friendly_name }}</a>
+          Source: <a href="{{ ballots_by_source.grouper.get_absolute_url }}">{{ ballots_by_source.grouper.friendly_name }}</a>
         </p>
-    {% endif %}
+      {% endif %}
 
 
-    {% for ballot in ballots_by_source.list %}
+      {% for ballot in ballots_by_source.list %}
 
-          <h4>{{ ballot.post.short_label }}</h4>
+        <h4>{{ ballot.post.short_label }}</h4>
 
-          {% if ballot.membership_set.exists %}
-            <table style="width:100%">
+        {% if ballot.membership_set.exists %}
+          <table style="width:100%">
             <thead>
               <th>Candidates</th>
               <th>SOPN</th>
@@ -53,20 +53,20 @@
             <tbody>
               {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot show_detail_url=1 %}
             </tbody>
-            </table>
+          </table>
 
-          {% endif %}
+        {% endif %}
 
 
+      {% endfor %}
     {% endfor %}
-  {% endfor %}
 
-  <a href="{% url "suggestions-to-lock-review-list" %}" class="button">Reload page</a>
+    <a href="{% url "suggestions-to-lock-review-list" %}" class="button">Reload page</a>
 
-{% else %}
-  All ballots with lock suggestions have been locked! (not including your own lock suggestions)
+  {% else %}
+    All ballots with lock suggestions have been locked! (not including your own lock suggestions)
 
-{% endif %}
+  {% endif %}
 
 
 

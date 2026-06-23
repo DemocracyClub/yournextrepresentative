@@ -1,29 +1,29 @@
 {% if candidates_might_stand_again %}
-    <div class="candidates__previous">
-      <h3>Past candidates in {{ ballot.post.label }}</h3>
-      <p>These candidates stood in {{ ballot.post.label }} in
-          {{ previous_ballot.election.election_date }}.
-          Candidates often stand again in the same area,
-          so it's worth researching to see if they are
-          standing in {{ ballot.election.election_date }} and recording what you find.
-      </p>
+  <div class="candidates__previous">
+    <h3>Past candidates in {{ ballot.post.label }}</h3>
+    <p>These candidates stood in {{ ballot.post.label }} in
+      {{ previous_ballot.election.election_date }}.
+      Candidates often stand again in the same area,
+      so it's worth researching to see if they are
+      standing in {{ ballot.election.election_date }} and recording what you find.
+    </p>
 
-      <table class="table candidates-list">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Party</th>
-            <th class="text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for candidate in candidates_might_stand_again %}
+    <table class="table candidates-list">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Party</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for candidate in candidates_might_stand_again %}
           <tr>
             <td>
               <a href="{{ candidate.person.get_absolute_url }}">
                 <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}" width="64" height="64" />
                 {% if candidate.elected %}<strong>{% endif %}
-                  {{ candidate.person.name }}
+                {{ candidate.person.name }}
                 {% if candidate.elected %}</strong>{% endif %}
               </a>
             </td>
@@ -39,9 +39,9 @@
               </a>
             </td>
           </tr>
-          {% endfor %}
+        {% endfor %}
 
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}

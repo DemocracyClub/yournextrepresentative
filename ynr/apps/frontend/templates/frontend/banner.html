@@ -1,8 +1,8 @@
 {% load markdown_filter %}
 {% if site_wide_banner %}
-<div class="site-wide-banner">
-  <div class=container>
-    {{ site_wide_banner.message|markdown }}
+  <div class="site-wide-banner">
+    <div class=container>
+      {{ site_wide_banner.message|markdown }}
+    </div>
   </div>
-</div>
 {% endif %}

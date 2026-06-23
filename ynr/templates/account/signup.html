@@ -11,35 +11,35 @@
 
 {% block content %}
 
-{% get_providers as socialaccount_providers %}
+  {% get_providers as socialaccount_providers %}
 
-{% if socialaccount_providers  %}
-  <div class="socialaccount_ballot">
-    <ul class="socialaccount_providers">
-      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-    </ul>
-    <p class="login-or"><span>Or</span></p>
-  </div>
-  {% include "socialaccount/snippets/login_extra.html" %}
-{% endif %}
+  {% if socialaccount_providers  %}
+    <div class="socialaccount_ballot">
+      <ul class="socialaccount_providers">
+        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+      </ul>
+      <p class="login-or"><span>Or</span></p>
+    </div>
+    {% include "socialaccount/snippets/login_extra.html" %}
+  {% endif %}
 
-<div class="login-signup-tabs">
+  <div class="login-signup-tabs">
     <a href="{{ login_url }}">I have an account</a>
     <span>I don’t have an account</span>
-</div>
+  </div>
 
-<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-  {% csrf_token %}
+  <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+    {% csrf_token %}
 
-  <p>Usernames are made public, so please don't use personal information like an email address as your username.</p>
+    <p>Usernames are made public, so please don't use personal information like an email address as your username.</p>
 
-  {{ form.as_p }}
+    {{ form.as_p }}
 
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <button class="button" type="submit">Create account</button>
-</form>
-<p>Contributions to this site are made public and form part of an openly licenced database.
+    {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <button class="button" type="submit">Create account</button>
+  </form>
+  <p>Contributions to this site are made public and form part of an openly licenced database.
     <a href="{%  url "help-about" %}">Find out more about our data licencing</a>.</p>
 {% endblock %}

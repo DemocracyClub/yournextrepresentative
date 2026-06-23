@@ -1,100 +1,100 @@
 {% if SHOW_BY_ELECTION_CTA %}
     <h2>By-elections</h2>
     {% if upcoming_ballots %}
-    <h3>Upcoming by-elections</h3>
+        <h3>Upcoming by-elections</h3>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Election</th>
-            <th>Area</th>
-            {% if request.user.is_authenticated %}
-                <th>Candidates known</th>
-                <th>Locked?</th>
-            {% endif %}
-        </tr>
-        </thead>
-        <tbody>
-            {% for ballot in upcoming_ballots %}
-                {% ifchanged ballot.election.election_date %}
-                    <tr>
-                        <th colspan="2">{{ ballot.election.election_date }}</th>
-                    </tr>
-                {% endifchanged %}
-
+        <table>
+            <thead>
                 <tr>
-                    <td><a href="{{ ballot.election.get_absolute_url }}">{{ ballot.election }}</a></td>
-                    {% if ballot.cancelled %}
-                      <td>
-                        {{ ballot.post.label }}
-                        {{ ballot.cancelled_status_html }}
-                      </td>
-                    {% else %}
-                      <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
-                    {% endif %}
+                    <th>Election</th>
+                    <th>Area</th>
                     {% if request.user.is_authenticated %}
-                    <td>
-                        {{ ballot.membership_set.count|default:"0" }}
-                    </td>
-                    <td>
-                        {% if ballot.locked_status_html %}
-                          {{ ballot.locked_status_html }}
-                        {% else %}
-                          No
-                        {% endif %}
-                    </td>
+                        <th>Candidates known</th>
+                        <th>Locked?</th>
                     {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for ballot in upcoming_ballots %}
+                    {% ifchanged ballot.election.election_date %}
+                        <tr>
+                            <th colspan="2">{{ ballot.election.election_date }}</th>
+                        </tr>
+                    {% endifchanged %}
+
+                    <tr>
+                        <td><a href="{{ ballot.election.get_absolute_url }}">{{ ballot.election }}</a></td>
+                        {% if ballot.cancelled %}
+                            <td>
+                                {{ ballot.post.label }}
+                                {{ ballot.cancelled_status_html }}
+                            </td>
+                        {% else %}
+                            <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
+                        {% endif %}
+                        {% if request.user.is_authenticated %}
+                            <td>
+                                {{ ballot.membership_set.count|default:"0" }}
+                            </td>
+                            <td>
+                                {% if ballot.locked_status_html %}
+                                    {{ ballot.locked_status_html }}
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
 
     {% if past_ballots %}
-    <h3>Recently past elections</h3>
-    <table>
-        <thead>
-        <tr>
-            <th>Election</th>
-            <th>Area</th>
-            {% if request.user.is_authenticated %}
-            <th>Results?</th>
-            {% endif %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for ballot in past_ballots %}
-        {% ifchanged ballot.election.election_date %}
-            <tr>
-                <th colspan="2">{{ ballot.election.election_date }}</th>
-            </tr>
-        {% endifchanged %}
-            <tr>
-                <td><a href="{{ ballot.election.get_absolute_url }}">{{ ballot.election }}</a></td>
-                {% if ballot.cancelled %}
-                  <td>
-                    {{ ballot.post.label }}
-                    {{ ballot.cancelled_status_html }}
-                  </td>
-                {% else %}
-                  <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
-                {% endif %}
-                {% if request.user.is_authenticated %}
-                <td>
-                    {% if ballot.cancelled %}
-                      &nbsp;
-                    {% else %}
-                      <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
-                      {{ ballot.resultset|yesno|title }}
+        <h3>Recently past elections</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Election</th>
+                    <th>Area</th>
+                    {% if request.user.is_authenticated %}
+                        <th>Results?</th>
                     {% endif %}
-                    </a>
-                </td>
-                {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for ballot in past_ballots %}
+                    {% ifchanged ballot.election.election_date %}
+                        <tr>
+                            <th colspan="2">{{ ballot.election.election_date }}</th>
+                        </tr>
+                    {% endifchanged %}
+                    <tr>
+                        <td><a href="{{ ballot.election.get_absolute_url }}">{{ ballot.election }}</a></td>
+                        {% if ballot.cancelled %}
+                            <td>
+                                {{ ballot.post.label }}
+                                {{ ballot.cancelled_status_html }}
+                            </td>
+                        {% else %}
+                            <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
+                        {% endif %}
+                        {% if request.user.is_authenticated %}
+                            <td>
+                                {% if ballot.cancelled %}
+                                    &nbsp;
+                                {% else %}
+                                    <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">
+                                        {{ ballot.resultset|yesno|title }}
+                                {% endif %}
+                            </a>
+                            </td>
+                        {% endif %}
 
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
 
 {% endif %}

@@ -174,15 +174,15 @@
         </details>
     </aside>
     <p>Sort:
-    {% if sort_by == "name" %}
-    	<a href="{% query_string request.GET sort_by="time" %}">Time</a>
-    	| Name
-    {% else %}
-        Time |
-        <a href="{% query_string request.GET sort_by="name" %}">Name</a>
+        {% if sort_by == "name" %}
+            <a href="{% query_string request.GET sort_by="time" %}">Time</a>
+            | Name
+        {% else %}
+            Time |
+            <a href="{% query_string request.GET sort_by="name" %}">Name</a>
 
 
-    {% endif %}
+        {% endif %}
 
     </p>
     <hr>
@@ -211,16 +211,16 @@
                     {% if not ballot.has_winner %}
                         <ul>
                             {% for membership in ballot.membership_set.all %}
-                            <li>
-                                <label for="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
-                                       class="party party-colour-{{ membership.party.ec_id|slugify }}">
-                                    <input type="radio" id="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
-                                           name="membership_id" value="{{ membership.pk }}">
+                                <li>
+                                    <label for="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
+                                           class="party party-colour-{{ membership.party.ec_id|slugify }}">
+                                        <input type="radio" id="{{ ballot.ballot_paper_id }}-{{ membership.pk }}"
+                                               name="membership_id" value="{{ membership.pk }}">
 
-                                    <p class="party_name">{{ membership.party_name }}
-                                        — {{ membership.person.name }}</p>
-                                </label>
-                            </li>
+                                        <p class="party_name">{{ membership.party_name }}
+                                            — {{ membership.person.name }}</p>
+                                    </label>
+                                </li>
 
                             {% endfor %}
                         </ul>

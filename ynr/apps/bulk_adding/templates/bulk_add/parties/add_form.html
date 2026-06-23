@@ -1,55 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Add {{ party.name }} candidates for the {{ election_obj.name }}</h2>
+  <h2>Add {{ party.name }} candidates for the {{ election_obj.name }}</h2>
 
-<form method="post" id="candidates-add">
-  {{ form.as_table }}
+  <form method="post" id="candidates-add">
+    {{ form.as_table }}
 
-  {% csrf_token %}
-  {% for post_info in posts %}
-    <div>
-      <h4>{{ post_info.ballot.post.label }} {{ post_info.ballot.cancelled_status_html }} {{ post_info.ballot.locked_status_html }}</h4>
-      <p>{{ post_info.ballot.winner_count }} seat{{ post_info.ballot.winner_count|pluralize }} contested.</p>
-      {% if post_info.existing %}
-      <h5>Existing {{ party.name }} candidates</h5>
-      <ul>
-      {% for membership in post_info.existing %}
-        <li><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></li>
-      {% endfor %}
-      </ul>
-      {% else %}
-      <p>No {{ party.name }} candidates known yet.</p>
-      {% endif %}
+    {% csrf_token %}
+    {% for post_info in posts %}
+      <div>
+        <h4>{{ post_info.ballot.post.label }} {{ post_info.ballot.cancelled_status_html }} {{ post_info.ballot.locked_status_html }}</h4>
+        <p>{{ post_info.ballot.winner_count }} seat{{ post_info.ballot.winner_count|pluralize }} contested.</p>
+        {% if post_info.existing %}
+          <h5>Existing {{ party.name }} candidates</h5>
+          <ul>
+            {% for membership in post_info.existing %}
+              <li><a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No {{ party.name }} candidates known yet.</p>
+        {% endif %}
 
-      {{ post_info.formset.management_form }}
-      <table class="table">
-        <tbody>
-          {% for form in post_info.formset %}
-          <tr>
-            <table class="table">
-              {% if form.errors %}
-                {{ form.errors }}
-              {% endif %}
-                {% for field in form %}
-                {% if not field.is_hidden %}
-                  <tr>
-                    <th>{{ field.label }}</th>
-                  </tr>
-                  <tr>
-                    <td>{{ field }}</td>
-                  </tr>
-                {% endif %}
-                {% endfor %}
-            </table>
-          </tr>
-          {% endfor %}
+        {{ post_info.formset.management_form }}
+        <table class="table">
+          <tbody>
+            {% for form in post_info.formset %}
+              <tr>
+                <table class="table">
+                  {% if form.errors %}
+                    {{ form.errors }}
+                  {% endif %}
+                  {% for field in form %}
+                    {% if not field.is_hidden %}
+                      <tr>
+                        <th>{{ field.label }}</th>
+                      </tr>
+                      <tr>
+                        <td>{{ field }}</td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                </table>
+              </tr>
+            {% endfor %}
 
 
-        </tbody>
-      </table>
-    </div>
-  {% endfor %}
-  <button type=submit>Next</button>
-</form>
+          </tbody>
+        </table>
+      </div>
+    {% endfor %}
+    <button type=submit>Next</button>
+  </form>
 {% endblock content %}

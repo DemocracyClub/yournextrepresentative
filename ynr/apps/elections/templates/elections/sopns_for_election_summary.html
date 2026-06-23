@@ -28,18 +28,18 @@
 
     {% if election_sopns %}
         <h2>Election SOPNs</h2>
-        
+
         {% for election_sopn in election_sopns %}
             <div>
                 <h3>
                     <a href="{{ election_sopn.get_absolute_url }}">
-                      {{ election_sopn.friendly_name }}
+                        {{ election_sopn.friendly_name }}
                     </a>
                 </h3>
                 <p>
                     <strong>Source:</strong> <a href="{{ election_sopn.source_url }}" target="_blank">{{ election_sopn.source_url }}</a>
                 </p>
-                
+
                 {% if election_sopn.ballotsopn_set.exists %}
                     <h4>Ballots linked to this SOPN:</h4>
                     <ul>

@@ -14,48 +14,48 @@
         <div class="panel callout">
             <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
         </div>
-        {% endif %}
+    {% endif %}
 
     <h2>Review ballot</h2>
     <p>When finished, this is what the final ballot will look like. If something looks wrong, please <a
-            href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a></p>
+        href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a></p>
     <table>
         <caption>{{ ballot.rawpeople.reconciled_data|length }}
             candidate{{ ballot.rawpeople.reconciled_data|pluralize }} | {{ ballot.winner_count }} seat contested
         </caption>
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            {% if ballot.election.party_lists_in_use %}
-                <th>List position</th>
-            {% endif %}
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                {% if ballot.election.party_lists_in_use %}
+                    <th>List position</th>
+                {% endif %}
+            </tr>
         </thead>
         <tbody>
-        {% for person in ballot.rawpeople.reconciled_data %}
-            <tr>
-                <td>
+            {% for person in ballot.rawpeople.reconciled_data %}
+                <tr>
+                    <td>
 
-                    {% if person.select_person != "_new" %}
+                        {% if person.select_person != "_new" %}
                         {# Use url here as we don't have the person object #}
-                        <a href="{% url 'person-view' person_id=person.select_person ignored_slug=person.name|slugify %}">
-                            {{ person.name }}
-                        </a>
-                    {% else %}
-                        {{ person.name }} (Add new person)
-                    {% endif %}
-                </td>
-                <td>
-                    {% if person.party in contested_warnings.over %}
-                        ⚠️
-                    {% endif %}
-                    {{ person.party_description_text }}</td>
+                            <a href="{% url 'person-view' person_id=person.select_person ignored_slug=person.name|slugify %}">
+                                {{ person.name }}
+                            </a>
+                        {% else %}
+                            {{ person.name }} (Add new person)
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if person.party in contested_warnings.over %}
+                            ⚠️
+                        {% endif %}
+                        {{ person.party_description_text }}</td>
                     {% if ballot.election.party_lists_in_use %}
                         <td>{{ person.party_list_position }}</td>
                     {% endif %}
-            </tr>
-        {% endfor %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     {% if contested_warnings.over or contested_warnings.under %}
@@ -105,22 +105,22 @@
             {% endif %}
             <table class="cta-row-table">
                 <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Remove candidacy?</th>
-                </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Remove candidacy?</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for field in removal_form %}
-                    <tr>
-                        <td><a href="{{ field.field.candidacy.person.get_absolute_url }}" target="_blank">{{ field.field.candidacy.person.name }}</a></td>
-                        <td>{{ field.field.candidacy.party.name }}</td>
-                        <td>{{ field }}
-                            <label for="{{ field.id_for_label }}" class="cta">Remove from ballot</label>
-                        </td>
-                    </tr>
-                {% endfor %}
+                    {% for field in removal_form %}
+                        <tr>
+                            <td><a href="{{ field.field.candidacy.person.get_absolute_url }}" target="_blank">{{ field.field.candidacy.person.name }}</a></td>
+                            <td>{{ field.field.candidacy.party.name }}</td>
+                            <td>{{ field }}
+                                <label for="{{ field.id_for_label }}" class="cta">Remove from ballot</label>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         {% endif %}

@@ -6,7 +6,7 @@
 {% block body_class %}party{% endblock %}
 
 {% block title %}
-    {{ party_name }} &#8212; Candidates by constituency for the {{ election_data.name }}
+  {{ party_name }} &#8212; Candidates by constituency for the {{ election_data.name }}
 {% endblock %}
 
 {% block hero %}
@@ -17,80 +17,80 @@
 
 {% block content %}
 
-<div class="party__primary">
+  <div class="party__primary">
 
-  {% if party_name == 'Independent' %}
+    {% if party_name == 'Independent' %}
 
-    <p>
-      This shows all the constituencies that have independent candidates standing in them
-      at the {{ election_data.name }}
-    </p>
+      <p>
+        This shows all the constituencies that have independent candidates standing in them
+        at the {{ election_data.name }}
+      </p>
 
-  {% elif party_name == 'Speaker seeking re-election' %}
+    {% elif party_name == 'Speaker seeking re-election' %}
 
-    <p>The Speaker of the House of Commons stands as a "The
-      Speaker seeking re-election" rather than a particular party
-      at a general election; for more information, please
-      see <a href="http://www.parliament.uk/about/faqs/house-of-commons-faqs/speakers-election/">Parliament's
-      website</a>.</p>
+      <p>The Speaker of the House of Commons stands as a "The
+        Speaker seeking re-election" rather than a particular party
+        at a general election; for more information, please
+        see <a href="http://www.parliament.uk/about/faqs/house-of-commons-faqs/speakers-election/">Parliament's
+          website</a>.</p>
 
-  {% elif register %}
+    {% elif register %}
 
-    <p>{{ party_name }} is on the Electoral Commission's register for {{ register }}.</p>
+      <p>{{ party_name }} is on the Electoral Commission's register for {{ register }}.</p>
 
-    <p>You can find more data about the party's registration at the
-      <a href="{{ ec_url }}">Electoral Commission page for {{ party_name }}</a>.</p>
-    <p></p>
+      <p>You can find more data about the party's registration at the
+        <a href="{{ ec_url }}">Electoral Commission page for {{ party_name }}</a>.</p>
+      <p></p>
 
-  {% endif %}
+    {% endif %}
 
-  {% for post_group, post_group_data in candidates_by_post_group %}
-    {% with stats=post_group_data.stats posts_with_memberships=post_group_data.posts_with_memberships %}
-      {% if post_group %}
-        <h3>{{ post_group }}</h3>
-      {% endif %}
-      {% if stats.candidates > 0 %}
-        <ul>
-          {% for post, post_members in posts_with_memberships %}
+    {% for post_group, post_group_data in candidates_by_post_group %}
+      {% with stats=post_group_data.stats posts_with_memberships=post_group_data.posts_with_memberships %}
+        {% if post_group %}
+          <h3>{{ post_group }}</h3>
+        {% endif %}
+        {% if stats.candidates > 0 %}
+          <ul>
+            {% for post, post_members in posts_with_memberships %}
               {% url 'constituency' election=election post_id=post.slug ignored_slug=post.short_label|slugify as post_url %}
               {% if post_members %}
                 <li>
-                <ul>
-                  {% for member_data in post_members %}
-                    {% url 'person-view' person_id=member_data.person.id as person_url %}
+                  <ul>
+                    {% for member_data in post_members %}
+                      {% url 'person-view' person_id=member_data.person.id as person_url %}
                       <li>
                         <a href="{{ person_url }}">{{ member_data.person.name }}</a> is standing in
                         <a href="{{ member_data.membership.ballot.get_absolute_url }}">{{ post.short_label }}</a>
                       </li>
-                  {% endfor %}
-                </ul>
+                    {% endfor %}
+                  </ul>
                 </li>
               {% else %}
                 {% if stats.show_all %}
                   <li>
-                      No candidate in <a href="{{ post_url }}">{{ post.short_label }}</a>
+                    No candidate in <a href="{{ post_url }}">{{ post.short_label }}</a>
                   </li>
                 {% endif %}
               {% endif %}
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>
-          We don't know of any {{ party_name }} candidates in {{ post_group }} in the {{ election_data.name }} so far.
-        </p>
-      {% endif %}
-    {% endwith %}
-  {% endfor %}
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>
+            We don't know of any {{ party_name }} candidates in {{ post_group }} in the {{ election_data.name }} so far.
+          </p>
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
 
-</div>
+  </div>
 
-<div class="party__secondary">
-  {% for image in emblems %}
-    {% thumbnail image.image "240" as im %}
-      <img class="party-detail__image" src="{{ im.url }}"
-           title="{{ image.extra.notes }}" alt="{{ image.extra.notes }}">
-    {% endthumbnail %}
-  {% endfor %}
-</div>
+  <div class="party__secondary">
+    {% for image in emblems %}
+      {% thumbnail image.image "240" as im %}
+        <img class="party-detail__image" src="{{ im.url }}"
+             title="{{ image.extra.notes }}" alt="{{ image.extra.notes }}">
+      {% endthumbnail %}
+    {% endfor %}
+  </div>
 
 {% endblock %}

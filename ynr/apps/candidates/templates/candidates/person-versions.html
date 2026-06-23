@@ -6,11 +6,11 @@
 
         {% for action in actions %}
             <div
-                    class="version"
-                    id="version-{{ action.popit_person_new_version }}"
-                    {% if action.version_dict %}
+                class="version"
+                id="version-{{ action.popit_person_new_version }}"
+                {% if action.version_dict %}
                     data-parent-version-ids="{{ action.version_dict.parent_version_ids|join:' ' }}"
-                    {% endif %}
+                {% endif %}
             >
                 <dl>
                     <dt>Edit type</dt>
@@ -22,7 +22,7 @@
                         <dt>Version</dt>
                         <dd>
                             {{ action.popit_person_new_version }} <a class="button tiny js-toggle-full-version-json">Hide
-                            full version</a>
+                                full version</a>
                             <pre class="full-version-json">{{ action.version_dict.data|prettyjson }}</pre>
                         </dd>
                     {% endif %}
@@ -34,19 +34,19 @@
                     <dd>{{ action.source }}</dd>
                     {% if action.popit_person_new_version %}
                         {{ action.diff_html }}
-                    	{% if person_edits_allowed and not forloop.first %}
-                        <dt>Revert to this</dt>
-                        <dd>
-                            <form id="revert-form-{{ action.popit_person_new_version }}"
-                                  action="{% url 'person-revert' person_id=person.id %}" method="post"
-                                  class="version-revert">
-                                {% csrf_token %}
-                                <input type="hidden" name="version_id" value="{{ action.popit_person_new_version }}"/>
-                                <input type="text" name="source" id="id_source" maxlength="512" required="required"
-                                       value="Reverting to version {{ action.popit_person_new_version }} because…"/>
-                                <input type="submit" class="button tiny alert" value="Revert"/>
-                            </form>
-                        </dd>
+                        {% if person_edits_allowed and not forloop.first %}
+                            <dt>Revert to this</dt>
+                            <dd>
+                                <form id="revert-form-{{ action.popit_person_new_version }}"
+                                      action="{% url 'person-revert' person_id=person.id %}" method="post"
+                                      class="version-revert">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="version_id" value="{{ action.popit_person_new_version }}"/>
+                                    <input type="text" name="source" id="id_source" maxlength="512" required="required"
+                                           value="Reverting to version {{ action.popit_person_new_version }} because…"/>
+                                    <input type="submit" class="button tiny alert" value="Revert"/>
+                                </form>
+                            </dd>
                         {% endif %}
                     {% endif %}
 

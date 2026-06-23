@@ -1,21 +1,21 @@
 {% extends "uk_results/uk_results_base.html" %}
 
 {% block content %}
-{% regroup elections by election as grouped_ballots %}
+  {% regroup elections by election as grouped_ballots %}
 
-{% for group in grouped_ballots %}
-  <h2><a href="{{ group.grouper.get_absolute_url }}">{{ group.grouper }}</a></h2>
-  <ul>
-    {% for ballot in group.list %}
-      <li>
-        <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
-        <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">Add results</a>
-      </li>
-    {% endfor %}
-  </ul>
-{% empty %}
-<p>There are no recent elections requiring results!</p>
+  {% for group in grouped_ballots %}
+    <h2><a href="{{ group.grouper.get_absolute_url }}">{{ group.grouper }}</a></h2>
+    <ul>
+      {% for ballot in group.list %}
+        <li>
+          <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+          <a href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}" class="button tiny">Add results</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% empty %}
+    <p>There are no recent elections requiring results!</p>
 
-<p>Why not view the <a href="https://candidates.democracyclub.org.uk/elections/">list of upcoming elections </a>instead?</p>
-{% endfor %}
+    <p>Why not view the <a href="https://candidates.democracyclub.org.uk/elections/">list of upcoming elections </a>instead?</p>
+  {% endfor %}
 {% endblock content %}

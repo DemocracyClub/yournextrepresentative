@@ -34,28 +34,28 @@
   <h1>Open candidate information for UK elections</h1>
   <p class="lead">
     Used by <a href="https://whocanivotefor.co.uk?utm_source=ynr&utm_campaign=ynr_cta">
-    ‘Who Can I Vote For?’</a>, The Electoral Commission, BBC, national newspapers and others.
+      ‘Who Can I Vote For?’</a>, The Electoral Commission, BBC, national newspapers and others.
   </p>
   <p class="lead">Join thousands of contributors collecting information on candidates</p>
 {% endblock %}
 
 {% block content %}
-    {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
-        <div class="finder__forms cta-{{ front_page_cta }}">
-            <div class="finder__forms__container">
-                {% sopn_import_progress %}
-                {% current_election_stats %}
-                {% results_progress %}
-            </div>
+  {% if front_page_cta and front_page_cta != "BY_ELECTIONS" %}
+    <div class="finder__forms cta-{{ front_page_cta }}">
+      <div class="finder__forms__container">
+        {% sopn_import_progress %}
+        {% current_election_stats %}
+        {% results_progress %}
+      </div>
+    </div>
+    {% if show_data_download %}
+      <div class="finder__forms cta-{{ front_page_cta }}">
+        <div class="finder__forms__container">
+          {% data_download %}
         </div>
-        {% if show_data_download %}
-            <div class="finder__forms cta-{{ front_page_cta }}">
-                <div class="finder__forms__container">
-                    {% data_download %}
-                </div>
-            </div>
-        {% endif %}
+      </div>
     {% endif %}
+  {% endif %}
 
 
   <div class="finder__forms cta-{{ front_page_cta }}">
@@ -106,8 +106,8 @@
         <h2><a href="{% url 'recent-changes' %}">Recent changes</a></h2>
         <ol>
           {% for action in recent_actions %}
-              <li>{{ action.friendly_description }}</li>
-              <span class="when">{{ action.created|timesince }} ago</span></li>
+            <li>{{ action.friendly_description }}</li>
+            <span class="when">{{ action.created|timesince }} ago</span></li>
           {% endfor %}
         </ol>
         <p class="more"><a href="{% url 'recent-changes' %}">Show more changes…</a></p>
@@ -118,7 +118,7 @@
         <ol>
           {% for row in top_users %}
             <li><strong>{{ row.username }}</strong> <span
-            class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
+              class="edits">{{ row.edit_count }} edit{{ row.edit_count|pluralize }}</span></li>
           {% endfor %}
         </ol>
         <p class="more"><a href="{% url 'leaderboard' %}">Show full leaderboard…</a></p>

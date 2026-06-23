@@ -5,47 +5,47 @@
 
     <table class="table sopn_adding_table">
         <thead>
-        <tr>
-            <th colspan="2" {% if form.has_error %}class="form-error-summary"{% endif %}>
-                Person <span class="person_number">{{ counter }}</span>
-            </th>
-        </tr>
+            <tr>
+                <th colspan="2" {% if form.has_error %}class="form-error-summary"{% endif %}>
+                    Person <span class="person_number">{{ counter }}</span>
+                </th>
+            </tr>
         </thead>
         <tbody class="ballot_group" data-party-register="{{ ballot.post.party_set.slug|upper }}">
-        <tr>
-            <th>
-                {{ form.name.errors }}
-                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-            </th>
-            <th>
-                {{ form.party.errors }}
-                <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
-            </th>
-        </tr>
-        <tr>
-            <td>{{ form.name }}</td>
-            <td {% if not form.name.initial %}colspan="2"{% endif %}>
-                {{ form.party }}
-                <p>If the party is blank on the SOPN, enter "Independent"</p>
-                {% if form.party_list_position %}
-                    <label for="{{ form.party_list_position.id_for_label }}">{{ form.party_list_position.label }}</label>
-                    {{ form.party_list_position.errors }}
-                    {{ form.party_list_position }}
+            <tr>
+                <th>
+                    {{ form.name.errors }}
+                    <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                </th>
+                <th>
+                    {{ form.party.errors }}
+                    <label for="{{ form.party.id_for_label }}">{{ form.party.label }}</label>
+                </th>
+            </tr>
+            <tr>
+                <td>{{ form.name }}</td>
+                <td {% if not form.name.initial %}colspan="2"{% endif %}>
+                    {{ form.party }}
+                    <p>If the party is blank on the SOPN, enter "Independent"</p>
+                    {% if form.party_list_position %}
+                        <label for="{{ form.party_list_position.id_for_label }}">{{ form.party_list_position.label }}</label>
+                        {{ form.party_list_position.errors }}
+                        {{ form.party_list_position }}
 
-                {% endif %}
+                    {% endif %}
 
-                {% if ballot.is_welsh_run %}
-                    <details>
-                        <summary class="button btn tiny secondary">
-                            Add Previous Party Affilations
-                        </summary>
-                        <p class="previous-party-input" colspan=3 >
-                            {{ form.previous_party_affiliations }}
-                        </p>
-                    </details>
-                {% endif %}
+                    {% if ballot.is_welsh_run %}
+                        <details>
+                            <summary class="button btn tiny secondary">
+                                Add Previous Party Affilations
+                            </summary>
+                            <p class="previous-party-input" colspan=3 >
+                                {{ form.previous_party_affiliations }}
+                            </p>
+                        </details>
+                    {% endif %}
 
-            </td>
-        </tr>
-    </table>
+                </td>
+            </tr>
+        </table>
 {% endwith %}
