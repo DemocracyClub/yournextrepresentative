@@ -277,7 +277,7 @@ class LoggedAction(models.Model):
     @property
     def version_dict(self):
         if not self.person:
-            return ""
+            return None
         try:
             return self.person.version_dict(self.popit_person_new_version)
         except VersionNotFound:
