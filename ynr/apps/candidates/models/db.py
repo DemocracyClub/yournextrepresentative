@@ -206,6 +206,9 @@ class LoggedAction(models.Model):
             )
         return ""
 
+    def friendly_action_type(self):
+        return ActionType(self.action_type).label
+
     def friendly_description(self):
         url = self.subject_url
         prefix = ""
