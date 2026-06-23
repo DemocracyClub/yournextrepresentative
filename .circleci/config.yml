@@ -69,8 +69,7 @@ jobs:
           command: |
             . .venv/bin/activate
             uv lock --locked
-            ruff .
-            ruff format . --check
+            ./scripts/code-check.sh
             python manage.py check
             python manage.py makemigrations --check
       - run:
