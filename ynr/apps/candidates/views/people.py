@@ -34,7 +34,6 @@ from popolo.models import NotStandingValidationError
 
 from ynr.apps.people.merging import InvalidMergeError, PersonMerger
 
-from ..diffs import get_version_diffs
 from ..models import (
     TRUSTED_TO_MERGE_GROUP_NAME,
     Ballot,
@@ -100,6 +99,11 @@ class PersonView(TemplateView):
         context["redirect_after_login"] = quote(path)
         context["canonical_url"] = self.person.wcivf_url()
         context["person"] = self.person
+        context["actions"] = (
+            self.person.loggedaction_set.all()
+            .select_related("user")
+            .order_by("-created")
+        )
         context["other_names"] = self.person.other_names
         if not self.request.user.is_authenticated:
             context["other_names"] = context["other_names"].filter(
@@ -439,6 +443,11 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
 
         person = self.object
         context["person"] = person
+        context["actions"] = (
+            person.loggedaction_set.all()
+            .select_related("user")
+            .order_by("-created")
+        )
 
         context["person_edits_allowed"] = person.user_can_edit(
             self.request.user
@@ -446,7 +455,6 @@ class UpdatePersonView(LoginRequiredMixin, ProcessInlineFormsMixin, UpdateView):
         context["current_locked_ballots"] = person.memberships.filter(
             ballot__election__current=True, ballot__candidates_locked=True
         )
-        context["versions"] = get_version_diffs(person.versions)
 
         return context
 

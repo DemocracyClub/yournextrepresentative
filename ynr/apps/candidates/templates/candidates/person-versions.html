@@ -1,36 +1,57 @@
 {% load prettyjson %}
 
 {% if request.user.is_authenticated %}
-<div class="person__versions">
-    <h2>All versions</h2>
-    {% for version in person.version_diffs %}
-      <div class="version" id="version-{{ version.version_id }}" data-parent-version-ids="{{ version.parent_version_ids|join:' ' }}">
-        <dl>
-          <dt>Version</dt>
-          <dd>
-            {{ version.version_id }} <a class="button tiny js-toggle-full-version-json">Hide full version</a>
-            <pre class="full-version-json">{{ version.data|prettyjson }}</pre>
-          </dd>
-          <dt>Username</dt>
-          <dd>{{ version.username }}</dd>
-          <dt>Timestamp</dt>
-          <dd>{{ version.timestamp }}</dd>
-          <dt>Source</dt>
-          <dd>{{ version.information_source }}</dd>
-          {% include 'candidates/_diffs_against_parents.html' with diffs_against_all_parents=version.diffs inline_style=False %}
-          {% if user.is_authenticated and person_edits_allowed and not forloop.first %}
-          <dt>Revert to this</dt>
-          <dd>
-            <form id="revert-form-{{ version.version_id }}" action="{% url 'person-revert' person_id=person.id %}" method="post" class="version-revert">
-              {% csrf_token %}
-              <input type="hidden" name="version_id" value="{{ version.version_id }}"/>
-              <input type="text" name="source" id="id_source" maxlength="512" required="required" value="Reverting to version {{ version.version_id }} because…"/>
-              <input type="submit" class="button tiny alert" value="Revert" />
-            </form>
-          </dd>
-          {% endif %}
-        </dl>
-      </div>
-    {% endfor %}
-</div>
+    <div class="person__versions">
+        <h2>All versions</h2>
+
+        {% for action in actions %}
+            <div
+                    class="version"
+                    id="version-{{ action.popit_person_new_version }}"
+                    {% if action.version_dict %}
+                    data-parent-version-ids="{{ action.version_dict.parent_version_ids|join:' ' }}"
+                    {% endif %}
+            >
+                <dl>
+                    <dt>Edit type</dt>
+                    <dd>{{ action.friendly_action_type }}</dd>
+                    <dt>Username</dt>
+                    <dd>{{ action.user.username }}</dd>
+                    {% if action.popit_person_new_version and action.version_dict %}
+                        {# Not all edit types have a version ID (e.g if marking as elected), uploading a photo #}
+                        <dt>Version</dt>
+                        <dd>
+                            {{ action.popit_person_new_version }} <a class="button tiny js-toggle-full-version-json">Hide
+                            full version</a>
+                            <pre class="full-version-json">{{ action.version_dict.data|prettyjson }}</pre>
+                        </dd>
+                    {% endif %}
+
+
+                    <dt>Timestamp</dt>
+                    <dd>{{ action.created }}</dd>
+                    <dt>Source</dt>
+                    <dd>{{ action.source }}</dd>
+                    {% if action.popit_person_new_version %}
+                        {{ action.diff_html }}
+                    	{% if person_edits_allowed and not forloop.first %}
+                        <dt>Revert to this</dt>
+                        <dd>
+                            <form id="revert-form-{{ action.popit_person_new_version }}"
+                                  action="{% url 'person-revert' person_id=person.id %}" method="post"
+                                  class="version-revert">
+                                {% csrf_token %}
+                                <input type="hidden" name="version_id" value="{{ action.popit_person_new_version }}"/>
+                                <input type="text" name="source" id="id_source" maxlength="512" required="required"
+                                       value="Reverting to version {{ action.popit_person_new_version }} because…"/>
+                                <input type="submit" class="button tiny alert" value="Revert"/>
+                            </form>
+                        </dd>
+                        {% endif %}
+                    {% endif %}
+
+                </dl>
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}

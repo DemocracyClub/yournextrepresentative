@@ -4,6 +4,7 @@
 
 import json
 import re
+from typing import Dict, List
 
 import jsonpatch
 import jsonpointer
@@ -164,7 +165,7 @@ def get_parents_version_data(parents, id_to_version):
     return [(None, {})]
 
 
-def get_version_diffs(versions):
+def get_version_diffs(versions) -> List[Dict]:
     """Add a diff to each of an array of version dicts
 
     The first version is the most recent; the last is the original

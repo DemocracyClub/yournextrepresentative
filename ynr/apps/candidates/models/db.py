@@ -15,6 +15,7 @@ from moderation_queue.review_required_helper import (
     REVIEW_TYPES,
 )
 from moderation_queue.slack import post_action_to_slack
+from popolo.models import VersionNotFound
 
 
 class LoggedActionQuerySet(models.QuerySet):
@@ -205,6 +206,9 @@ class LoggedAction(models.Model):
             )
         return ""
 
+    def friendly_action_type(self):
+        return ActionType(self.action_type).label
+
     def friendly_description(self):
         url = self.subject_url
         prefix = ""
@@ -271,9 +275,16 @@ class LoggedAction(models.Model):
         return mark_safe(output)
 
     @property
-    def diff_html(self):
-        from popolo.models import VersionNotFound
+    def version_dict(self):
+        if not self.person:
+            return None
+        try:
+            return self.person.version_dict(self.popit_person_new_version)
+        except VersionNotFound:
+            return None
 
+    @property
+    def diff_html(self):
         if not self.person:
             return ""
         try:
@@ -281,7 +292,7 @@ class LoggedAction(models.Model):
                 self.popit_person_new_version, inline_style=True
             )
         except VersionNotFound as e:
-            return "<p>{}</p>".format(escape(str(e)))
+            return mark_safe("<p>{}</p>".format(escape(str(e))))
 
     def changed_version_fields(self):
         if not self.version_fields:
@@ -317,7 +328,7 @@ class LoggedAction(models.Model):
 
     def save(self, **kwargs):
         has_initial_pk = self.pk
-        if not kwargs.get("review_not_required", False):
+        if not kwargs.pop("review_not_required", False):
             self.set_review_required()
 
         if self.person:
