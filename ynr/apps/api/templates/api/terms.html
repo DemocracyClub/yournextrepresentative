@@ -2,27 +2,28 @@
 {% load markdown_filter %}
 {% block api_content %}
   <h1>Data reuse terms</h1>
-  {% filter markdown %}
-    The data is made available under the Creative Commons Attribution 4.0 (CC BY 4.0) license.
-    This means you are free to reuse the data for any reason, as long as you give attribution to "Democracy Club".
-    [Please read the full terms for more information](https://creativecommons.org/licenses/by/4.0/).
+{# fmt:off #}
+{% filter markdown %}
+The data is made available under the Creative Commons Attribution 4.0 (CC BY 4.0) license.
+This means you are free to reuse the data for any reason, as long as you give attribution to "Democracy Club".
+[Please read the full terms for more information](https://creativecommons.org/licenses/by/4.0/).
 
-    This licence excludes:
+This licence excludes:
 
-    * The party logos, which are taken from the Electoral Commission's website
-    * Candidate photos, which are typically either submitted by the candidates themselves,
-    or from sources where it seems reasonable that we might use them on this site,
-    such as the party's official page for that candidate, or their social media profile picture.
+* The party logos, which are taken from the Electoral Commission's website
+* Candidate photos, which are typically either submitted by the candidates themselves,
+or from sources where it seems reasonable that we might use them on this site,
+such as the party's official page for that candidate, or their social media profile picture.
 
-    If the CC BY licence is problematic for you, but you feel that you have a worthwhile use of
-    the data in mind, please contact us to discuss your situation further.
+If the CC BY licence is problematic for you, but you feel that you have a worthwhile use of
+the data in mind, please contact us to discuss your situation further.
 
-    #### Giving attribution
+#### Giving attribution
 
-    If you are reusing our data, please credit "Democracy Club" on the same page(s) as the data is used,
-    and provide a link (or write the URL in the case of printed material) to
-    [https://democracyclub.org.uk](https://democracyclub.org.uk)
+If you are reusing our data, please credit "Democracy Club" on the same page(s) as the data is used,
+and provide a link (or write the URL in the case of printed material) to
+[https://democracyclub.org.uk](https://democracyclub.org.uk)
 
-  {% endfilter %}
-
+{% endfilter %}
+{# fmt:on #}
 {% endblock %}
