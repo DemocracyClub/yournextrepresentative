@@ -38,18 +38,18 @@
       <button class="button primary" type="submit">Suggest</button>
     </form>
 
-      {% if user_can_merge %}
-        <h3>You have permission to merge these people directly</h2>
-        <p>Click the merge button below to merge instantly rather than create a duplicate suggestion</p>
-        <form method="post" action="{% url 'person-merge' person_id=person.id %}" id="{{ MERGE_FORM_ID }}">
-          {% csrf_token %}
+    {% if user_can_merge %}
+      <h3>You have permission to merge these people directly</h2>
+      <p>Click the merge button below to merge instantly rather than create a duplicate suggestion</p>
+      <form method="post" action="{% url 'person-merge' person_id=person.id %}" id="{{ MERGE_FORM_ID }}">
+        {% csrf_token %}
 
-          {{ form.other_person }}
-          <button class="button alert" type="submit">Merge</button>
-        </form>
-      {% endif %}
-
+        {{ form.other_person }}
+        <button class="button alert" type="submit">Merge</button>
+      </form>
     {% endif %}
+
+  {% endif %}
 
 
 {% endblock %}

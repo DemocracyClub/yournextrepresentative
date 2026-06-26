@@ -4,11 +4,11 @@
 
 {% block hero %}
 
-<h2>Enter results for
-  <a href="{{ ballot.get_absolute_url }}">
-    {{ ballot.post.label }} in the {{ ballot.election.name }}
-  </a>
-</h2>
+  <h2>Enter results for
+    <a href="{{ ballot.get_absolute_url }}">
+      {{ ballot.post.label }} in the {{ ballot.election.name }}
+    </a>
+  </h2>
 {% endblock  %}
 
 {% block content %}
@@ -22,50 +22,50 @@
 
 
   {% if resultset.versions %}
-  <h3>Older versions</h3>
-  {% for version in resultset.versions %}
-    <table style="min-width:50%">
-      <caption>
-        User <tt>{{ version.user }}</tt> entered the following
-        {{ version.created|parse_iso|naturaltime }} from the source: <br>
-        <q>{{ version.source }}</q>
-      </caption>
-      <tbody>
-        {% for candidate_result in version.candidate_results %}
-        <tr>
-          <th>
-            {{ candidate_result.person_name }}
-          </th>
-          <td>
-            {{ candidate_result.num_ballots }}
-            {% if candidate_result.elected %}
-            (elected)
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-      <tbody>
-        <tr>
-          <th>
-            Spoilt ballots
-          </th>
-          <td>
-            {{ version.spoilt_ballots|default_if_none:"" }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Turnout
-          </th>
-          <td>
-            {{ version.turnout|default_if_none:"" }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <h3>Older versions</h3>
+    {% for version in resultset.versions %}
+      <table style="min-width:50%">
+        <caption>
+          User <tt>{{ version.user }}</tt> entered the following
+          {{ version.created|parse_iso|naturaltime }} from the source: <br>
+          <q>{{ version.source }}</q>
+        </caption>
+        <tbody>
+          {% for candidate_result in version.candidate_results %}
+            <tr>
+              <th>
+                {{ candidate_result.person_name }}
+              </th>
+              <td>
+                {{ candidate_result.num_ballots }}
+                {% if candidate_result.elected %}
+                  (elected)
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tbody>
+          <tr>
+            <th>
+              Spoilt ballots
+            </th>
+            <td>
+              {{ version.spoilt_ballots|default_if_none:"" }}
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Turnout
+            </th>
+            <td>
+              {{ version.turnout|default_if_none:"" }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-  {% endfor %}
+    {% endfor %}
   {% endif %}
 
 {% endblock content %}

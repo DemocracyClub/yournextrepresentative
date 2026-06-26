@@ -21,9 +21,9 @@
 
   <p>
     {% if queued_images %}
-    If you still want to upload another photo of {{ person.name }}, cancel the existing queued photos first.
+      If you still want to upload another photo of {{ person.name }}, cancel the existing queued photos first.
     {% else %}
-    Select an image from your computer (maximum size: 50MB). If you have any trouble uploading the image, please <a href="mailto:hello@democracyclub.org.uk">contact us</a>.
+      Select an image from your computer (maximum size: 50MB). If you have any trouble uploading the image, please <a href="mailto:hello@democracyclub.org.uk">contact us</a>.
     {% endif %}
   </p>
   <p>
@@ -34,7 +34,7 @@
   </p>
 
   <p>
-  Now let us know about the copyright of this image by selecting one of
+    Now let us know about the copyright of this image by selecting one of
     these options or explaining why we can use it:</p>
   <div class="photo-why-allowed-radio-buttons">
     {{ image_form.why_allowed.errors }}
@@ -43,8 +43,8 @@
   <p>
     {{ image_form.justification_for_use.errors }}
     <label for="{{ image_form.justification_for_use.id_for_label }}">
-    Here is my justification for why this photo may be reasonably used on the
-    website, including the source URL:</label>
+      Here is my justification for why this photo may be reasonably used on the
+      website, including the source URL:</label>
     {{ image_form.justification_for_use }}
   </p>
   {{ image_form.person }}

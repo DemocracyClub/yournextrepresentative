@@ -11,13 +11,13 @@
 
 {% block content %}
 
-<p>
-Before updating our records we need to know the source for
-your information that {{ person.name }} <strong>isn’t</strong>
-standing for election to the post of {{ post_label }} in the
-{{ election_data.name }}.
-</p>
+  <p>
+    Before updating our records we need to know the source for
+    your information that {{ person.name }} <strong>isn’t</strong>
+    standing for election to the post of {{ post_label }} in the
+    {{ election_data.name }}.
+  </p>
 
-{% include 'candidates/_source-plain.html' with action='candidacy-delete' %}
+  {% include 'candidates/_source-plain.html' with action='candidacy-delete' %}
 
 {% endblock %}

@@ -42,11 +42,11 @@
     <h2>Stats</h2>
     <table class="table">
         <thead>
-        <tr>
-            <th>Field</th>
-            <th>%</th>
-            <th>Filter</th>
-        </tr>
+            <tr>
+                <th>Field</th>
+                <th>%</th>
+                <th>Filter</th>
+            </tr>
         </thead>
 
         {% for label, percentage in percentages.items %}
@@ -65,29 +65,29 @@
 
         <table class="table">
             <thead>
-            <tr>
-                <th>Person</th>
-                <th>Ballot</th>
-                <th>Party</th>
-                {% for identifier_field in identifier_fields %}
-                    <th>{{ identifier_field }}</th>
-                {% endfor %}
+                <tr>
+                    <th>Person</th>
+                    <th>Ballot</th>
+                    <th>Party</th>
+                    {% for identifier_field in identifier_fields %}
+                        <th>{{ identifier_field }}</th>
+                    {% endfor %}
 
-            </tr>
+                </tr>
             </thead>
             <tbody>
-            {% for membership in qs %}
-                <tr>
-                    <td><a href="{% url "person-view" membership.person_id %}">{{ membership.person_name }}</a></td>
-                    <td>
-                        <a href="{% url "election_view" membership.ballot_paper_id %}">{{ membership.ballot_paper_id }}</a>
-                    </td>
-                    <td>{{ membership.party_name }}</td>
-                    {% for identifier_field in identifier_fields %}
-                        <th>{% model_attr membership identifier_field %}</th>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
+                {% for membership in qs %}
+                    <tr>
+                        <td><a href="{% url "person-view" membership.person_id %}">{{ membership.person_name }}</a></td>
+                        <td>
+                            <a href="{% url "election_view" membership.ballot_paper_id %}">{{ membership.ballot_paper_id }}</a>
+                        </td>
+                        <td>{{ membership.party_name }}</td>
+                        {% for identifier_field in identifier_fields %}
+                            <th>{% model_attr membership identifier_field %}</th>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

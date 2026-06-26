@@ -5,20 +5,20 @@
   <h2>Posts needing most attention</h2>
   <table class="counts_table">
     <thead>
-    <th>Election</th>
-    <th>Post Name</th>
-    <th>Number of Candidates</th>
-    <th>Election Date</th>
+      <th>Election</th>
+      <th>Post Name</th>
+      <th>Number of Candidates</th>
+      <th>Election Date</th>
     </thead>
     <tbody>
-    {% for ballot in post_counts %}
-      <tr {% if ballot.count == 0 %}class="no_known"{% endif %}>
-        <td>{{ ballot.election.name }}</td>
-        <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.short_label }}</a></td>
-        <td>{{ ballot.count }}</td>
-        <td>{{ ballot.election.election_date }}</td>
-      </tr>
-    {% endfor %}
+      {% for ballot in post_counts %}
+        <tr {% if ballot.count == 0 %}class="no_known"{% endif %}>
+          <td>{{ ballot.election.name }}</td>
+          <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.short_label }}</a></td>
+          <td>{{ ballot.count }}</td>
+          <td>{{ ballot.election.election_date }}</td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
 

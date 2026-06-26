@@ -1,39 +1,39 @@
 
 {% with contributor=image.uploading_user %}
-{% with user_reason=image.user_copyright %}
-{% with mod_reason=image.copyright %}
-{% with user_comment=image.user_notes %}
+  {% with user_reason=image.user_copyright %}
+    {% with mod_reason=image.copyright %}
+      {% with user_comment=image.user_notes %}
 
-  {% if contributor %}
-    This photo was uploaded by the user ‘{{ contributor }}’ on {{ image.modified }}.
-  {% else%}
-    This photo was uploaded on {{ image.modified }}.
-  {% endif %}
-  {% if user_reason and user_reason != 'other'  %}
-    Their justification for its use on the site was:
-    {% include 'candidates/_photo-expand-reason.html' with reason=user_reason %}.
-  {% endif %}
-  {% if user_comment %}
-    They commented: “{{ user_comment }}”.
-  {% endif %}
-  {% if mod_reason != user_reason %}
-    The moderator who reviewed this photo picked a
-    different justification for its use on the site, which was:
-    {% include 'candidates/_photo-expand-reason.html' with reason=mod_reason %}.
-  {% endif %}
+        {% if contributor %}
+          This photo was uploaded by the user ‘{{ contributor }}’ on {{ image.modified }}.
+        {% else%}
+          This photo was uploaded on {{ image.modified }}.
+        {% endif %}
+        {% if user_reason and user_reason != 'other'  %}
+          Their justification for its use on the site was:
+          {% include 'candidates/_photo-expand-reason.html' with reason=user_reason %}.
+        {% endif %}
+        {% if user_comment %}
+          They commented: “{{ user_comment }}”.
+        {% endif %}
+        {% if mod_reason != user_reason %}
+          The moderator who reviewed this photo picked a
+          different justification for its use on the site, which was:
+          {% include 'candidates/_photo-expand-reason.html' with reason=mod_reason %}.
+        {% endif %}
 
   {# Photos not uploaded from the review queue have different metadata: #}
 
-  {% if 'Approved from photo moderation queue' not in image.notes %}
-    {% if image.source %}
-      The source of the image was “{{ image.source }}”.
-    {% endif %}
-    {% if image.notes and 'md5sum:' not in image.notes %}
-      Notes about this image: “{{ image.notes }}”.
-    {% endif %}
-  {% endif %}
+        {% if 'Approved from photo moderation queue' not in image.notes %}
+          {% if image.source %}
+            The source of the image was “{{ image.source }}”.
+          {% endif %}
+          {% if image.notes and 'md5sum:' not in image.notes %}
+            Notes about this image: “{{ image.notes }}”.
+          {% endif %}
+        {% endif %}
 
-{% endwith %}
-{% endwith %}
-{% endwith %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
 {% endwith %}

@@ -52,56 +52,56 @@
 
 {% endcomment %}
 
-        <div class="party-group {% if party_lists_in_use %}party-list{% else %}no-party-list{% endif %}">
+<div class="party-group {% if party_lists_in_use %}party-list{% else %}no-party-list{% endif %}">
 
-          {% if party_lists_in_use %}
-            <h4 class="party-list-header">{{ party.name }}</h4>
-            <p class="party-list-description">
-              {% if party.truncated %}
-                Showing the top candidates. <a href="{% url 'party-for-post' election=election post_id=post_data.id legacy_slug=party.legacy_slug %}">See all {{ party.total_count }} members on the party list &rarr;</a>
-              {% else %}
+  {% if party_lists_in_use %}
+    <h4 class="party-list-header">{{ party.name }}</h4>
+    <p class="party-list-description">
+      {% if party.truncated %}
+        Showing the top candidates. <a href="{% url 'party-for-post' election=election post_id=post_data.id legacy_slug=party.legacy_slug %}">See all {{ party.total_count }} members on the party list &rarr;</a>
+      {% else %}
 
-                <a href="{% url 'party-for-ballot' ballot_id=ballot.ballot_paper_id party_id=party.ec_id %}">See just this party list &rarr;</a>
-              {% endif %}
+        <a href="{% url 'party-for-ballot' ballot_id=ballot.ballot_paper_id party_id=party.ec_id %}">See just this party list &rarr;</a>
+      {% endif %}
+  {% endif %}
+
+  {% for position_in_list, c, candidate_elected in people %}
+    {% if forloop.first %}
+      <ul class="candidate-list">
+    {% endif %}
+
+    <li class="candidates-list__person{% if user_can_record_results %} hover-highlighting{% endif %}">
+      {% include 'candidates/_person_in_list.html' with election=election.slug %}
+      {% if user.is_authenticated %}
+        <p>
+          {% if candidate_list_edits_allowed %}
+            <a class="button tiny js-toggle-source-confirmation not-standing">Not actually standing?</a>
           {% endif %}
+          <a href="{% url 'person-update' person_id=c.id %}" class="button tiny secondary">Edit</a>
+        </p>
+        {% if candidate_list_edits_allowed %}
+          {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
+        {% endif %}
+      {% endif %}
+      {% if DATE_TODAY >= election.election_date %}
+        {% if user_can_record_results and show_confirm_result and not candidate_elected %}
+          {% if 'local' not in election.slug %}
+            <form class="winner-confirm" action="{% url 'record-winner' election=election.slug post_id=post_data.id %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="person_id" value="{{ c.id }}">
+              <input type="hidden" name="source" value="[Quick update from the constituency page]">
+              <input type="submit" class="button" value="Mark candidate as elected">
+            </form>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </li>
 
-          {% for position_in_list, c, candidate_elected in people %}
-            {% if forloop.first %}
-              <ul class="candidate-list">
-            {% endif %}
+    {% if forloop.last %}
+      </ul>
+    {% endif %}
 
-              <li class="candidates-list__person{% if user_can_record_results %} hover-highlighting{% endif %}">
-                {% include 'candidates/_person_in_list.html' with election=election.slug %}
-                {% if user.is_authenticated %}
-                <p>
-                  {% if candidate_list_edits_allowed %}
-                    <a class="button tiny js-toggle-source-confirmation not-standing">Not actually standing?</a>
-                  {% endif %}
-                  <a href="{% url 'person-update' person_id=c.id %}" class="button tiny secondary">Edit</a>
-                </p>
-                {% if candidate_list_edits_allowed %}
-                  {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' %}
-                {% endif %}
-                {% endif %}
-                {% if DATE_TODAY >= election.election_date %}
-                  {% if user_can_record_results and show_confirm_result and not candidate_elected %}
-                    {% if 'local' not in election.slug %}
-                      <form class="winner-confirm" action="{% url 'record-winner' election=election.slug post_id=post_data.id %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="person_id" value="{{ c.id }}">
-                        <input type="hidden" name="source" value="[Quick update from the constituency page]">
-                        <input type="submit" class="button" value="Mark candidate as elected">
-                      </form>
-                    {% endif %}
-                  {% endif %}
-                {% endif %}
-              </li>
+  {% endfor %} {# end of 'for position_in_list, c, candidate_elected in people' #}
 
-            {% if forloop.last %}
-              </ul>
-            {% endif %}
-
-          {% endfor %} {# end of 'for position_in_list, c, candidate_elected in people' #}
-
-        </div>
+</div>
 

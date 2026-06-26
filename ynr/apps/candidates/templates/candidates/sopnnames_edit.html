@@ -6,17 +6,17 @@
 
 {% block content %}
 
-<h1>Edit SOPN names for candidacy</h1>
+  <h1>Edit SOPN names for candidacy</h1>
 
-<p>
-{{ person.name }}
-Standing in
-{{ object.ballot.election.name }}
--
-{{ object.ballot.post.label }}
-on
-{{ object.ballot.election.election_date }}
-</p>
+  <p>
+    {{ person.name }}
+    Standing in
+    {{ object.ballot.election.name }}
+    -
+    {{ object.ballot.post.label }}
+    on
+    {{ object.ballot.election.election_date }}
+  </p>
 
   <div>
     <form action="" method="post" id="person_edit_sopn_names">

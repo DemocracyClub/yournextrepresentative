@@ -13,20 +13,20 @@
 
 {% block content %}
 
-<h2>Still Unlocked Constituencies</h2>
-{% if total_constituencies %}
-  <h4>{{ total_left }} left to do ({{ percent_done }}% done)</h4>
-  <ul>
-    {% for c in unlocked %}
-      <li>
-       <a href="{{ c.ballot.get_absolute_url }}">{{ c.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <h4>
-    No constituencies found in {{ election_data.name }}
-  </h4>
-{% endif %}
+  <h2>Still Unlocked Constituencies</h2>
+  {% if total_constituencies %}
+    <h4>{{ total_left }} left to do ({{ percent_done }}% done)</h4>
+    <ul>
+      {% for c in unlocked %}
+        <li>
+          <a href="{{ c.ballot.get_absolute_url }}">{{ c.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <h4>
+      No constituencies found in {{ election_data.name }}
+    </h4>
+  {% endif %}
 
 {% endblock %}

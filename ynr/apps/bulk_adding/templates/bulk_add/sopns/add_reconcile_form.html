@@ -6,108 +6,108 @@
 {% block title %}Add candidates from nomination paper{% endblock %}
 
 {% block extra_css %}
-{% stylesheet 'bulk_adding' %}
+  {% stylesheet 'bulk_adding' %}
 {% endblock %}
 
 {% block extra_js %}
-{% javascript 'bulk_adding' %}
+  {% javascript 'bulk_adding' %}
 {% endblock %}
 
 
 {% block content %}
-<h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
-    <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
+  <h1>{{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h1>
+  <a href="{{ ballot.get_sopn_url }}" class="button tiny">SOPN</a>
 
-{% if bulk_add_claim_warning %}
+  {% if bulk_add_claim_warning %}
     <div class="panel callout">
-        <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
+      <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
     </div>
-{% endif %}
+  {% endif %}
 
-<h2>Reconcile candidates to existing people</h2>
+  <h2>Reconcile candidates to existing people</h2>
   {% if official_document %}
-  <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
+    <a href="{{ official_document.get_absolute_url }}" target="_blank" class="button tiny">Nomination paper (SoPN)</a>
   {% endif %}
   {% if ballot.rawpeople.source_type == "council_csv" %}
     <div class="panel">
-    <h4>Good news!</h4>
-    <p>This candidate data below has been provided to us by the council directly. This means we trust it to
-    be correct, but it still needs checking to see if the candidates have stood in the
-    past, and to make sure the names are correctly formatted.</p>
+      <h4>Good news!</h4>
+      <p>This candidate data below has been provided to us by the council directly. This means we trust it to
+        be correct, but it still needs checking to see if the candidates have stood in the
+        past, and to make sure the names are correctly formatted.</p>
     </div>
 
   {% endif %}
-<p>We might already have a profile for some of these candidates from previous elections.</p>
-<p>If you think someone has stood before, please select them from the tables below. If in doubt,
-  just select "create a new person".</p>
-<p>Alternatively you can <a href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a>.</p>
+  <p>We might already have a profile for some of these candidates from previous elections.</p>
+  <p>If you think someone has stood before, please select them from the tables below. If in doubt,
+    just select "create a new person".</p>
+  <p>Alternatively you can <a href="{{ ballot.get_bulk_add_url }}?edit=1">edit these candidates</a>.</p>
 
 
-<form method=POST id="bulk_add_reconcile_formset">
-  {% csrf_token %}
-  {{ formset.management_form }}
-  {% if formset.non_form_errors %}
-    <div class="errorlist">
-      {% for error in formset.non_form_errors %}
-        <p>{{ error }}</p>
-      {% endfor %}
+  <form method=POST id="bulk_add_reconcile_formset">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}
+      <div class="errorlist">
+        {% for error in formset.non_form_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
 
-    </div>
-  {% endif %}
-  {% for form in formset %}
-    {% if form.name.value %}
-      <div>
-
-        <h3 style="clear:left;">{{ form.name.value }}</h3>
-        <h4><em>“{{ form.party_description_text.value }}”</em>{% if form.party_list_position.value %} (position {{ form.party_list_position.value }}){% endif %}</h4>
-        <table class="table sopn_adding_suggestions_table">
-          <thead>
-            <th>Action</th>
-            <th>Other names</th>
-            <th>Recent previous candidacies</th>
-          </thead>
-          <tbody>
-            {% for choice in form.select_person %}
-
-              <tr>
-                <td class="multiple-choice" style="margin-left:1em">
-                  {{ choice.tag }}
-                    <label>{{ choice.choice_label }}</label>
-                </td>
-                <td>
-                    {% if choice.data.instance.other_names.exists %}
-                        {% for other_name in choice.data.instance.other_names.all %}
-                            <small>{{ other_name.name }}</small><br>
-                        {% endfor %}
-
-                    {% endif %}
-                </td>
-                <td>
-                {% if choice.data.instance.on_ballot %}
-                  (Already listed on this ballot)
-                {% else %}
-                  <ul>
-                    {% for candidacy in choice.data.previous_candidacies %}
-                    <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-
-            {% for field in form.hidden_fields %}
-                {{ field }}
-            {% endfor %}
-
-          </tbody>
-        </table>
       </div>
     {% endif %}
-  {% endfor %}
+    {% for form in formset %}
+      {% if form.name.value %}
+        <div>
 
-  <button type=submit>Next</button>
-</form>
+          <h3 style="clear:left;">{{ form.name.value }}</h3>
+          <h4><em>“{{ form.party_description_text.value }}”</em>{% if form.party_list_position.value %} (position {{ form.party_list_position.value }}){% endif %}</h4>
+          <table class="table sopn_adding_suggestions_table">
+            <thead>
+              <th>Action</th>
+              <th>Other names</th>
+              <th>Recent previous candidacies</th>
+            </thead>
+            <tbody>
+              {% for choice in form.select_person %}
+
+                <tr>
+                  <td class="multiple-choice" style="margin-left:1em">
+                    {{ choice.tag }}
+                    <label>{{ choice.choice_label }}</label>
+                  </td>
+                  <td>
+                    {% if choice.data.instance.other_names.exists %}
+                      {% for other_name in choice.data.instance.other_names.all %}
+                        <small>{{ other_name.name }}</small><br>
+                      {% endfor %}
+
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if choice.data.instance.on_ballot %}
+                      (Already listed on this ballot)
+                    {% else %}
+                      <ul>
+                        {% for candidacy in choice.data.previous_candidacies %}
+                          <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+
+              {% for field in form.hidden_fields %}
+                {{ field }}
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <button type=submit>Next</button>
+  </form>
 
 
 {% endblock content %}

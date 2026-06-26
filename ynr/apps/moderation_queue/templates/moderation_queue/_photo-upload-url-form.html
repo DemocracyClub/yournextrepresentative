@@ -9,9 +9,9 @@
 
   <p>
     {% if queued_images %}
-    If you still want to upload another photo of {{ person.name }}, cancel the existing queued photos first:
+      If you still want to upload another photo of {{ person.name }}, cancel the existing queued photos first:
     {% else %}
-    Alternatively, you can paste a URL for the image (maximum size: 50 MB):
+      Alternatively, you can paste a URL for the image (maximum size: 50 MB):
     {% endif %}
   </p>
   <p>
@@ -22,7 +22,7 @@
   </p>
 
   <p>
-  Now let us know about the copyright of this image by selecting one of
+    Now let us know about the copyright of this image by selecting one of
     these options or explaining why we can use it:</p>
   <div class="photo-why-allowed-radio-buttons">
     {{ url_form.why_allowed_url.errors }}
@@ -31,8 +31,8 @@
   <p>
     {{ url_form.justification_for_use_url.errors }}
     <label for="{{ url_form.justification_for_use_url.id_for_label }}">
-    Here is my justification for why this photo may be reasonably used on the
-    website, including URL of the page that embeds the image:</label>
+      Here is my justification for why this photo may be reasonably used on the
+      website, including URL of the page that embeds the image:</label>
     {{ url_form.justification_for_use_url }}
   </p>
   <input type="submit" class="button" value="Upload">

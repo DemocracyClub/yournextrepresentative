@@ -12,27 +12,27 @@
 {% block content %}
 
 
-<div class="row">
-  <p>Since the {{ num_new_users_since_date.date|date }}, we've had {{num_new_users_since_date.count|intcomma}} new users sign up to help crowdsource election data.
-  {% for leaderboard in leaderboards %}
+  <div class="row">
+    <p>Since the {{ num_new_users_since_date.date|date }}, we've had {{num_new_users_since_date.count|intcomma}} new users sign up to help crowdsource election data.
+      {% for leaderboard in leaderboards %}
 
-    <div class="leaderboard" id="{{ leaderboard.title|slugify }}">
-      <h2>{{ leaderboard.title }}</h2>
-      <table>
-        <tr>
-          <th>User</th>
-          <th>Number of edits</th>
-        </tr>
-        {% for row in leaderboard.rows %}
-          <tr>
-            <td>{{ row.username }}</td>
-            <td>{{ row.edit_count }}</td>
-          </tr>
-        {% endfor %}
-      </table>
+        <div class="leaderboard" id="{{ leaderboard.title|slugify }}">
+          <h2>{{ leaderboard.title }}</h2>
+          <table>
+            <tr>
+              <th>User</th>
+              <th>Number of edits</th>
+            </tr>
+            {% for row in leaderboard.rows %}
+              <tr>
+                <td>{{ row.username }}</td>
+                <td>{{ row.edit_count }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+      {% endfor %}
     </div>
-
-  {% endfor %}
-</div>
 
 {% endblock %}

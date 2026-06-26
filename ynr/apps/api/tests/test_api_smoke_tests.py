@@ -1,11 +1,19 @@
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.urls import reverse
 from django_webtest import WebTest
 
 
 class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
+
+    def test_docs_html(self):
+        """
+        Check that the API docs are being rendered as Markdown
+        """
+        resp = self.app.get(reverse("api-home"))
+        self.assertContains(resp, "<h3>Usage terms</h3>")
 
     def test_each_endpoint(self):
         """

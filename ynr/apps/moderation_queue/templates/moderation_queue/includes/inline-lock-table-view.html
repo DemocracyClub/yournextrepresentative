@@ -4,9 +4,9 @@
 <tr>
     <td>
         {% if show_detail_url %}
-        <p>
-            <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
-        </p>
+            <p>
+                <a href="{{ ballot.get_absolute_url }}">Ballot Page</a>
+            </p>
         {% endif %}
         <p>
             {{ ballot.suggestedpostlock_set.count|apnumber|title }}
@@ -22,85 +22,85 @@
         <table style="width:100%">
             <caption><strong>{{ ballot.membership_set.count }} people</strong></caption>
             <thead>
-            <tr>
-                <th>Name</th>
-                <th>Party</th>
-                {% if ballot.election.party_lists_in_use %}
-                  <th>List Position</th>
-                {% endif %}
-                <th>Existing other names</th>
-                <th>Actions</th>
-            </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Party</th>
+                    {% if ballot.election.party_lists_in_use %}
+                        <th>List Position</th>
+                    {% endif %}
+                    <th>Existing other names</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
             <tbody>
-            {% for membership in ballot.memberships %}
-                <tr>
-                    <td>
-                        <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
-                        {% if membership.sopn_last_name %}
-                            <br>({{ membership.sopn_last_name }}, {{ membership.sopn_first_names }})
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if membership.party_description_text %}
-                            {{ membership.party_description_text }}
-                        {% else %}
-                            {{ membership.party_name }}
-                        {% endif %}
+                {% for membership in ballot.memberships %}
+                    <tr>
+                        <td>
+                            <a href="{{ membership.person.get_absolute_url }}">{{ membership.person.name }}</a>
+                            {% if membership.sopn_last_name %}
+                                <br>({{ membership.sopn_last_name }}, {{ membership.sopn_first_names }})
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if membership.party_description_text %}
+                                {{ membership.party_description_text }}
+                            {% else %}
+                                {{ membership.party_name }}
+                            {% endif %}
 
-                        {% if membership.previous_party_affiliations.exists %}
-                            <small>Previous party affiliations:</small>
-                            {% for previous_party in membership.previous_party_affiliations.all %}
-                                <small>{{ previous_party.name }}</small>
-                            {% endfor %}
-                        {% endif %}
-                    </td>
-                    {% if ballot.election.party_lists_in_use %}
-                      <td>{{ membership.party_list_position }}</td>
-                    {% endif %}
-                    <td>
-                        {% if membership.person.other_names.exists %}
-                            <ul>
-                                {% for name in membership.person.other_names.all %}
-                                    <li>{{ name.name }}</li>
+                            {% if membership.previous_party_affiliations.exists %}
+                                <small>Previous party affiliations:</small>
+                                {% for previous_party in membership.previous_party_affiliations.all %}
+                                    <small>{{ previous_party.name }}</small>
                                 {% endfor %}
-                            </ul>
+                            {% endif %}
+                        </td>
+                        {% if ballot.election.party_lists_in_use %}
+                            <td>{{ membership.party_list_position }}</td>
                         {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
-                           title="Edit person" target="_blank">
-                            ✏️ Edit
-                        </a><br>
-                        <a href="{% url 'person-other-name-create' membership.person.pk %}"
-                           class="radius secondary label known-person-alternate-name" title="Add alternative names">
-                            🏷️ Add name
-                        </a><br>
-                        <a href="{% url 'person-sopn-names-edit' person_id=membership.person_id membership_id=membership.id %}"
-                           class="radius secondary label" title="Edit SOPN names" target="_blank">
-                            🏷️ Edit SOPN name
-                        </a><br>
+                        <td>
+                            {% if membership.person.other_names.exists %}
+                                <ul>
+                                    {% for name in membership.person.other_names.all %}
+                                        <li>{{ name.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'person-update' membership.person.pk %}" class="radius secondary label"
+                               title="Edit person" target="_blank">
+                                ✏️ Edit
+                            </a><br>
+                            <a href="{% url 'person-other-name-create' membership.person.pk %}"
+                               class="radius secondary label known-person-alternate-name" title="Add alternative names">
+                                🏷️ Add name
+                            </a><br>
+                            <a href="{% url 'person-sopn-names-edit' person_id=membership.person_id membership_id=membership.id %}"
+                               class="radius secondary label" title="Edit SOPN names" target="_blank">
+                                🏷️ Edit SOPN name
+                            </a><br>
 
-                        <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
-                           href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}"
-                           class="radius secondary label known-person-not-standing" title="Mark as not standing">
-                            ❌ Not standing
-                        </a>
-                    </td>
+                            <a data-person-id="{{ membership.person.pk }}" data-post-id="{{ membership.ballot.post.slug }}"
+                               href="{% url 'candidacy-delete' ballot_paper_id=membership.ballot.ballot_paper_id %}"
+                               class="radius secondary label known-person-not-standing" title="Mark as not standing">
+                                ❌ Not standing
+                            </a>
+                        </td>
 
 
-                </tr>
-            {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
-    {% if ballot.current_user_suggested_lock %}
-    	Locking disabled because you suggested locking this page
-    {% else %}
-        {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
-        {% if show_detail_url %}
-            <p class="row"><a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}"># Link to this locking form</a></p>
+        {% if ballot.current_user_suggested_lock %}
+            Locking disabled because you suggested locking this page
+        {% else %}
+            {% include "moderation_queue/includes/ajax_lock_button_html.html" with ballot=ballot %}
+            {% if show_detail_url %}
+                <p class="row"><a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}"># Link to this locking form</a></p>
+            {% endif %}
         {% endif %}
-    {% endif %}
 
     </td>
     <td>
@@ -281,41 +281,41 @@
 
 <script type="text/html" class="known-person-not-standing-form">
     <tr class="inline-edit-row">
-        <td colspan="3" class="js-row">
-            <form action="" method="post" class="person-ajax-form">
-                {% csrf_token %}
-                <p>
-                    Are you sure you want to mark this candidate as not standing?
-                    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
-                </p>
-                <p>
-                    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
-                    <button type="submit" class="button primary">Mark Not Standing</button>
-                </p>
-            </form>
-        </td>
+    <td colspan="3" class="js-row">
+    <form action="" method="post" class="person-ajax-form">
+    {% csrf_token %}
+    <p>
+    Are you sure you want to mark this candidate as not standing?
+    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
+    </p>
+    <p>
+    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
+    <button type="submit" class="button primary">Mark Not Standing</button>
+    </p>
+    </form>
+    </td>
     </tr>
 </script>
 
 
 <script type="text/html" class="known-person-alternate-name-form">
     <tr class="inline-edit-row">
-        <td colspan="3" class="js-row">
-            <form action="" method="post" class="person-ajax-form">
-                {% csrf_token %}
-                <div class="other_names_container"></div>
-                <p>
-                    <label for="alt-name">Name as it appears on nomination paper:</label>
-                    <input id="alt-name" name="name" type="text">
-                </p>
-                <p>
-                    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
-                </p>
-                <p>
-                    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
-                    <button type="submit" class="button primary">Add alternate name</button>
-                </p>
-            </form>
-        </td>
+    <td colspan="3" class="js-row">
+    <form action="" method="post" class="person-ajax-form">
+    {% csrf_token %}
+    <div class="other_names_container"></div>
+    <p>
+    <label for="alt-name">Name as it appears on nomination paper:</label>
+    <input id="alt-name" name="name" type="text">
+    </p>
+    <p>
+    <input id="alt-source" name="source" type="hidden" value="{{ ballot.sopn.source_url }}">
+    </p>
+    <p>
+    <button type="button" class="button secondary inline-edit-cancel">Cancel</button>
+    <button type="submit" class="button primary">Add alternate name</button>
+    </p>
+    </form>
+    </td>
     </tr>
 </script>

@@ -11,33 +11,33 @@
 
 {% block content %}
 
-<form id="record_winner" method="post" action="{% url 'record-winner' ballot_paper_id=ballot.ballot_paper_id %}">
+  <form id="record_winner" method="post" action="{% url 'record-winner' ballot_paper_id=ballot.ballot_paper_id %}">
 
-{% csrf_token %}
+    {% csrf_token %}
 
-{{ form.non_field_errors }}
-<h2>Log of recent events for <a href="{{ ballot.get_absolute_url }}">{{ ballot.ballot_paper_id }}</a></h2>
-<table>
-  <thead>
-    <th>Updated</th>
-    <th>Person</th>
-    <th>Action</th>
-    <th>Source</th>
-  </thead>
-  <tbody>
-  {% for action in winner_logged_action %}
-    <tr>
-      <td>{{ action.updated }}</td>
-      <td>{{ action.person }}</td>
-      <td>{{ action.action_type }}</td>
-      <td>{{ action.source }}</td>
+    {{ form.non_field_errors }}
+    <h2>Log of recent events for <a href="{{ ballot.get_absolute_url }}">{{ ballot.ballot_paper_id }}</a></h2>
+    <table>
+      <thead>
+        <th>Updated</th>
+        <th>Person</th>
+        <th>Action</th>
+        <th>Source</th>
+      </thead>
+      <tbody>
+        {% for action in winner_logged_action %}
+          <tr>
+            <td>{{ action.updated }}</td>
+            <td>{{ action.person }}</td>
+            <td>{{ action.action_type }}</td>
+            <td>{{ action.source }}</td>
 
 
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-</form>
+  </form>
 
 {% endblock %}

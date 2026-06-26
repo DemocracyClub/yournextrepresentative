@@ -2,6 +2,7 @@
 {% load markdown_filter %}
 {% load static %}
 {% block api_content %}
+{# fmt:off #}
 {% filter markdown %}
 
 This site holds data on elections in the UK, including candidates, parties, results and other related data.
@@ -17,16 +18,16 @@ Found our data useful and want to support our work? Please consider contributing
 
 The API has a rate limit of 10 requests per minute for unauthenticated users.
 {% if request.user.is_authenticated %}
-To authenticate, pass your token in with `auth_token={{ request.user.auth_token.key }}`.
+    To authenticate, pass your token in with `auth_token={{ request.user.auth_token.key }}`.
 
-Alternatively pass in the authorization header:
+    Alternatively pass in the authorization header:
 
-`curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
+    `curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
 
 {% else %}
-To authenticate, simply create and account, and you will be given a token on your profile page.
+    To authenticate, simply create and account, and you will be given a token on your profile page.
 
-Pass this token in with `auth_token=[token]`.
+    Pass this token in with `auth_token=[token]`.
 
 {% endif %}
 
@@ -48,10 +49,6 @@ feature set and interaface. If you want to consume our API, this is a good start
 a good idea to [contact us](https://democracyclub.org.uk/contact/) before you do.
 
 We plan on creating a `v1` API version soon, that will be close to the current `next` API.
-
-
-
-
-
 {% endfilter %}
+{# fmt:on #}
 {% endblock %}

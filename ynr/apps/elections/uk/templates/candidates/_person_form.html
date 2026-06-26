@@ -1,8 +1,8 @@
 {% csrf_token %}
 <style>
-    label {
-        font-weight: bold;
-    }
+  label {
+    font-weight: bold;
+  }
 </style>
 {% for field in form.hidden_fields %}
   {{ field }}
@@ -17,14 +17,14 @@
     {% else %}
       <p>Please check your information matches our requirements, below.</p>
       {% if form.errors %}
-      <dl>
-        {% for field, error_list in form.errors.items %}
-          <dt>{{ field }}</dt>
-          {% for error in error_list %}
-            <dd>{{ error }}</dd>
+        <dl>
+          {% for field, error_list in form.errors.items %}
+            <dt>{{ field }}</dt>
+            {% for error in error_list %}
+              <dd>{{ error }}</dd>
+            {% endfor %}
           {% endfor %}
-        {% endfor %}
-      </dl>
+        </dl>
       {% endif %}
 
 
@@ -40,7 +40,7 @@
     {% if form.honorific_prefix.help_text %}
       <p class="help_text">{{ form.honorific_prefix.help_text }}</p>
     {% endif %}
-  {{ form.honorific_prefix }}
+    {{ form.honorific_prefix }}
   </p>
   {{ form.honorific_prefix.errors }}
 </div>
@@ -52,7 +52,7 @@
     {% if form.name.help_text %}
       <p class="help_text">{{ form.name.help_text }}</p>
     {% endif %}
-  {{ form.name }}
+    {{ form.name }}
   </p>
   {% if person.has_locked_and_current_ballots %}
     <p class="help-text">This candidate is on a locked ballot. Changes to this candidate's name will be reviewed by a second person before being published.</p>
@@ -77,7 +77,7 @@
     {% if form.honorific_suffix.help_text %}
       <p class="help_text">{{ form.honorific_suffix.help_text }}</p>
     {% endif %}
-  {{ form.honorific_suffix }}
+    {{ form.honorific_suffix }}
   </p>
   {{ form.honorific_suffix.errors }}
 </div>
@@ -89,7 +89,7 @@
     {% if form.biography.help_text %}
       {{ form.biography.help_text }}
     {% endif %}
-  {{ form.biography }}
+    {{ form.biography }}
   </p>
   {{ form.biography.errors }}
 </div>
@@ -102,46 +102,46 @@
   {{ form.favourite_biscuit.errors }}
 </div>
 
-  <div class="form-item">
-    <h2>Candidacies:</h2>
-    {% if current_locked_ballots %}
-      <table class="table">
+<div class="form-item">
+  <h2>Candidacies:</h2>
+  {% if current_locked_ballots %}
+    <table class="table">
       <caption>Current locked ballots</caption>
       <thead>
         <th>Ballot</th>
         <th>Party</th>
       </thead>
       <tbody>
-      {% for membership in current_locked_ballots %}
-        <tr>
-          <td>{{ membership.ballot.ballot_paper_id }}</td>
-          <td>{{ membership.party.name }}<br>
-          {% if membership.is_welsh_run_ballot %}
-            <i class="previous-party">Previous Party Affiliations:</i>
-              <ul class="previous-party">
-              {% for party in membership.previous_party_affiliations.all %}
-                <li>{{ party.name }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
+        {% for membership in current_locked_ballots %}
+          <tr>
+            <td>{{ membership.ballot.ballot_paper_id }}</td>
+            <td>{{ membership.party.name }}<br>
+              {% if membership.is_welsh_run_ballot %}
+                <i class="previous-party">Previous Party Affiliations:</i>
+                <ul class="previous-party">
+                  {% for party in membership.previous_party_affiliations.all %}
+                    <li>{{ party.name }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
       </tbody>
-      </table>
+    </table>
 
-    {% endif %}
+  {% endif %}
 
 
-    {% if memberships_formset %}
+  {% if memberships_formset %}
     {{ memberships_formset.management_form }}
     {% for membership_form in memberships_formset %}
       <div class="row">
         <fieldset class="ballot_group"
-          {% if membership_form.instance.pk %}
-                  data-party-register="{{ membership_form.instance.ballot.post.party_set.slug|upper }}"
-                  data-uses-party-lists="{{ membership_form.instance.ballot.election.party_lists_in_use }}"
-          {% endif %}
+                  {% if membership_form.instance.pk %}
+                    data-party-register="{{ membership_form.instance.ballot.post.party_set.slug|upper }}"
+                    data-uses-party-lists="{{ membership_form.instance.ballot.election.party_lists_in_use }}"
+                  {% endif %}
         >
           {% for field in membership_form.hidden_fields %}
             {{ field }}
@@ -186,25 +186,25 @@
         </fieldset>
       </div>
     {% endfor %}
-    {% endif %}
-    {% if form.party_identifier %}
+  {% endif %}
+  {% if form.party_identifier %}
     {# We're on a new person form on the ballot, so we know the ballot already #}
-      <fieldset class="row ballot_group"
-           data-party-register="{{ ballot.post.party_set.slug|upper }}"
-           data-uses-party-lists="{{ ballot.election.party_lists_in_use }}">
-        <legend>{{ ballot.ballot_paper_id }}</legend>
-        <div class="large-12 columns">
-          {{ form.party_identifier.label }}
-          {{ form.party_identifier }}
-          {{ form.party_identifier.errors }}
-        </div>
-        <div class="large-12 columns">
-          {{ form.party_list_position.label }}
-          {{ form.party_list_position }}
-        </div>
-      </fieldset>
-    {% endif %}
-  </div>
+    <fieldset class="row ballot_group"
+              data-party-register="{{ ballot.post.party_set.slug|upper }}"
+              data-uses-party-lists="{{ ballot.election.party_lists_in_use }}">
+      <legend>{{ ballot.ballot_paper_id }}</legend>
+      <div class="large-12 columns">
+        {{ form.party_identifier.label }}
+        {{ form.party_identifier }}
+        {{ form.party_identifier.errors }}
+      </div>
+      <div class="large-12 columns">
+        {{ form.party_list_position.label }}
+        {{ form.party_list_position }}
+      </div>
+    </fieldset>
+  {% endif %}
+</div>
 
 
 

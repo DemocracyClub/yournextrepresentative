@@ -2,9 +2,9 @@
 
 
 {% block content %}
-<h2>
-  Number of known {{ election_data.name }} candidates per post
-</h2>
+    <h2>
+        Number of known {{ election_data.name }} candidates per post
+    </h2>
     <table class="counts_table">
         <thead>
             <th>Post Name</th>
@@ -12,13 +12,13 @@
             <th>Election Date</th>
         </thead>
         <tbody>
-        {% for ballot in post_counts %}
-            <tr {% if ballot.count == 0 %}class="no_known"{% endif%}>
-                <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
-                <td>{{ ballot.count }}</td>
-                <td>{{ election_data.election_date }}</td>
-            </tr>
-        {% endfor %}
+            {% for ballot in post_counts %}
+                <tr {% if ballot.count == 0 %}class="no_known"{% endif%}>
+                    <td><a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a></td>
+                    <td>{{ ballot.count }}</td>
+                    <td>{{ election_data.election_date }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 

@@ -18,14 +18,14 @@
 
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
     $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", window.csrftoken);
-            }
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", window.csrftoken);
         }
+      }
     });
 
     $('.ajax_lock_button').on('click', function(e) {
@@ -42,28 +42,28 @@
       post_url = form.attr('action');
 
       $.ajax({
-              url: post_url,
-              type: 'post',
-              dataType: 'json',
-              data: form.serialize(),
-              success: function(data) {
+        url: post_url,
+        type: 'post',
+        dataType: 'json',
+        data: form.serialize(),
+        success: function(data) {
 
-                if (data['ballot_updated']) {
-                  return form.parent().html("<strong>Locking failed as the ballot has been updated.</strong><br>It looks like someone updated the ballot since loading. Please refresh the page to review these changes and try again.")
-                };
+          if (data['ballot_updated']) {
+            return form.parent().html("<strong>Locking failed as the ballot has been updated.</strong><br>It looks like someone updated the ballot since loading. Please refresh the page to review these changes and try again.")
+          };
 
-                if (data['locked']) {
-                  this_button.html(UNLOCKED_TEXT);
-                  this_button.data("op", 'unlock');
-                  form.find('input[name=lock]').val('False')
-                } else {
-                  this_button.html(LOCKED_TEXT);
-                  this_button.data("op", 'lock');
-                  form.find('input[name=lock]').val('True')
-                }
-                this_button.removeAttr("disabled");
-              }
-          });
+          if (data['locked']) {
+            this_button.html(UNLOCKED_TEXT);
+            this_button.data("op", 'unlock');
+            form.find('input[name=lock]').val('False')
+          } else {
+            this_button.html(LOCKED_TEXT);
+            this_button.data("op", 'lock');
+            form.find('input[name=lock]').val('True')
+          }
+          this_button.removeAttr("disabled");
+        }
+      });
 
     });
 
@@ -72,26 +72,26 @@
       var this_button = $(e.target);
       this_button.attr("disabled", "disabled");
       if (confirm("Are you sure you want to remove the suggested post lock for this ballot? \n " +
-          "This will put the ballot back in to the queue of ballots that need data entry")) {
-        this_button.parents('td').find('button.ajax_lock_button').attr("disabled", "disabled");;
-        var this_form = this_button.parent();
-        var post_url = this_form.attr('action');
-        $.ajax({
-          url: post_url,
-          type: 'post',
-          dataType: 'json',
-          data: {'ballot': this_form.data('ballot')},
-          success: function(data) {
-            if (data['removed']) {
-              this_button.html("Suggestion removed");
-            } else {
-              this_button.html("Error removing suggestion");
+        "This will put the ballot back in to the queue of ballots that need data entry")) {
+          this_button.parents('td').find('button.ajax_lock_button').attr("disabled", "disabled");;
+          var this_form = this_button.parent();
+          var post_url = this_form.attr('action');
+          $.ajax({
+            url: post_url,
+            type: 'post',
+            dataType: 'json',
+            data: {'ballot': this_form.data('ballot')},
+            success: function(data) {
+              if (data['removed']) {
+                this_button.html("Suggestion removed");
+              } else {
+                this_button.html("Error removing suggestion");
+              }
             }
-          }
-        });
-      } else {
-       this_button.removeAttr("disabled")
-      }
+          });
+        } else {
+          this_button.removeAttr("disabled")
+        }
     });
 
   });

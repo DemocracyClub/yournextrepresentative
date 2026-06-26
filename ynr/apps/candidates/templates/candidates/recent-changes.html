@@ -14,12 +14,12 @@
 {% block content %}
 
   <style>
-      .recent-changes td {
-          vertical-align: top;
-      }
-      .recent-changes th:first-child {
-          width: 10%;
-      }
+    .recent-changes td {
+      vertical-align: top;
+    }
+    .recent-changes th:first-child {
+      width: 10%;
+    }
   </style>
   <aside class="ds-filter" aria-labelledby="filter-label" style="margin-bottom: 2em;">
     <div class="ds-filter-cluster">
@@ -32,102 +32,102 @@
       </ul>
     </div>
     <form>
-    <details {% if filter.data %}open=""{% endif %}>
-      <summary>Advanced filters</summary>
-      <div class="ds-advanced-filters">
-        <div class="ds-filter-cluster">
+      <details {% if filter.data %}open=""{% endif %}>
+        <summary>Advanced filters</summary>
+        <div class="ds-advanced-filters">
+          <div class="ds-filter-cluster">
 
-          {% for field in filter.form %}
-            <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
-              <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
-              {{ field }}
-            </ul>
-          {% endfor %}
+            {% for field in filter.form %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+                <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
+                {{ field }}
+              </ul>
+            {% endfor %}
 
 
+          </div>
         </div>
-      </div>
-      <button type="submit" class="button">Filter</button>
-    </details>
+        <button type="submit" class="button">Filter</button>
+      </details>
     </form>
   </aside>
 
 
-<table class="table recent-changes">
-  <tr>
-    <th>User</th>
-    <th>Edited</th>
-    <th>Change</th>
-    <th>Source</th>
-    <th>Flagged</th>
-    <th>View diff</th>
-  </tr>
-  {% for action in actions %}
-    <tbody>
-      <tr>
-        <td>
-          <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
-            {{ action.user.username }}<br>
-          </a>
-          {{ action.created|naturaltime }}
-        </td>
-        <td>
-      {% if action.person %}
-        <a href="{{ action.person.get_absolute_url }}">{{ action.person.name }}</a>
-      {% endif %}
-      {% if action.ballot %}
-        <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.post.label }}</a>
-      {% endif %}
-      </td>
-      <td>
-        {{ action.get_action_type_display }}
-        {% if action.get_action_type_display == "Person updated" and not action.candidacy_edit %}
-        <br>
-        <em>{{ action.changed_version_fields }}</em>
-        {% endif %}
+  <table class="table recent-changes">
+    <tr>
+      <th>User</th>
+      <th>Edited</th>
+      <th>Change</th>
+      <th>Source</th>
+      <th>Flagged</th>
+      <th>View diff</th>
+    </tr>
+    {% for action in actions %}
+      <tbody>
+        <tr>
+          <td>
+            <a href="{% url "recent-changes" %}?username={{ action.user.username }}" title="Filter by this user only">
+              {{ action.user.username }}<br>
+            </a>
+            {{ action.created|naturaltime }}
+          </td>
+          <td>
+            {% if action.person %}
+              <a href="{{ action.person.get_absolute_url }}">{{ action.person.name }}</a>
+            {% endif %}
+            {% if action.ballot %}
+              <a href="{{ action.ballot.get_absolute_url }}">{{ action.ballot.post.label }}</a>
+            {% endif %}
+          </td>
+          <td>
+            {{ action.get_action_type_display }}
+            {% if action.get_action_type_display == "Person updated" and not action.candidacy_edit %}
+              <br>
+              <em>{{ action.changed_version_fields }}</em>
+            {% endif %}
 
-      </td>
+          </td>
 
-      <td style="overflow: scroll; width: 15%">{{ action.source }}</td>
-      <td>
-        {% if action.flagged_reason %}
-         <small style="display:inline-block;max-width:20ch;color:red;">⚠ {{ action.flagged_reason }}</small>
-        {% endif %}
-      </td>
+          <td style="overflow: scroll; width: 15%">{{ action.source }}</td>
+          <td>
+            {% if action.flagged_reason %}
+              <small style="display:inline-block;max-width:20ch;color:red;">⚠ {{ action.flagged_reason }}</small>
+            {% endif %}
+          </td>
+          {% if action.diff_html %}
+            <td><button id="diff-button-{{ forloop.counter }}" class="button secondary tiny js-toggle-diff-row">Show</button></td>
+          {% endif %}
+        </tr>
+      </tbody>
       {% if action.diff_html %}
-      <td><button id="diff-button-{{ forloop.counter }}" class="button secondary tiny js-toggle-diff-row">Show</button></td>
+        <tbody class="diff-row">
+          <tr>
+            <td></td>
+            <td colspan="6">
+              <div class="diff-html">
+                <p>{{ action.diff_html }}</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
       {% endif %}
-      </tr>
-    </tbody>
-    {% if action.diff_html %}
-    <tbody class="diff-row">
-      <tr>
-        <td></td>
-        <td colspan="6">
-          <div class="diff-html">
-            <p>{{ action.diff_html }}</p>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-    {% endif %}
-  {% endfor %}
-</table>
+    {% endfor %}
+  </table>
 
-<div class="pagination">
+  <div class="pagination">
     <span class="step-links">
-        {% if actions.has_previous %}
-          <a href="{% query_string request.GET page=actions.previous_page_number %}">previous</a>
-        {% endif %}
+      {% if actions.has_previous %}
+        <a href="{% query_string request.GET page=actions.previous_page_number %}">previous</a>
+      {% endif %}
 
-        <span class="current">
-          Page {{ actions.number }} of {{ actions.paginator.num_pages }}
-        </span>
+      <span class="current">
+        Page {{ actions.number }} of {{ actions.paginator.num_pages }}
+      </span>
 
-        {% if actions.has_next %}
-          <a href="{% query_string request.GET page=actions.next_page_number %}">next</a>
-        {% endif %}
+      {% if actions.has_next %}
+        <a href="{% query_string request.GET page=actions.next_page_number %}">next</a>
+      {% endif %}
     </span>
-</div>
+  </div>
 
 {% endblock %}
