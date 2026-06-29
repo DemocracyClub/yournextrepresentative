@@ -1,12 +1,12 @@
 {% if object %}
     Same as <a href="{{ object.get_absolute_url }}"
                target="_blank">
-    {% if object.name == object.new_name %}
-        <strong>{{ object.name }}</strong>
-    {% else %}
-        {{ object.name }}
-    {% endif %}
-</a>
+        {% if object.name == object.new_name %}
+            <strong>{{ object.name }}</strong>
+        {% else %}
+            {{ object.name }}
+        {% endif %}
+    </a>
 
     <br>
     <small>Name match rank {{ object.rank|floatformat }}

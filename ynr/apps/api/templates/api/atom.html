@@ -1,18 +1,18 @@
 {% extends "api/api-base.html" %}
 {% block api_page_title %}
-    <h1>Results Atom feed</h1>
-  {% endblock %}
+  <h1>Results Atom feed</h1>
+{% endblock %}
 {% block api_content %}
-<h2 id="atom">Results ATOM feeds</h2>
-<p>There is an atom feed of recent election results available in two versions:</p>
+  <h2 id="atom">Results ATOM feeds</h2>
+  <p>There is an atom feed of recent election results available in two versions:</p>
 
-<ul>
-  <li><a href="{% url 'atom-results' %}">Atom feed with additional machine-readable elements</a></li>
-  <li><a href="{% url 'atom-results-basic' %}">Basic Atom feed</a></li>
-</ul>
-<p>Here is an example of the full feed - this is the contents of
-the feed with additional extra elements with a single
-result:</p>
+  <ul>
+    <li><a href="{% url 'atom-results' %}">Atom feed with additional machine-readable elements</a></li>
+    <li><a href="{% url 'atom-results-basic' %}">Basic Atom feed</a></li>
+  </ul>
+  <p>Here is an example of the full feed - this is the contents of
+    the feed with additional extra elements with a single
+    result:</p>
 
 <pre class="feed-example">
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -50,7 +50,7 @@ result:</p>
 &lt;/feed&gt;
 </pre>
 
-<p>The corresponding basic Atom feed would look like:</p>
+  <p>The corresponding basic Atom feed would look like:</p>
 
 <pre class="feed-example">
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -74,16 +74,16 @@ result:</p>
 &lt;/feed&gt;
 </pre>
 
-<p>
+  <p>
 
-  If you're using this feed, please be aware that it's possible
-  that a volunteer will record the wrong winner in error. In
-  that case, there will be an entry in the feed to indicate that
-  that statement about the winner has been retracted. If you're
-  using the extended feed, that will have
-  a <tt>&lt;retraction&gt;1&lt;/retraction&gt;</tt> element. If
-  you're using the basic feed, then the entry will look like:
-</p>
+    If you're using this feed, please be aware that it's possible
+    that a volunteer will record the wrong winner in error. In
+    that case, there will be an entry in the feed to indicate that
+    that statement about the winner has been retracted. If you're
+    using the extended feed, that will have
+    a <tt>&lt;retraction&gt;1&lt;/retraction&gt;</tt> element. If
+    you're using the basic feed, then the entry will look like:
+  </p>
 
 <pre class="feed-example">
 &lt;entry&gt;
@@ -99,93 +99,93 @@ result:</p>
 &lt;/entry&gt;
 </pre>
 
-<p>
-  This feed contains results from any election, so if you just
-  want to get results for the 2017 General Election, say, you
-  should filter
-  for <tt>&lt;election_slug&gt;parl.2017-06-08&lt;/election_slug&gt;</tt>.
-</p>
+  <p>
+    This feed contains results from any election, so if you just
+    want to get results for the 2017 General Election, say, you
+    should filter
+    for <tt>&lt;election_slug&gt;parl.2017-06-08&lt;/election_slug&gt;</tt>.
+  </p>
 
-<p>
-  The additional XML elements in the extended feed have the following meaning:
-</p>
+  <p>
+    The additional XML elements in the extended feed have the following meaning:
+  </p>
 
-<dl>
+  <dl>
 
-  <dt>election_slug</dt>
+    <dt>election_slug</dt>
 
-  <dd>The election ID
-    from <a href="https://elections.democracyclub.org.uk/">Every
-    Election</a> which is also used in URLs that refer to the election
-    on this site.</dd>
+    <dd>The election ID
+      from <a href="https://elections.democracyclub.org.uk/">Every
+        Election</a> which is also used in URLs that refer to the election
+      on this site.</dd>
 
-  <dt>election_name</dt>
+    <dt>election_name</dt>
 
-  <dd>The human-readable name of this election</dd>
+    <dd>The human-readable name of this election</dd>
 
-  <dt>election_date</dt>
+    <dt>election_date</dt>
 
-  <dd>The date that the election is took place on</dd>
+    <dd>The date that the election is took place on</dd>
 
-  <dt>post_id</dt>
+    <dt>post_id</dt>
 
-  <dd>The ID of the post that the candidate has been elected
-  to. In the case of the 2017 general election in the UK, for
-  example, the post ID of <tt>WMC:E14001046</tt> represents the
-  UK parliament constituency of Witney, which
-  has <a href="https://en.wikipedia.org/wiki/ONS_coding_system">GSS
-  code</a> E14001046.</dd>
+    <dd>The ID of the post that the candidate has been elected
+      to. In the case of the 2017 general election in the UK, for
+      example, the post ID of <tt>WMC:E14001046</tt> represents the
+      UK parliament constituency of Witney, which
+      has <a href="https://en.wikipedia.org/wiki/ONS_coding_system">GSS
+        code</a> E14001046.</dd>
 
-  <dt>post_name</dt>
+    <dt>post_name</dt>
 
-  <dd>This is the human-readable short name of the post, which
-  is typically the name of the constituency or area the
-  candidate has been elected to represent, e.g. "Witney".</dd>
+    <dd>This is the human-readable short name of the post, which
+      is typically the name of the constituency or area the
+      candidate has been elected to represent, e.g. "Witney".</dd>
 
-  <dt>winner_person_id</dt>
+    <dt>winner_person_id</dt>
 
-  <dd>The ID of the candidate who was elected to this post,
-    which is used to identify them on this website (e.g. in
-    URLs)
-  </dd>
+    <dd>The ID of the candidate who was elected to this post,
+      which is used to identify them on this website (e.g. in
+      URLs)
+    </dd>
 
-  <dt>winner_person_name</dt>
+    <dt>winner_person_name</dt>
 
-  <dd>The name of the candidate who was elected to this post.</dd>
+    <dd>The name of the candidate who was elected to this post.</dd>
 
-  <dt>winner_party_id</dt>
+    <dt>winner_party_id</dt>
 
-  <dd>The ID of the party of the winning candidate. This is used
-  in URLs on this website, and should be based on an official ID
-  for the party. e.g. in the UK, <tt>party:52</tt> is the
-  Conservative party,
-  which <a href="http://search.electoralcommission.org.uk/English/Registrations/PP52">has
-  ID 52 on the Electoral Commission's website</a>.</dd>
+    <dd>The ID of the party of the winning candidate. This is used
+      in URLs on this website, and should be based on an official ID
+      for the party. e.g. in the UK, <tt>party:52</tt> is the
+      Conservative party,
+      which <a href="http://search.electoralcommission.org.uk/English/Registrations/PP52">has
+        ID 52 on the Electoral Commission's website</a>.</dd>
 
-  <dt>image_url</dt>
+    <dt>image_url</dt>
 
-  <dd>If present, a link to a square headshot image of the
-  candidate. (You can read about licensing of the photos
-  on <a href="https://candidates.democracyclub.org.uk/help/about">the
-  About page</a>.)</dd>
+    <dd>If present, a link to a square headshot image of the
+      candidate. (You can read about licensing of the photos
+      on <a href="https://candidates.democracyclub.org.uk/help/about">the
+        About page</a>.)</dd>
 
-  <dt>parlparse_id</dt>
+    <dt>parlparse_id</dt>
 
-  <dd>If present, this means that the winning candidate has been
-  previously elected, and this is their ID that's used on
-  TheyWorkForYou, PublicWhip and parlparse.</dd>
+    <dd>If present, this means that the winning candidate has been
+      previously elected, and this is their ID that's used on
+      TheyWorkForYou, PublicWhip and parlparse.</dd>
 
-  <dt>user_id</dt>
+    <dt>user_id</dt>
 
-  <dd>The ID of the user of this site who recorded that this
-  candidate was elected. This is unlikely to be of any use to
-  you and will likely be removed in the future.</dd>
+    <dd>The ID of the user of this site who recorded that this
+      candidate was elected. This is unlikely to be of any use to
+      you and will likely be removed in the future.</dd>
 
-  <dt>information_source</dt>
+    <dt>information_source</dt>
 
-  <dd>The source of information that this candidate was indeed
-  elected to that post.</dd>
+    <dd>The source of information that this candidate was indeed
+      elected to that post.</dd>
 
-</dl>
+  </dl>
 
 {% endblock %}

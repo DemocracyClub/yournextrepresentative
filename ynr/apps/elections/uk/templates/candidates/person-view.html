@@ -11,29 +11,29 @@
 {% load markdown_filter %}
 
 {% block extra_head %}
-    <link rel="canonical" href="{{ canonical_url }}" />
+  <link rel="canonical" href="{{ canonical_url }}" />
 
     <!-- Open Graph and Twitter card data -->
-    <meta property="og:url" name="twitter:url" content="{{ canonical_url }}" />
-    <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - Candidate for {{ last_candidacy.ballot.post.short_label }} in {{ last_candidacy.ballot.election.name }}{% endif %}" />
-    <meta property="og:description" name="twitter:description" content="{% metadescription person last_candidacy DATE_TODAY %}">
+  <meta property="og:url" name="twitter:url" content="{{ canonical_url }}" />
+  <meta property="og:title" name="twitter:title" content="{{ person.name }}{% if last_candidacy %} - Candidate for {{ last_candidacy.ballot.post.short_label }} in {{ last_candidacy.ballot.election.name }}{% endif %}" />
+  <meta property="og:description" name="twitter:description" content="{% metadescription person last_candidacy DATE_TODAY %}">
 
     <!-- Just Open Graph metadata -->
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="{{ person.get_display_image_url }}" />
-    <meta property="og:image:height" content="80" />
-    <meta property="og:image:width" content="80" />
-    <meta property="og:site_name" content="{{ site.name }}" />
-    <meta property="og:locale" content="en-gb" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="{{ person.get_display_image_url }}" />
+  <meta property="og:image:height" content="80" />
+  <meta property="og:image:width" content="80" />
+  <meta property="og:site_name" content="{{ site.name }}" />
+  <meta property="og:locale" content="en-gb" />
 
     <!-- Twitter card data -->
-    <meta name="twitter:card" content="summary" />
-    {% if settings.TWITTER_USERNAME %}
-      <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
-    {% endif %}
-    <meta property="twitter:image" content="{{ person.get_display_image_url }}" />
-    <meta property="twitter:image:width" content="160" />
-    <meta property="twitter:image:height" content="160" />
+  <meta name="twitter:card" content="summary" />
+  {% if settings.TWITTER_USERNAME %}
+    <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
+  {% endif %}
+  <meta property="twitter:image" content="{{ person.get_display_image_url }}" />
+  <meta property="twitter:image:width" content="160" />
+  <meta property="twitter:image:height" content="160" />
 {% endblock %}
 
 {% block body_class %}person{% endblock %}
@@ -46,19 +46,19 @@
 
 {% block hero %}
 
-<div class="person__hero">
-  <div class="person__photo">
+  <div class="person__hero">
+    <div class="person__photo">
 
-    <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
-    {% if not person.person_image %}
-      {% if user_can_edit and person_edits_allowed %}
+      <img class="person-avatar" src="{{ person.get_display_image_url }}"/>
+      {% if not person.person_image %}
+        {% if user_can_edit and person_edits_allowed %}
           <a class="upload-photo" href="{% url 'photo-upload' person.id %}">
             Upload photo
           </a>
+        {% endif %}
       {% endif %}
-    {% endif %}
-  </div>
-  <h1>{{ person.name }}</h1>
+    </div>
+    <h1>{{ person.name }}</h1>
     {% if last_candidacy %}
       {% with election=last_candidacy.ballot.election post=last_candidacy.ballot.post %}
 
@@ -67,222 +67,222 @@
         </p>
       {% endwith %}
     {% endif %}
-</div>
+  </div>
 {% endblock %}
 
 {% block content %}
-{% url 'person-update' person_id=person.id as person_edit_url %}
+  {% url 'person-update' person_id=person.id as person_edit_url %}
 
-{% if election_to_show %}
-  {% if person|election_decision_known:election_to_show %}
-    <div class="person__details__result">
-    {% if person|was_elected:election_to_show %}
-      <h3>{{ person.name }} was elected</h3>
-    {% else %}
-      <h3>{{ person.name }} was not elected</h3>
+  {% if election_to_show %}
+    {% if person|election_decision_known:election_to_show %}
+      <div class="person__details__result">
+        {% if person|was_elected:election_to_show %}
+          <h3>{{ person.name }} was elected</h3>
+        {% else %}
+          <h3>{{ person.name }} was not elected</h3>
+        {% endif %}
+      </div>
     {% endif %}
-    </div>
   {% endif %}
-{% endif %}
 
-<div class="person__details">
+  <div class="person__details">
     <p class="panel">
       This is {{ person.name }}’s entry in Democracy Club’s candidate database.
       {% if not has_current_elections %}
-            These are the last details we have for {{ person.name }}.
-            They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
-            if you have new information.
+        These are the last details we have for {{ person.name }}.
+        They may not be current. Please <a href="{{ person_edit_url }} ">edit the details</a>
+        if you have new information.
       {% else %}
-          It can be <a href="{{ person_edit_url }} "> edited </a> to include {{ person.name }}’s
-          social media links, election statement, photograph, and other details.
+        It can be <a href="{{ person_edit_url }} "> edited </a> to include {{ person.name }}’s
+        social media links, election statement, photograph, and other details.
       {% endif %}
     </p>
-  <h2>Personal details:</h2>
+    <h2>Personal details:</h2>
 
-  <dl>
-    <dt>Name</dt>
-    <dd>{{ person.name_with_honorifics }}</dd>
-    <dt>ID</dt>
-    <dd>{{ person.pk }}</dd>
-    {% if other_names.exists %}
-      <dt>Also known as</dt>
-    {% endif %}
-    {% for other_name in other_names.all %}
-        <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
-    {% endfor %}
-    {% if person.get_email  %}
-      <dt>Email</dt>
-      <dd><a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a></dd>
-    {% endif %}
-    {% if last_candidacy %}
-      <dt>Party</dt>
-      <dd>{{ last_candidacy.party.name }}</dd>
-    {% endif %}
-
-    {% if person.biography %}
-      <dt>Statement to voters</dt>
-      <dd class="person_biography">{{ person.biography|markdown_subset}}</dd>
-      {% if person.biography_last_updated %}<dd>This statement was last updated on {{ person.biography_last_updated }}.</dd>{% endif %}
-    {% endif %}
-  </dl>
-  <h2>Candidacies:</h2>
-  <dl>
-    {% for election in person.current_elections_standing_down %}
-    <dt>{{ election.name }} ({{ election.election_date }})</dt>
-      <dd>Standing down</dd>
-    {% endfor %}
-
-    {% for election_data in elections_to_list %}
-      <dt>{% if DATE_TODAY > election_data.election_date %}
-           Contested the {{ election_data.name }} ({{ election_data.election_date }})
-        {% else %}
-           Contesting the {{ election_data.name }} ({{ election_data.election_date }})
-        {% endif %}</dt>
-
-      <dd>{{ person|post_in_election:election_data }}</dd>
-      {% for membership in person.memberships.all %}
-      {% if membership.ballot.election == election_data %}
-          {% if membership.deselected %}
-            <dd>This candidate has been deselected by their party, but will remain on the ballot paper. <a href="{{ membership.deselected_source }}" target="_blank">Learn more</a>.</dd>
-          {% endif %}
+    <dl>
+      <dt>Name</dt>
+      <dd>{{ person.name_with_honorifics }}</dd>
+      <dt>ID</dt>
+      <dd>{{ person.pk }}</dd>
+      {% if other_names.exists %}
+        <dt>Also known as</dt>
       {% endif %}
+      {% for other_name in other_names.all %}
+        <dd>{{ other_name.name }}{% if other_name.note %} ({{ other_name.note }}){% endif %}</dd>
+      {% endfor %}
+      {% if person.get_email  %}
+        <dt>Email</dt>
+        <dd><a href="mailto:{{ person.get_email }}">{{ person.get_email }}</a></dd>
+      {% endif %}
+      {% if last_candidacy %}
+        <dt>Party</dt>
+        <dd>{{ last_candidacy.party.name }}</dd>
+      {% endif %}
+
+      {% if person.biography %}
+        <dt>Statement to voters</dt>
+        <dd class="person_biography">{{ person.biography|markdown_subset}}</dd>
+        {% if person.biography_last_updated %}<dd>This statement was last updated on {{ person.biography_last_updated }}.</dd>{% endif %}
+      {% endif %}
+    </dl>
+    <h2>Candidacies:</h2>
+    <dl>
+      {% for election in person.current_elections_standing_down %}
+        <dt>{{ election.name }} ({{ election.election_date }})</dt>
+        <dd>Standing down</dd>
       {% endfor %}
 
-    {% empty %}
-      <p>No candidacies known at the moment.</p>
-    {% endfor %}
-  </dl>
+      {% for election_data in elections_to_list %}
+        <dt>{% if DATE_TODAY > election_data.election_date %}
+          Contested the {{ election_data.name }} ({{ election_data.election_date }})
+        {% else %}
+          Contesting the {{ election_data.name }} ({{ election_data.election_date }})
+        {% endif %}</dt>
 
-  <h2>Links and social media:</h2>
+        <dd>{{ person|post_in_election:election_data }}</dd>
+        {% for membership in person.memberships.all %}
+          {% if membership.ballot.election == election_data %}
+            {% if membership.deselected %}
+              <dd>This candidate has been deselected by their party, but will remain on the ballot paper. <a href="{{ membership.deselected_source }}" target="_blank">Learn more</a>.</dd>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
 
-  <dl>
-    {% for identifier in person.tmp_person_identifiers.all %}
+      {% empty %}
+        <p>No candidacies known at the moment.</p>
+      {% endfor %}
+    </dl>
+
+    <h2>Links and social media:</h2>
+
+    <dl>
+      {% for identifier in person.tmp_person_identifiers.all %}
         <dt>{{ identifier.get_value_type_html }}</dt>
         <dd>
           {{ identifier.get_value_html }}
         </dd>
-    {% endfor %}
-  </dl>
+      {% endfor %}
+    </dl>
 
     <h2>Demographics:</h2>
 
     <dl>
-        <dt>Gender</dt>
-        <dd>{% if person.gender %}{{ person.gender|title }}{% else %}Unknown{% endif %}</dd>
+      <dt>Gender</dt>
+      <dd>{% if person.gender %}{{ person.gender|title }}{% else %}Unknown{% endif %}</dd>
 
       <dt>Age</dt>
       {% if person.birth_date %}
-          <dd>
-            {{ person.age }}
-            <small class="dob">
-              (Born: {{ person.dob_as_approximate_date|format_approximate_date }})
-            </small>
-          </dd>
+        <dd>
+          {{ person.age }}
+          <small class="dob">
+            (Born: {{ person.dob_as_approximate_date|format_approximate_date }})
+          </small>
+        </dd>
       {% else %}
         <dd>Unknown</dd>
       {% endif %}
 
       {% if person.death_date %}
-          <dd>
-            Died: {{ person.dod_as_approximate_date|format_approximate_date }}
-          </dd>
+        <dd>
+          Died: {{ person.dod_as_approximate_date|format_approximate_date }}
+        </dd>
       {% endif %}
 
     </dl>
 
-  {% if person.favourite_biscuit %}
-    <h2>Additional information:</h2>
-    <dl>
-      <dt>Favourite biscuit</dt>
-      <dd>{{ person.favourite_biscuit }}</dd>
-    </dl>
-  {% endif %}
-
-  {% if person.person_image %}
-  <h2>Photo Credit:</h2>
-  <p class="person__photo-credit">
-    {% include 'candidates/_photo-credit.html' with image=person.person_image_model %}
-  </p>
-    {% if user.is_authenticated %}
-      <i>I am {{ person.name }}, and I would like to remove this photo:</i>
-      <a href="mailto:hello@democracyclub.org.uk" class="button">Request photo removal</a>
+    {% if person.favourite_biscuit %}
+      <h2>Additional information:</h2>
+      <dl>
+        <dt>Favourite biscuit</dt>
+        <dd>{{ person.favourite_biscuit }}</dd>
+      </dl>
     {% endif %}
-  {% endif %}
-</div>
 
-<div class="person__actions">
-
-  {% if last_candidacy.party.default_emblem %}
-    <div class="person__party_emblem">
-      {% thumbnail last_candidacy.party.default_emblem.image "240" as im %}
-        <img src="{{ im.url }}"/>
-      {% endthumbnail %}
-    </div>
-  {% endif %}
-
-  <div class="person__actions__action person__actions__edit">
-    <h2>Improve this data!</h2>
-    {% if user_can_edit and person_edits_allowed %}
-      <p>Our database is built by people like you.</p>
-      <p>Please add extra details about this candidate – it only takes a moment.</p>
-      <p> <a href="{% url 'volunteer-view'%}">Learn more about editing candidates.</a> </p>
+    {% if person.person_image %}
+      <h2>Photo Credit:</h2>
+      <p class="person__photo-credit">
+        {% include 'candidates/_photo-credit.html' with image=person.person_image_model %}
+      </p>
       {% if user.is_authenticated %}
-        <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
-        {% if person.queued_image %}
-          {% if user_can_review_photos %}
-            <p>{{ person.name }} has a photo that needs to be reviewed</p>
-            <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
+        <i>I am {{ person.name }}, and I would like to remove this photo:</i>
+        <a href="mailto:hello@democracyclub.org.uk" class="button">Request photo removal</a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="person__actions">
+
+    {% if last_candidacy.party.default_emblem %}
+      <div class="person__party_emblem">
+        {% thumbnail last_candidacy.party.default_emblem.image "240" as im %}
+          <img src="{{ im.url }}"/>
+        {% endthumbnail %}
+      </div>
+    {% endif %}
+
+    <div class="person__actions__action person__actions__edit">
+      <h2>Improve this data!</h2>
+      {% if user_can_edit and person_edits_allowed %}
+        <p>Our database is built by people like you.</p>
+        <p>Please add extra details about this candidate – it only takes a moment.</p>
+        <p> <a href="{% url 'volunteer-view'%}">Learn more about editing candidates.</a> </p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'person-update' person_id=person.id %}" class="button">Edit candidate</a>
+          {% if person.queued_image %}
+            {% if user_can_review_photos %}
+              <p>{{ person.name }} has a photo that needs to be reviewed</p>
+              <a href="{{ person.get_absolute_queued_image_url}}" class="button">Review image</a>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
           {% endif %}
         {% else %}
-          <a href="{% url 'photo-upload' person.id %}" class="button">Upload candidate photo</a>
+          <a href="{% url 'wombles:login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
         {% endif %}
       {% else %}
-        <a href="{% url 'wombles:login' %}?next={{ redirect_after_login }}" class="button">Log in to edit</a>
+        <h2>Edits disabled</h2>
+        {% include 'candidates/_edits_disallowed_message.html' %}
       {% endif %}
-    {% else %}
-      <h2>Edits disabled</h2>
-      {% include 'candidates/_edits_disallowed_message.html' %}
-    {% endif %}
-  </div>
-  <form class="person__actions__action person__actions__merge" id="{{ SUGGESTION_FORM_ID }}" action="{% url 'person-duplicate' person_id=person.id %}" method="get">
-    <h2>Is this a duplicate person?</h2>
-    <p>
-      <label for="other">Suggest another person should be merged into this one:</label>
-      <input id="other_person_id" name="other_person" placeholder="Other person ID" type="text" required></input>
-    </p>
-    <input type="submit" class="button alert" value="Suggest duplicate">
-  </form>
+    </div>
+    <form class="person__actions__action person__actions__merge" id="{{ SUGGESTION_FORM_ID }}" action="{% url 'person-duplicate' person_id=person.id %}" method="get">
+      <h2>Is this a duplicate person?</h2>
+      <p>
+        <label for="other">Suggest another person should be merged into this one:</label>
+        <input id="other_person_id" name="other_person" placeholder="Other person ID" type="text" required></input>
+      </p>
+      <input type="submit" class="button alert" value="Suggest duplicate">
+    </form>
 
-  <div class="person__actions__action person__actions__data">
-    <h2>Use this data!</h2>
-    <p>Open data JSON API:</p>
-    {% url 'person-detail' version='v0.9' pk=person.id format='json' as person_json_api_url %}
-    <p><input type="text" value="{{ person_json_api_url|absolute_url:request }}" onclick="this.select();"></p>
-    {% url 'api-home' as api_url %}
-    {% url 'api-terms' as terms_url %}
-    <p>
-      More details about getting <a href="{{ api_url }}">the data</a>
-      and <a href="{{ terms_url }}">its licence</a>.
-    </p>
-  </div>
+    <div class="person__actions__action person__actions__data">
+      <h2>Use this data!</h2>
+      <p>Open data JSON API:</p>
+      {% url 'person-detail' version='v0.9' pk=person.id format='json' as person_json_api_url %}
+      <p><input type="text" value="{{ person_json_api_url|absolute_url:request }}" onclick="this.select();"></p>
+      {% url 'api-home' as api_url %}
+      {% url 'api-terms' as terms_url %}
+      <p>
+        More details about getting <a href="{{ api_url }}">the data</a>
+        and <a href="{{ terms_url }}">its licence</a>.
+      </p>
+    </div>
 
-  <div class="person__actions__action person__actions__data">
-    <h2>Public profile page</h2>
-    <p>View <a href="{{ person.wcivf_url }}">{{ person.name }}'s page on WhoCanIVoteFor.co.uk</a></p>
-    <p>
+    <div class="person__actions__action person__actions__data">
+      <h2>Public profile page</h2>
+      <p>View <a href="{{ person.wcivf_url }}">{{ person.name }}'s page on WhoCanIVoteFor.co.uk</a></p>
+      <p>
         This website is designed for maintaining election candidate profile data. The data is used on our public-facing website,
         WhoCanIVoteFor.co.uk, and by other information providers, such as The Electoral Commission and news media companies.
-    </p>
-  </div>
-  {% if user.is_staff %}
-  <div class="person__actions__action person__actions__edit">
-    <h2>Admin interface</h2>
-    <p><a href="{% url "admin:people_person_change" person.pk %}">Edit this person in the admin interface</a></p>
-  </div>
-  {% endif %}
+      </p>
+    </div>
+    {% if user.is_staff %}
+      <div class="person__actions__action person__actions__edit">
+        <h2>Admin interface</h2>
+        <p><a href="{% url "admin:people_person_change" person.pk %}">Edit this person in the admin interface</a></p>
+      </div>
+    {% endif %}
 
-</div>
+  </div>
 
-{% include 'candidates/person-versions.html' %}
+  {% include 'candidates/person-versions.html' %}
 
 {% endblock %}

@@ -8,16 +8,16 @@
 
 {% block content %}
 
-{% for ballot in ballots %}
-  <h2>{{ ballot.election.name }}</h2>
-  <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+  {% for ballot in ballots %}
+    <h2>{{ ballot.election.name }}</h2>
+    <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
 
-{% empty %}
-  {% if postcode %}
-    <p>We don't know of any upcoming elections for {{ postcode }}</p>
-  {% else %}
-    <p>We don't know of any upcoming elections in this area</p>
-  {% endif %}
-{% endfor %}
+  {% empty %}
+    {% if postcode %}
+      <p>We don't know of any upcoming elections for {{ postcode }}</p>
+    {% else %}
+      <p>We don't know of any upcoming elections in this area</p>
+    {% endif %}
+  {% endfor %}
 
 {% endblock content %}

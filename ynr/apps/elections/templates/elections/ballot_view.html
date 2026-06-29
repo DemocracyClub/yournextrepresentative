@@ -7,26 +7,26 @@
 
 {% block extra_head %}
     <!-- Open Graph and Twitter card data -->
-    <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" name="twitter:title" content="Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }}" />
-    <meta property="og:description" name="twitter:description" content="List of Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} - find out more on {{ site.name }}">
+  <meta property="og:url" name="twitter:url" content="{{ request.build_absolute_uri }}" />
+  <meta property="og:title" name="twitter:title" content="Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }}" />
+  <meta property="og:description" name="twitter:description" content="List of Candidates for {{ ballot.post.label }} in the {{ ballot.election.name }} - find out more on {{ site.name }}">
 
     <!-- Open Graph data -->
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="og:image:height" content="80" />
-    <meta property="og:image:width" content="80" />
-    <meta property="og:site_name" content="{{ site.name }}" />
-    <meta property="og:locale" content="en-gb" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
+  <meta property="og:image:height" content="80" />
+  <meta property="og:image:width" content="80" />
+  <meta property="og:site_name" content="{{ site.name }}" />
+  <meta property="og:locale" content="en-gb" />
 
     <!-- Twitter card data -->
-    <meta name="twitter:card" content="summary" />
-    {% if settings.TWITTER_USERNAME %}
-      <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
-    {% endif %}
-    <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
-    <meta property="twitter:image:height" content="120" />
-    <meta property="twitter:image:width" content="120" />
+  <meta name="twitter:card" content="summary" />
+  {% if settings.TWITTER_USERNAME %}
+    <meta name="twitter:site" content="@{{ settings.TWITTER_USERNAME }}" />
+  {% endif %}
+  <meta property="twitter:image" content="{{ 'img/logo.png'|static_image_path:request }}" />
+  <meta property="twitter:image:height" content="120" />
+  <meta property="twitter:image:width" content="120" />
 {% endblock %}
 
 {% block body_class %}constituency{% endblock %}
@@ -35,266 +35,266 @@
 
 {% block hero %}
   <h1>{{ ballot.post.label }}</h1>
-    <p> <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}
-        on {{ ballot.election.election_date|date:"j F Y" }}</a>
-    </p>
+  <p> <a href="{% url 'election_view' ballot.election.slug %}">{{ ballot.election.name }}
+    on {{ ballot.election.election_date|date:"j F Y" }}</a>
+  </p>
 {% endblock %}
 
 
 {% block content %}
-<div class="row">
-  <div class="columns large-9">
-    <div class="ballot_status">
+  <div class="row">
+    <div class="columns large-9">
+      <div class="ballot_status">
         {% if ballot.cancelled %}
           <p>
             ❌ The poll for this election was cancelled
             {% if ballot.replaced_by %}
-            and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
-          </p>
-          {% endif %}
+              and <a href="{{ ballot.replaced_by.get_absolute_url }}">replaced by {{ ballot.replaced_by.ballot_paper_id }}</a>
+              </p>
+            {% endif %}
         {% endif %}
         {% if candidates.exists %}
-            {% if ballot.candidates_locked %}
-                <p>
-                    <strong>{{ ballot.locked_status_html }}</strong>: These {{ ballot.num_candidates }} candidates have been double-checked against the
-                    <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>
-                    from the council. The ballot is ‘locked’, which means that no new candidates may be added.
-                </p>
+          {% if ballot.candidates_locked %}
+            <p>
+              <strong>{{ ballot.locked_status_html }}</strong>: These {{ ballot.num_candidates }} candidates have been double-checked against the
+              <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>
+              from the council. The ballot is ‘locked’, which means that no new candidates may be added.
+            </p>
+          {% endif %}
+
+          {% if ballot.has_lock_suggestion %}
+            {% if current_user_suggested_lock %}
+              <p>
+                <strong>{{ ballot.suggested_lock_html }}</strong> You suggested locking this ballot. Someone else needs to double-check and lock it.
+              </p>
+            {% else %}
+
+              <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
+              <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button small">Review lock suggestion</a>
             {% endif %}
 
-            {% if ballot.has_lock_suggestion %}
-                {% if current_user_suggested_lock %}
-                 <p>
-                  <strong>{{ ballot.suggested_lock_html }}</strong> You suggested locking this ballot. Someone else needs to double-check and lock it.
-                </p>
-              {% else %}
+          {% endif %}
 
-                    <p><strong>{{ ballot.suggested_lock_html }}</strong> These candidates have not yet been double-checked against the official candidate list.</p>
-                    <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button small">Review lock suggestion</a>
-              {% endif %}
-
+          {% if not ballot.candidates_locked %}
+            {% if ballot.has_sopn %}
+              <p>These candidates need to be double-checked against the <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>.</p>
+            {% else %}
+              <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
+                Once nomination papers are published, we will manually verify each candidate.
+              </p>
             {% endif %}
-
-            {% if not ballot.candidates_locked %}
-                {% if ballot.has_sopn %}
-                    <p>These candidates need to be double-checked against the <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>.</p>
-                {% else %}
-                    <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
-                    Once nomination papers are published, we will manually verify each candidate.
-                    </p>
-                {% endif %}
-            {% endif %}
+          {% endif %}
         {% else %}
             {# In this case we show a heading as it needs to indicate that this is the main section of the page #}
             {# without the heading the 'previous candidates' section looks like the main section  #}
-            <h2>Candidates</h2>
-            <p>
-                We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
+          <h2>Candidates</h2>
+          <p>
+            We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
             We expect the official list of candidates to be published on or after
-                <strong>{{ ballot.expected_sopn_date }}</strong>.</p>
-            <p class="clearfix">
+            <strong>{{ ballot.expected_sopn_date }}</strong>.</p>
+          <p class="clearfix">
             {% if not ballot.has_sopn %}
               {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
             {% endif %}
-            </p>
+          </p>
         {% endif %}
-    </div>
+      </div>
 
 
-    {% include "elections/includes/_ballot_sopn_links.html" %}
+      {% include "elections/includes/_ballot_sopn_links.html" %}
 
-    {% if candidates.exists %}
-      <table class="table candidates-list">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Party</th>
-            {% if ballot.election.party_lists_in_use %}
-            <th>List Position</th>
-            {% endif %}
-            {% if ballot.is_welsh_run %}
-            <th>Previous Party Affiliations</th>
-            {% endif %}
-            {% if ballot.has_results %}
-            <th>Results</th>
-            {% endif %}
-            {% if ballot.has_results and not ballot.election.party_lists_in_use %}
-            <th>Rank</th>
-            {% endif %}
-            {% if user.is_authenticated %}
-            <th class="text-right">Actions</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for candidate in candidates %}
-          <tr>
-            <td>
-              <a href="{{ candidate.person.get_absolute_url }}">
-                <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}" width="64" height="64" />
-                {% if candidate.elected %}<strong>{% endif %}
-                  {{ candidate.person.name }}
-                {% if candidate.elected %}</strong>{% endif %}
-              </a>
-            </td>
-            <td>
-              {{ candidate.party_name }}
-              {% if candidate.party_description_text %}
-              <br>({{ candidate.party_description_text }})
+      {% if candidates.exists %}
+        <table class="table candidates-list">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Party</th>
+              {% if ballot.election.party_lists_in_use %}
+                <th>List Position</th>
               {% endif %}
-            </td>
-
-            {% if ballot.election.party_lists_in_use %}
-              <td>
-                {{ candidate.party_list_position }}
-              </td>
-            {% endif %}
-
-            {% if ballot.is_welsh_run %}
-              <td>
-                <ul class="previous-party">
-                {% for party in candidate.previous_party_affiliations.all %}
-                  <li>{{ party.name }}</li>
-                {% endfor %}
-                </ul>
-              </td>
-            {% endif %}
-
-            {% if ballot.has_results %}
-            <td>
-              {{ candidate.result.num_ballots }}
-              {% if candidate.elected %} (elected){% endif %}
-            </td>
-            {% endif %}
-
-            {% if ballot.has_results and not ballot.election.party_lists_in_use %}
-            <td>
-              {{ candidate.result.rank }}
-            </td>
-            {% endif %}
-
-            {% if user.is_authenticated %}
-            <td class="text-right">
-              {% if membership_edits_allowed %}
-                <a class="button tiny js-toggle-source-confirmation not-standing">
-                  Not actually standing?
-                </a>
-                {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=candidate.person_id %}
+              {% if ballot.is_welsh_run %}
+                <th>Previous Party Affiliations</th>
               {% endif %}
-
-              {% if ballot.polls_closed %}
-                {% if user_can_record_results and not ballot.cancelled %}
-                  {% if not ballot.can_enter_votes_cast %}
-                    {% if not has_all_winners %}
-                      <form class="winner-confirm" id="winner-confirm_{{ candidate.person_id }}" action="{% url 'record-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="person_id" value="{{ candidate.person_id }}">
-                        <input type="hidden" name="source" value="[Quick update from the constituency page]">
-                        <input type="submit" class="button success" value="Mark candidate as elected">
-                      </form>
-                    {% endif %}
+              {% if ballot.has_results %}
+                <th>Results</th>
+              {% endif %}
+              {% if ballot.has_results and not ballot.election.party_lists_in_use %}
+                <th>Rank</th>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <th class="text-right">Actions</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for candidate in candidates %}
+              <tr>
+                <td>
+                  <a href="{{ candidate.person.get_absolute_url }}">
+                    <img class="person-avatar" src="{{ candidate.person.get_display_image_url }}" width="64" height="64" />
+                    {% if candidate.elected %}<strong>{% endif %}
+                    {{ candidate.person.name }}
+                    {% if candidate.elected %}</strong>{% endif %}
+                  </a>
+                </td>
+                <td>
+                  {{ candidate.party_name }}
+                  {% if candidate.party_description_text %}
+                    <br>({{ candidate.party_description_text }})
                   {% endif %}
+                </td>
+
+                {% if ballot.election.party_lists_in_use %}
+                  <td>
+                    {{ candidate.party_list_position }}
+                  </td>
                 {% endif %}
-              {% endif %}
-              <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">
-                Edit
-              </a>
-            </td>
+
+                {% if ballot.is_welsh_run %}
+                  <td>
+                    <ul class="previous-party">
+                      {% for party in candidate.previous_party_affiliations.all %}
+                        <li>{{ party.name }}</li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                {% endif %}
+
+                {% if ballot.has_results %}
+                  <td>
+                    {{ candidate.result.num_ballots }}
+                    {% if candidate.elected %} (elected){% endif %}
+                  </td>
+                {% endif %}
+
+                {% if ballot.has_results and not ballot.election.party_lists_in_use %}
+                  <td>
+                    {{ candidate.result.rank }}
+                  </td>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                  <td class="text-right">
+                    {% if membership_edits_allowed %}
+                      <a class="button tiny js-toggle-source-confirmation not-standing">
+                        Not actually standing?
+                      </a>
+                      {% include 'candidates/_source_confirmation.html' with standing='not-standing' action='candidacy-delete' person_id=candidate.person_id %}
+                    {% endif %}
+
+                    {% if ballot.polls_closed %}
+                      {% if user_can_record_results and not ballot.cancelled %}
+                        {% if not ballot.can_enter_votes_cast %}
+                          {% if not has_all_winners %}
+                            <form class="winner-confirm" id="winner-confirm_{{ candidate.person_id }}" action="{% url 'record-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="person_id" value="{{ candidate.person_id }}">
+                              <input type="hidden" name="source" value="[Quick update from the constituency page]">
+                              <input type="submit" class="button success" value="Mark candidate as elected">
+                            </form>
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                    <a href="{% url 'person-update' person_id=candidate.person.pk %}" class="button tiny secondary">
+                      Edit
+                    </a>
+                  </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+
+            {% if not ballot.has_sopn and membership_edits_allowed or not user.is_authenticated  %}
+              <tr>
+                <td colspan="{% if ballot.is_welsh_run %}5{% else %}4{% endif %}">
+                  {% include "elections/includes/_ballot_add_candidate.html" %}
+                </td>
+              </tr>
+
             {% endif %}
-          </tr>
-          {% endfor %}
 
-          {% if not ballot.has_sopn and membership_edits_allowed or not user.is_authenticated  %}
-        <tr>
-        <td colspan="{% if ballot.is_welsh_run %}5{% else %}4{% endif %}">
-          {% include "elections/includes/_ballot_add_candidate.html" %}
-        </td>
-        </tr>
 
+          </tbody>
+        </table>
       {% endif %}
 
-
-        </tbody>
-      </table>
-      {% endif %}
-
-    {% if user.is_authenticated %}
+      {% if user.is_authenticated %}
       {#  You basically can't do anything unless you're logged in #}
-      <div class="ballot-ctas">
+        <div class="ballot-ctas">
         {# Everything you can _do to change_ the ballot or related objects #}
 
         {# Bulk adding #}
-        {% if ballot.has_sopn and not ballot.has_lock_suggestion and not ballot.candidates_locked and not ballot.cancelled %}
-          <a href="{{ ballot.get_bulk_add_url }}" class="button small">
-            Add candidates from SOPN
-          </a>
-        {% endif %}
+          {% if ballot.has_sopn and not ballot.has_lock_suggestion and not ballot.candidates_locked and not ballot.cancelled %}
+            <a href="{{ ballot.get_bulk_add_url }}" class="button small">
+              Add candidates from SOPN
+            </a>
+          {% endif %}
 
         {# Locking #}
-        {% if candidates.exists and user_can_lock %}
+          {% if candidates.exists and user_can_lock %}
             <form method="post" action="{% url 'constituency-lock' ballot_id=ballot.ballot_paper_id %}">
-                {% csrf_token %}
-                {% if ballot.candidates_locked %}
-                    <input type="submit" class="button small" value="Unlock">
-                {% endif %}
+              {% csrf_token %}
+              {% if ballot.candidates_locked %}
+                <input type="submit" class="button small" value="Unlock">
+              {% endif %}
             </form>
-        {% endif %}
+          {% endif %}
 
-        {% if ballot.has_sopn %}
-        <p>
-            {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
-        </p>
-        {% endif %}
-
-
+          {% if ballot.has_sopn %}
+            <p>
+              {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+            </p>
+          {% endif %}
 
 
-        {% include "elections/includes/_ballot_suggest_locking.html" %}
 
-         {% if user_can_record_results and has_any_winners %}
-          <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
-            {% csrf_token %}
-            <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
-          </form>
-        {% endif %}
 
-        {% if has_missing_list_positions %}
-          <p>Some candidates on this party list ballot are missing list positions. Can you add them?</p>
-        {% endif %}
+          {% include "elections/includes/_ballot_suggest_locking.html" %}
 
-        {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
-          <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
-        {% endif %}
-      </div>
-    {% endif %}
+          {% if user_can_record_results and has_any_winners %}
+            <form action="{% url 'retract-winner' ballot_paper_id=ballot.ballot_paper_id %}" method="post">
+              {% csrf_token %}
+              <input type="submit" class="button alert small" value="Unset the current winners, if incorrect">
+            </form>
+          {% endif %}
 
-  {% if ballot.has_results and ballot.resultset %}
-    {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
-  {% endif %}
+          {% if has_missing_list_positions %}
+            <p>Some candidates on this party list ballot are missing list positions. Can you add them?</p>
+          {% endif %}
+
+          {% if user_can_review_photos and ballot.get_absolute_queued_image_review_url %}
+            <p>This ballot has candidate photos awaiting approval.<a href="{{ ballot.get_absolute_queued_image_review_url }}"> Do you have time to review them?</a></p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if ballot.has_results and ballot.resultset %}
+        {% include "elections/includes/_ballot_results_table.html" with results=ballot.resultset %}
+      {% endif %}
 
    {# Only include these if the user can alter memberships #}
       {% include "elections/includes/_ballot_candidates_might_stand.html" %}
       {% include "elections/includes/_ballot_candidates_not_standing.html" %}
 
 
-  {% if user.is_authenticated and logged_actions %}
-    <h2 id="history">History for this ballot</h2>
-    {% for action in logged_actions %}
-      <div class="version">
-        <dl>
-          <dt>Description</dt>
-          <dd>{{ action.friendly_description }}</dd>
-          <dt>Timestamp</dt>
-          <dd>{{ action.created }}</dd>
-        </dl>
-      </div>
-    {% endfor %}
-  {% endif %}
+      {% if user.is_authenticated and logged_actions %}
+        <h2 id="history">History for this ballot</h2>
+        {% for action in logged_actions %}
+          <div class="version">
+            <dl>
+              <dt>Description</dt>
+              <dd>{{ action.friendly_description }}</dd>
+              <dt>Timestamp</dt>
+              <dd>{{ action.created }}</dd>
+            </dl>
+          </div>
+        {% endfor %}
+      {% endif %}
 
+    </div>
+    <div class="columns large-3">
+      {% include "uk/data_timeline.html" %}
+    </div>
   </div>
-  <div class="columns large-3">
-    {% include "uk/data_timeline.html" %}
-  </div>
-</div>
 
 {% endblock %}

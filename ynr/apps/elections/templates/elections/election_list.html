@@ -15,7 +15,7 @@
     {% if shortcuts.active.name == "data_input" %}
       <h1>Ballots that need checking against the nomination paper</h1>
       <p>For each of these ballots, we need someone to look at the document and manually add or remove candidates
-      to make our list exactly the same as the official nomination paper (SoPN).</p>
+        to make our list exactly the same as the official nomination paper (SoPN).</p>
     {% endif %}
   {% else %}
     <h1>All ballots in current or future Elections</h1>
@@ -58,12 +58,12 @@
       <summary>Advanced filters</summary>
       <div class="ds-advanced-filters">
         <div class="ds-filter-cluster">
-            {% for field in filter.form %}
-              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+          {% for field in filter.form %}
+            <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
               <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
               {{ field }}
-              </ul>
-            {% endfor %}
+            </ul>
+          {% endfor %}
 
         </div>
       </div>
@@ -82,7 +82,7 @@
           <th>Ballot</th>
           <th>Candidates known</th>
           <th>Status</th>
-          {% if group.list.0.polls_closed %} 
+          {% if group.list.0.polls_closed %}
             <th>Winner(s) marked</th>
             <th>Has Electorate</th>
             <th>Has Turnout Reported</th>
@@ -92,29 +92,29 @@
         </tr>
       </thead>
       <tbody>
-      {% for ballot in group.list %}
-        <tr>
-          <td>
-            {% ifchanged %}
-              <strong>
-                <a href="{{ ballot.election.get_absolute_url }}">
-                  {{ ballot.election.name }}
-                </a>
-              </strong>
-            {% endifchanged %}
-          </td>
-          <td>
-            <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
-            {% if ballot.election.modgov_url %}
-              <span class="round alert label">Results may be added by ResultsBot</span>
-            {% endif %}
-          </td>
-          <td>{{ ballot.memberships_count }}</td>
-          <td>
+        {% for ballot in group.list %}
+          <tr>
+            <td>
+              {% ifchanged %}
+                <strong>
+                  <a href="{{ ballot.election.get_absolute_url }}">
+                    {{ ballot.election.name }}
+                  </a>
+                </strong>
+              {% endifchanged %}
+            </td>
+            <td>
+              <a href="{{ ballot.get_absolute_url }}">{{ ballot.post.label }}</a>
+              {% if ballot.election.modgov_url %}
+                <span class="round alert label">Results may be added by ResultsBot</span>
+              {% endif %}
+            </td>
+            <td>{{ ballot.memberships_count }}</td>
+            <td>
             {# Status column #}
-            {% if ballot.polls_closed %}
+              {% if ballot.polls_closed %}
                 {% if ballot.resultset.resultset_complete %}
-                    <i style="text-align:center;">✓</i> Has results
+                  <i style="text-align:center;">✓</i> Has results
                 {% else %}
                   {% if user_can_record_results %}
                     <a href="{{ ballot.get_results_url }}" class="button tiny">{{ ballot.results_button_text }}</a>
@@ -122,7 +122,7 @@
                     Incomplete
                   {% endif %}
                 {% endif %}
-            {% else %}
+              {% else %}
                 {% if ballot.cancelled %}
                   {{ ballot.cancelled_status_html }}
                 {% elif ballot.candidates_locked %}
@@ -132,43 +132,43 @@
                     SOPN Uploaded <br><a href="{{ ballot.get_bulk_add_url }}" class="button tiny">Add candidates</a>
                   {% else %}
                     {% if ballot.has_lock_suggestion %}
-                        {{ ballot.suggested_lock_html }}
-                        {% if user_can_lock and not ballot.current_user_suggested_lock %}
-                            <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
-                        {% endif %}
+                      {{ ballot.suggested_lock_html }}
+                      {% if user_can_lock and not ballot.current_user_suggested_lock %}
+                        <a href="{% url "suggest-lock" ballot_paper_id=ballot.ballot_paper_id %}" class="button tiny">Review</a>
+                      {% endif %}
                     {% else %}
                       Unlocked
-                  {% endif %}
+                    {% endif %}
                   {% endif %}
 
                 {% endif %}
-            {% endif %}
-          </td>
-          {% if ballot.polls_closed %}
-            <td>
-              {% if ballot.elected_count >= ballot.winner_count %}
-                <i style="text-align:center;">✓</i>
-              {% else %}
-                No
               {% endif %}
             </td>
-            <td>{% if ballot.resultset.total_electorate is not None %}{{ ballot.resultset.total_electorate }}{% else %}No{% endif %}</td>
-            <td>{% if ballot.resultset.num_turnout_reported is not None %}{{ ballot.resultset.num_turnout_reported }}{% else %}No{% endif %}</td>
-            <td>{% if ballot.resultset.num_spoilt_ballots is not None %}{{ ballot.resultset.num_spoilt_ballots }}{% else %}No{% endif %}</td>
-          {% endif %}
-        </tr>
-      {% endfor %}
+            {% if ballot.polls_closed %}
+              <td>
+                {% if ballot.elected_count >= ballot.winner_count %}
+                  <i style="text-align:center;">✓</i>
+                {% else %}
+                  No
+                {% endif %}
+              </td>
+              <td>{% if ballot.resultset.total_electorate is not None %}{{ ballot.resultset.total_electorate }}{% else %}No{% endif %}</td>
+              <td>{% if ballot.resultset.num_turnout_reported is not None %}{{ ballot.resultset.num_turnout_reported }}{% else %}No{% endif %}</td>
+              <td>{% if ballot.resultset.num_spoilt_ballots is not None %}{{ ballot.resultset.num_spoilt_ballots }}{% else %}No{% endif %}</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   {% empty %}
     {% if filter.data.review_required == "suggestion" %}
       {% if filter.data.election_type %}
-      All ballots for this election type with suggested locks have been locked!
+        All ballots for this election type with suggested locks have been locked!
       {% else%}
         All ballots with suggested locks have been locked!
       {% endif %}
     {% elif filter.data.review_required == "unlocked" %}
-        All ballots with documents have had data entered!
+      All ballots with documents have had data entered!
     {% else %}
       No elections match the filters given. Try removing some.
     {% endif %}

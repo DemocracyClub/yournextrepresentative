@@ -2,37 +2,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Review person name suggestions</h2>
-<p>This step is to prevent the few cases of vandalism on Person names.</p>
-<p>You can either use the suggestion as the person's primary name (this will retain the original name as an alternative),
-    keep the suggested name as an alternative (this doesn't set it as the primary name), or delete the suggested name.</p>
-<p>Only delete the other name if it's clearly not the person's name (e.g it's vandalism).</p>
+    <h2>Review person name suggestions</h2>
+    <p>This step is to prevent the few cases of vandalism on Person names.</p>
+    <p>You can either use the suggestion as the person's primary name (this will retain the original name as an alternative),
+        keep the suggested name as an alternative (this doesn't set it as the primary name), or delete the suggested name.</p>
+    <p>Only delete the other name if it's clearly not the person's name (e.g it's vandalism).</p>
 
-<table class="table">
-    <tr> 
-        <th>Person ID</th>
-        <th>Current Name</th>
-        <th>Suggested Name</th>
-        <th>Action</th>
-    </tr>
-
-    {% for other_name in object_list %}
+    <table class="table">
         <tr>
-            <td>{{ other_name.object_id }}</td>
-            <td><a href="/person/{{other_name.object_id}}">{{ other_name.content_object.name }}</a></td>
-            <td>{{ other_name.name }}</td>
-            <td>
-                <form action="" method="post" id="review_name_form_{{other_name.pk}}">
-                    {% csrf_token %}
-                    <input type="hidden" name="other_name_pk" value="{{other_name.pk}}">
-                    <input class="button small success" type="submit" name="decision_approve" value="Set as primary name">
-                    <input class="button small secondary" type="submit" name="decision_reject" value="Keep as other name">
-                    <input class="button small alert" type="submit" name="decision_delete" value="Delete">
-                </form>
-            </td>
+            <th>Person ID</th>
+            <th>Current Name</th>
+            <th>Suggested Name</th>
+            <th>Action</th>
         </tr>
-    {% endfor %}
-   
+
+        {% for other_name in object_list %}
+            <tr>
+                <td>{{ other_name.object_id }}</td>
+                <td><a href="/person/{{other_name.object_id}}">{{ other_name.content_object.name }}</a></td>
+                <td>{{ other_name.name }}</td>
+                <td>
+                    <form action="" method="post" id="review_name_form_{{other_name.pk}}">
+                        {% csrf_token %}
+                        <input type="hidden" name="other_name_pk" value="{{other_name.pk}}">
+                        <input class="button small success" type="submit" name="decision_approve" value="Set as primary name">
+                        <input class="button small secondary" type="submit" name="decision_reject" value="Keep as other name">
+                        <input class="button small alert" type="submit" name="decision_delete" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+
     </tr>
-</table> 
+    </table>
 {% endblock %}

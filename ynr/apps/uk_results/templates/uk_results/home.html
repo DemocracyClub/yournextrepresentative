@@ -1,40 +1,40 @@
 {% extends "uk_results/uk_results_base.html" %}
 
 {% block results_content %}
-<h2>Entering results</h2>
-<ol>
-  <li>Find <a href="{{ elections_without_results_url }}">an area without results yet</a></li>
-  <li>Click "add results"</li>
-  <li>Find the results on the council website</li>
-</ol>
+  <h2>Entering results</h2>
+  <ol>
+    <li>Find <a href="{{ elections_without_results_url }}">an area without results yet</a></li>
+    <li>Click "add results"</li>
+    <li>Find the results on the council website</li>
+  </ol>
 
-</p>
-
-
-<h3>Use the data!</h3>
-<p>The data for results is <a href="https://candidates.democracyclub.org.uk/help/api">
-  available for use under our standard terms (CC BY-SA)</a>.</p>
-
-<h4>Atom feed</h4>
-<p>You can subscribe to a feed of winning candidates here:</p>
-<p><a href="https://candidates.democracyclub.org.uk/results/all.atom" class="button">Atom Feed</a></p>
-<p><a href="https://candidates.democracyclub.org.uk/results/all-basic.atom" class="button">Atom Feed (simplified)</a></p>
+  </p>
 
 
-<h4>Votes API</h4>
-<p>We list all votes reported to us.</p>
-<p>This endpoint contains all results reported by any member of the public. Use with care!</p>
+  <h3>Use the data!</h3>
+  <p>The data for results is <a href="https://candidates.democracyclub.org.uk/help/api">
+    available for use under our standard terms (CC BY-SA)</a>.</p>
 
-<p>
-  <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/?election_date=2018-05-03" class="button success">
-    All 2018 results</a>
-  <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/?election_date=2019-05-02" class="button success">
-    All 2019 results</a>
-  <a href="https://candidates.democracyclub.org.uk/api/next/results/?election_date=2021-05-06" class="button success">
-    All 2021 results</a>
-</p>
+  <h4>Atom feed</h4>
+  <p>You can subscribe to a feed of winning candidates here:</p>
+  <p><a href="https://candidates.democracyclub.org.uk/results/all.atom" class="button">Atom Feed</a></p>
+  <p><a href="https://candidates.democracyclub.org.uk/results/all-basic.atom" class="button">Atom Feed (simplified)</a></p>
 
-<h4>CSV</h4>
+
+  <h4>Votes API</h4>
+  <p>We list all votes reported to us.</p>
+  <p>This endpoint contains all results reported by any member of the public. Use with care!</p>
+
+  <p>
+    <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/?election_date=2018-05-03" class="button success">
+      All 2018 results</a>
+    <a href="https://candidates.democracyclub.org.uk/api/v0.9/result_sets/?election_date=2019-05-02" class="button success">
+      All 2019 results</a>
+    <a href="https://candidates.democracyclub.org.uk/api/next/results/?election_date=2021-05-06" class="button success">
+      All 2021 results</a>
+  </p>
+
+  <h4>CSV</h4>
   <a href="{% url "download_reason" %}?field_group=results&election_date=2018-05-03" class="button success">
     2018 local CSV file</a>
   <a href="{% url "download_reason" %}?field_group=results&election_date=2019-05-02" class="button success">
@@ -47,22 +47,22 @@
     2023 local CSV file</a>
 
 
-<p>
-  The CSV file is likely to change format over time.
-  <a href="https://democracyclub.org.uk/contact/">Get in touch</a>
-  if you have any requirements for it
-</p>
+  <p>
+    The CSV file is likely to change format over time.
+    <a href="https://democracyclub.org.uk/contact/">Get in touch</a>
+    if you have any requirements for it
+  </p>
 
-<h4>JSON</h4>
+  <h4>JSON</h4>
   <a href="https://candidates.democracyclub.org.uk/media/csv-archives/results-2018-05-03.json" class="button success">
     2018 local JSON file</a>
   <a href="https://candidates.democracyclub.org.uk/media/csv-archives/results-2019-05-02.json" class="button success">
     2019 local JSON file</a>
-<p>
-  The JSON file is likely to change format over time.
-  <a href="https://democracyclub.org.uk/contact/">Get in touch</a>
-  if you have any requirements for it
-</p>
+  <p>
+    The JSON file is likely to change format over time.
+    <a href="https://democracyclub.org.uk/contact/">Get in touch</a>
+    if you have any requirements for it
+  </p>
 
 
 

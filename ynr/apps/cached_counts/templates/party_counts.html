@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<h2>Number of known {{ election_data.name }} candidates per party</h2>
+    <h2>Number of known {{ election_data.name }} candidates per party</h2>
     <table class="counts_table">
         <thead>
             <th>Party Name</th>
@@ -10,17 +10,17 @@
             <th>Election Date</th>
         </thead>
         <tbody>
-        {% for pc in party_counts %}
-            <tr {% if pc.count == 0 %}class="no_known"{% endif%}>
-              {% if pc.count == 0 %}
-                <td>{{ pc.name }}</td>
-              {% else %}
-                <td><a href="{% url 'candidates_by_election_for_party' election=election party_id=pc.ec_id %}">{{ pc.name }}</a></td>
-              {% endif %}
-              <td>{{ pc.count}}</td>
-              <td>{{ election_data.election_date }}
-            </tr>
-        {% endfor %}
+            {% for pc in party_counts %}
+                <tr {% if pc.count == 0 %}class="no_known"{% endif%}>
+                    {% if pc.count == 0 %}
+                        <td>{{ pc.name }}</td>
+                    {% else %}
+                        <td><a href="{% url 'candidates_by_election_for_party' election=election party_id=pc.ec_id %}">{{ pc.name }}</a></td>
+                    {% endif %}
+                    <td>{{ pc.count}}</td>
+                    <td>{{ election_data.election_date }}
+                    </tr>
+            {% endfor %}
         </tbody>
     </table>
 

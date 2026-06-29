@@ -1,7 +1,7 @@
 {% extends "uk_results/uk_results_base.html" %}
 
 {% block results_title %}
-<h1>Confirm reported result</h1>
+  <h1>Confirm reported result</h1>
 {% endblock results_title %}
 
 
@@ -12,13 +12,13 @@
   <p>They said the source of this was:</p>
   <blockquote>{{ object.source }}</blockquote>
 
-<p>Can you confirm or reject this result?  Please give a good reason for your decision.</p>
+  <p>Can you confirm or reject this result?  Please give a good reason for your decision.</p>
 
-<form method=post>
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit" name="btn_confirm">Review</button>
-</form>
+  <form method=post>
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" name="btn_confirm">Review</button>
+  </form>
 
 
 {% endblock results_content %}

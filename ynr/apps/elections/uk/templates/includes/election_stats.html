@@ -2,15 +2,15 @@
 {% load cache %}
 
 {% if SHOW_ELECTION_STATS %}
-{% cache 43200 ELECTION_STATS %}
-<h2>🗳 {{ election_name }} 🗳 </h2>
-<p>{{ election_stats.elections|intcomma }} elections</p>
-<p>{{ election_stats.seats_contested|intcomma }} seats contested</p>
-<p>{{ election_stats.candidates|intcomma }} candidates</p>
-<p>
-    <a href="https://democracyclub.org.uk/blog/2026/04/13/2026-local-election-data-summary/">
-        Read more on our blog
-    </a>
-</p>
-{% endcache %}
+    {% cache 43200 ELECTION_STATS %}
+        <h2>🗳 {{ election_name }} 🗳 </h2>
+        <p>{{ election_stats.elections|intcomma }} elections</p>
+        <p>{{ election_stats.seats_contested|intcomma }} seats contested</p>
+        <p>{{ election_stats.candidates|intcomma }} candidates</p>
+        <p>
+            <a href="https://democracyclub.org.uk/blog/2026/04/13/2026-local-election-data-summary/">
+                Read more on our blog
+            </a>
+        </p>
+    {% endcache %}
 {% endif %}

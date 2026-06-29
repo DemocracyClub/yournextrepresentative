@@ -16,9 +16,9 @@
   <p>This page provides an overview of every election covered by the Democracy Club database, including total number of candidates and links to breakdowns by seat and party.</p>
 
   <p>{% url 'attention_needed' as url %}
-      You can also see a list of all the posts in current elections
-      <a href="{{ url }}">ordered starting with those with the fewest
-        candidates</a>.
+    You can also see a list of all the posts in current elections
+    <a href="{{ url }}">ordered starting with those with the fewest
+      candidates</a>.
   </p>
 
   <aside class="ds-filter" aria-labelledby="filter-label">
@@ -27,64 +27,64 @@
         <summary>Filters</summary>
         <div class="ds-advanced-filters">
           <div class="ds-filter-cluster">
-              {% for field in filter.form %}
+            {% for field in filter.form %}
               <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
                 <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">
-                {{ field.label }}:
+                  {{ field.label }}:
 
-                {{ field }}
-                {% if field.help_text %}
-                <p class="help_text">{{ field.help_text }}</p>
-                {% endif %}
+                  {{ field }}
+                  {% if field.help_text %}
+                    <p class="help_text">{{ field.help_text }}</p>
+                  {% endif %}
                 </li>
               </ul>
-                {% endfor %}
+            {% endfor %}
           </div>
         </div>
-      <button type="submit">Filter</button>
+        <button type="submit">Filter</button>
       </details>
       <script src="{% static 'js/filter_form_date_input.js' %}"></script>
     </form>
   </aside>
 
-{% regroup object_list by election_date as object_list_by_date %}
+  {% regroup object_list by election_date as object_list_by_date %}
 
   {% for election_date, elections in object_list_by_date %}
     <h3> {{ election_date }}</h3>
     {% for election in elections %}
-    {% with election_slug=election.ballot_paper__election__slug %}
-      <div id="statistics-election-{{ election_slug }}">
-        <h4>Statistics for {{ election.election_name }} on {{ election.election_date }}</h4>
-        <ul>
-          <li>Total candidates: {{ election.candidates }}</li>
-          <li><a href="{% url "posts_counts" election=election_slug %}">Candidates per post</a></li>
-          <li><a href="{% url "parties_counts" election=election_slug %}">Candidates per party</a></li>
-          <li>
-            <a href="{% url "constituencies-unlocked" election=election_slug %}">
+      {% with election_slug=election.ballot_paper__election__slug %}
+        <div id="statistics-election-{{ election_slug }}">
+          <h4>Statistics for {{ election.election_name }} on {{ election.election_date }}</h4>
+          <ul>
+            <li>Total candidates: {{ election.candidates }}</li>
+            <li><a href="{% url "posts_counts" election=election_slug %}">Candidates per post</a></li>
+            <li><a href="{% url "parties_counts" election=election_slug %}">Candidates per party</a></li>
+            <li>
+              <a href="{% url "constituencies-unlocked" election=election_slug %}">
                 See progress towards locking all posts
-            </a>
-          </li>
-          <li>
-            <a href="{% url "candidate_completeness" election=election_slug %}">
+              </a>
+            </li>
+            <li>
+              <a href="{% url "candidate_completeness" election=election_slug %}">
                 Candidate profile completeness
-            </a>
-          </li>
-          {% endwith %}
-        </ul>
+              </a>
+            </li>
+      {% endwith %}
+      </ul>
       </div>
     {% endfor %}
   {% endfor %}
 
   <div class="pagination">
     <span class="step-links">
-        {% if page_obj.has_previous %}
-          <a href="{% query_string request.GET page=1 %}">&laquo; first</a>
-          <a href="{% query_string request.GET page=page_obj.previous_page_number %}">previous</a>
-        {% endif %}
+      {% if page_obj.has_previous %}
+        <a href="{% query_string request.GET page=1 %}">&laquo; first</a>
+        <a href="{% query_string request.GET page=page_obj.previous_page_number %}">previous</a>
+      {% endif %}
 
       <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
 
       {% if page_obj.has_next %}
         <a href="{% query_string request.GET page=page_obj.next_page_number %}">next</a>

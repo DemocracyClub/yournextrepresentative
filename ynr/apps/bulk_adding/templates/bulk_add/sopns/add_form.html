@@ -17,31 +17,31 @@
     <h2>Add candidates to {{ election_obj.name }}: <a href="{{ ballot.get_absolute_url }}">{{ post.label }}</a></h2>
     {% if ballot_sopn %}
 
-            <details {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %} class="panel">
-                <summary>How to add or check candidates</summary>
+        <details {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %} class="panel">
+            <summary>How to add or check candidates</summary>
 
-                <ol>
-                    <li>Open the nomination paper using the button above (opens in a new window)</li>
-                    <li>Find the part of the document about {{ post.label }}</li>
-                    <li>Either
-                        <ol type="a">
-                            <li>Add all the candidates in the form below,</li>
-                        </ol>
-                    </li>
-                    <li>Press next</li>
-                    <li>Match candidate to existing people in our database</li>
-                    <li>Press next</li>
-                    <li>Double check everything</li>
-                    <li>Press confirm</li>
-                    <li>Bask in the glow of making democracy better for everyone.</li>
-                    <li>Return to the home page to do another one!</li>
-                </ol>
-            </details>
+            <ol>
+                <li>Open the nomination paper using the button above (opens in a new window)</li>
+                <li>Find the part of the document about {{ post.label }}</li>
+                <li>Either
+                    <ol type="a">
+                        <li>Add all the candidates in the form below,</li>
+                    </ol>
+                </li>
+                <li>Press next</li>
+                <li>Match candidate to existing people in our database</li>
+                <li>Press next</li>
+                <li>Double check everything</li>
+                <li>Press confirm</li>
+                <li>Bask in the glow of making democracy better for everyone.</li>
+                <li>Return to the home page to do another one!</li>
+            </ol>
+        </details>
 
         {% if ballot.rawpeople and ballot.rawpeople.is_parsed_from_pdf %}
             <div class="panel callout">
                 <details
-                        {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
+                    {% if action_counts.last_months_actions <= 3 and action_counts.candidacy_create < 30 %}open{% else %}closed{% endif %}>
                     <summary>
                         🤖 This SoPN has been parsed by a bot 🤖
                     </summary>
@@ -50,33 +50,33 @@
                         should be populated with the candidates on the nomination paper, but
                         they still need checking against the document. If it has been parsed incorrectly
                         you can <a href="#delete-parsed-people">clear the form using the button at the bottom of the
-                        page</a>.
+                            page</a>.
                     </p>
                     <p>
                         To help us resolve bugs quicker, please <a href="https://github.com/DemocracyClub/yournextrepresentative/issues/2674">report SOPN related errors in GitHub</a>.
-                    <p>
-                        If you're unsure how to classify the error or for any other errors, please post a message on our
-                        <a href="https://slack.democracyclub.org.uk">Slack</a>
-                        or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
-                    </p>
-                    <p>Note: CandidateBot parsed this SOPN automatically.</p>
-                </details>
-            </div>
+                        <p>
+                            If you're unsure how to classify the error or for any other errors, please post a message on our
+                            <a href="https://slack.democracyclub.org.uk">Slack</a>
+                            or over <a href="mailto:hello@democracyclub.org.uk">email</a>.
+                        </p>
+                        <p>Note: CandidateBot parsed this SOPN automatically.</p>
+                    </details>
+                </div>
         {% endif %}
         {% if ballot.parse_state == "IN_PROGRESS" or ballot.parse_state == "NOT_STARTED" %}
-          <div class="panel callout">
-          <p>🤖 Our bot is currently working on parsing this SOPN.</p>
-          </div>
+            <div class="panel callout">
+                <p>🤖 Our bot is currently working on parsing this SOPN.</p>
+            </div>
         {% elif ballot.parse_state == "FAILED" %}
-          <div class="panel callout">
-          <p>🤖 Our bot failed to parse this SOPN</p>
-          </div>
+            <div class="panel callout">
+                <p>🤖 Our bot failed to parse this SOPN</p>
+            </div>
         {% endif %}
 
         {% if bulk_add_claim_warning %}
-        <div class="panel callout">
-            <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
-        </div>
+            <div class="panel callout">
+                <p><strong>Heads up:</strong> {{ bulk_add_claim_warning.username }} started adding candidates to this ballot {{ bulk_add_claimed_at|naturaltime }}.</p>
+            </div>
         {% endif %}
 
         <form method=POST id="bulk_add_form">
@@ -92,9 +92,9 @@
                 </div>
             {% endif %}
             <div id="formset-rows">
-            {% for form in formset %}
-                {% include 'bulk_add/sopns/quick_add_form.html' with data=form counter=forloop.counter %}
-            {% endfor %}
+                {% for form in formset %}
+                    {% include 'bulk_add/sopns/quick_add_form.html' with data=form counter=forloop.counter %}
+                {% endfor %}
             </div>
             <button type=submit>Next</button>
         </form>

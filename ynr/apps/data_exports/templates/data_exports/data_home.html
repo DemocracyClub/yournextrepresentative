@@ -14,7 +14,7 @@
 
     <h2>Scheduled elections</h2>
     {% for charismatic_election in charismatic_elections %}
-                {% include "data_exports/_data_shortcut_form.html" with title=charismatic_election.title election_date=charismatic_election.election_date election_type=charismatic_election.election_type %}
+        {% include "data_exports/_data_shortcut_form.html" with title=charismatic_election.title election_date=charismatic_election.election_date election_type=charismatic_election.election_type %}
     {% endfor %}
 
     <h2>Other downloads</h2>

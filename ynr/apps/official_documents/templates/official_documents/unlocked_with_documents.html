@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Unlocked posts with nomination papers</h2>
-{% for doc in unlocked_sopns %}
-  <li>
-    <a href="{{ doc.ballot.get_bulk_add_url }}?source={{ doc.source_url }}">
-    {{ doc.ballot.post.label }}</a>
-  </li>
-{% endfor %}
+  <h2>Unlocked posts with nomination papers</h2>
+  {% for doc in unlocked_sopns %}
+    <li>
+      <a href="{{ doc.ballot.get_bulk_add_url }}?source={{ doc.source_url }}">
+        {{ doc.ballot.post.label }}</a>
+    </li>
+  {% endfor %}
 {% endblock content %}

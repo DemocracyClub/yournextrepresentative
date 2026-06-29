@@ -18,40 +18,40 @@
 
   {% if othername_list %}
     <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Notes</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for other_name in othername_list %}
-      <tr>
-        <td><strong>{{ other_name.name }}</strong></td>
-        <td>{{ other_name.note }}</td>
-        <td>
-          <a class="button tiny secondary" href="{% url 'person-other-name-update' pk=other_name.id person_id=person.id %}">
-              Edit
-            </a>
-            <a class="button tiny js-toggle-source-confirmation delete-other-name">Delete</a>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for other_name in othername_list %}
+          <tr>
+            <td><strong>{{ other_name.name }}</strong></td>
+            <td>{{ other_name.note }}</td>
+            <td>
+              <a class="button tiny secondary" href="{% url 'person-other-name-update' pk=other_name.id person_id=person.id %}">
+                Edit
+              </a>
+              <a class="button tiny js-toggle-source-confirmation delete-other-name">Delete</a>
 
-            <div class="source-confirmation source-confirmation-delete-other-name">
-            <form
-              method="post"
-              action="{% url 'person-other-name-delete' pk=other_name.id person_id=person.id %}"
-              id="other-name-delete-reason-{{ other_name.id }}"
-            >
-              {% csrf_token %}
-              <label for="id_source">Before we delete this other name, can you tell us how you know it's not valid? {{ settings.SOURCE_HINTS }}</label>
-              <input type="text" name="source" id="id_source" maxlength="512" required="required"/>
-              <input type="submit" class="button expand" value="Delete other name" />
-            </form>
-          </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
+              <div class="source-confirmation source-confirmation-delete-other-name">
+                <form
+                  method="post"
+                  action="{% url 'person-other-name-delete' pk=other_name.id person_id=person.id %}"
+                  id="other-name-delete-reason-{{ other_name.id }}"
+                >
+                  {% csrf_token %}
+                  <label for="id_source">Before we delete this other name, can you tell us how you know it's not valid? {{ settings.SOURCE_HINTS }}</label>
+                  <input type="text" name="source" id="id_source" maxlength="512" required="required"/>
+                  <input type="submit" class="button expand" value="Delete other name" />
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   {% else %}
     <p>No alternative names found</p>
@@ -81,27 +81,27 @@
       </thead>
       <tbody>
         {% for membership in memberships %}
-        <tr>
-          <td>
-            <a href="{{ membership.ballot.get_absolute_url }}">
-              {{ membership.ballot.election.name }} - {{ membership.ballot.post.label }}
-            </a>
-          </td>
-          <td>{{ membership.ballot.election.election_date }}</td>
-          <td>{{ membership.sopn_first_names }}</td>
-          <td>{{ membership.sopn_last_name }}</td>
-          <td>
-            {% if membership.ballot.sopn %}
-              <a
-                class="button tiny secondary"
-                href="{% url 'person-sopn-names-edit' person_id=person.id membership_id=membership.id %}">
-                Edit
+          <tr>
+            <td>
+              <a href="{{ membership.ballot.get_absolute_url }}">
+                {{ membership.ballot.election.name }} - {{ membership.ballot.post.label }}
               </a>
-            {% else%}
-              No SOPN yet
-            {% endif %}
-          </td>
-        </tr>
+            </td>
+            <td>{{ membership.ballot.election.election_date }}</td>
+            <td>{{ membership.sopn_first_names }}</td>
+            <td>{{ membership.sopn_last_name }}</td>
+            <td>
+              {% if membership.ballot.sopn %}
+                <a
+                  class="button tiny secondary"
+                  href="{% url 'person-sopn-names-edit' person_id=person.id membership_id=membership.id %}">
+                  Edit
+                </a>
+              {% else%}
+                No SOPN yet
+              {% endif %}
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>

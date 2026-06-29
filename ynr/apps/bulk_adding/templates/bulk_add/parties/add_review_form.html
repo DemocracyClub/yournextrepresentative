@@ -1,69 +1,69 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{ election_obj.name }}: {{ party }} candidates</h2>
+  <h2>{{ election_obj.name }}: {{ party }} candidates</h2>
 
-<form method="POST" id="bulk-add-reconcile">
-{% csrf_token %}
+  <form method="POST" id="bulk-add-reconcile">
+    {% csrf_token %}
 
-{% for formset in formsets %}
-  {{ formset.management_form }}
-  {% if formset.data.non_form_errors %}
-    <div class="errorlist">
-      {% for error in formset.data.non_form_errors %}
-        <p>{{ error }}</p>
-      {% endfor %}
+    {% for formset in formsets %}
+      {{ formset.management_form }}
+      {% if formset.data.non_form_errors %}
+        <div class="errorlist">
+          {% for error in formset.data.non_form_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
 
-    </div>
-  {% endif %}
-  {% for form in formset.data %}
-    {% if form.name.value %}
-      <div>
-        <h3 style="clear:left;">{{ form.name.value }}</h3>
-        <table class="table sopn_adding_suggestions_table">
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Other names</th>
-              <th>Recent previous candidacies</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for choice in form.select_person %}
+        </div>
+      {% endif %}
+      {% for form in formset.data %}
+        {% if form.name.value %}
+          <div>
+            <h3 style="clear:left;">{{ form.name.value }}</h3>
+            <table class="table sopn_adding_suggestions_table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Other names</th>
+                  <th>Recent previous candidacies</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for choice in form.select_person %}
 
-              <tr>
-                <td class="multiple-choice" style="margin-left:1em">
-                  {{ choice.tag }}
-                    <label>{{ choice.choice_label }}</label>
-                </td>
-                <td>
-                    {% if choice.data.instance.other_names.exists %}
+                  <tr>
+                    <td class="multiple-choice" style="margin-left:1em">
+                      {{ choice.tag }}
+                      <label>{{ choice.choice_label }}</label>
+                    </td>
+                    <td>
+                      {% if choice.data.instance.other_names.exists %}
                         {% for other_name in choice.data.instance.other_names.all %}
-                            <small>{{ other_name.name }}</small><br>
+                          <small>{{ other_name.name }}</small><br>
                         {% endfor %}
 
-                    {% endif %}
-                </td>
-                <td>
-                  {% for candidacy in choice.data.previous_candidacies %}
-                    <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
-                  {% endfor %}
-                </td>
-              </tr>
-            {% endfor %}
-            {% for field in form %}
-              {% if field.is_hidden%}
-                {{ field }}
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-  {% endfor %}
-{% endfor %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% for candidacy in choice.data.previous_candidacies %}
+                        <li>{% include "bulk_add/widgets/_previous_candidacy.html" with candidacy=candidacy person=choice.data.instance %}</li>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                {% for field in form %}
+                  {% if field.is_hidden%}
+                    {{ field }}
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
 
-  <button type=submit>Next</button>
-</form>
+    <button type=submit>Next</button>
+  </form>
 
 {% endblock content %}

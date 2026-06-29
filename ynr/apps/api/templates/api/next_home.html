@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block api_content %}
-
+{# fmt:off #}
 {% filter markdown %}
 **A *read only* API for information stored about UK candidates and how they relate to ballots.**
 
@@ -107,6 +107,6 @@ for local, police and crime commissioners, devolved governments and mayoral elec
 See the {{ "ElectionType"|link_to_definition:"next,Election Types" }} section for more information about elections covered.
 
 {% endfilter %}
-
+{# fmt:on #}
 
 {% endblock %}

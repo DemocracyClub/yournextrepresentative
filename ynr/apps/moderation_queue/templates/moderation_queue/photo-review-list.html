@@ -4,7 +4,7 @@
 {% load thumbnail %}
 
 {% block extra_js %}
-{% javascript 'image-review' %}
+  {% javascript 'image-review' %}
 {% endblock %}
 
 {% block body_class %}{% endblock %}
@@ -33,12 +33,12 @@
         <summary>Advanced filters</summary>
         <div class="ds-advanced-filters">
           <div class="ds-filter-cluster">
-              {% for field in filter_obj.form.visible_fields %}
-                <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
+            {% for field in filter_obj.form.visible_fields %}
+              <ul aria-labelledby="adv-filter-label-{{ forloop.counter }}">
                 <li id="adv-filter-label-{{ forloop.counter }}" class="ds-filter-label" aria-hidden="true">{{ field.label }}:</li>
                 {{ field }}
-                </ul>
-              {% endfor %}
+              </ul>
+            {% endfor %}
 
           </div>
         </div>
@@ -53,18 +53,18 @@
           <th></th>
           <th class=" sorttable_sorted">Date uploaded<span id="sorttable_sortfwdind">&nbsp;▾</span></th>
           <th>Election Date</a></th>
-          <th>Uploading user</th>
-          <th>Candidate ID</a></th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
+        <th>Uploading user</th>
+        <th>Candidate ID</a></th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
       {% for queued_image in object_list.object_list %}
         <tr>
           <td>
-          {% thumbnail queued_image.image "x100" as im %}
-            <a href="{% url 'photo-review' queued_image_id=queued_image.id %}"><img src="{{ im.url }}"></a>
-          {% endthumbnail %}
+            {% thumbnail queued_image.image "x100" as im %}
+              <a href="{% url 'photo-review' queued_image_id=queued_image.id %}"><img src="{{ im.url }}"></a>
+            {% endthumbnail %}
           </td>
           <td>{{ queued_image.created }}</td>
           <td>{{ queued_image.election_date }}</td>
@@ -74,7 +74,7 @@
         </tr>
       {% endfor %}
       <tbody>
-    </table>
+      </table>
   {% else %}
     <p><strong>Congratulations!</strong> There are no more photos to review.</p>
   {% endif %}

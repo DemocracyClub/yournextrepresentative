@@ -2,14 +2,14 @@
 
 
 {% block content %}
-<h2>Select the election that "{{ name }}" is standing in</h2>
+  <h2>Select the election that "{{ name }}" is standing in</h2>
 
   <form method="post" id="select_ballot_form">
-  {% csrf_token %}
-  <div class="ballot_group">
-    {{ form.as_p }}
-  </div>
-  <button>Add candidate</button>
+    {% csrf_token %}
+    <div class="ballot_group">
+      {{ form.as_p }}
+    </div>
+    <button>Add candidate</button>
   </form>
 
 

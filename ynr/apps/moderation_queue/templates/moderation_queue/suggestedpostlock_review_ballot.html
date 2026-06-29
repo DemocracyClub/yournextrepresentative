@@ -33,11 +33,11 @@
     {% if ballot.membership_set.exists %}
         <table style="width:100%">
             <thead>
-            <th>Candidates</th>
-            <th>SOPN</th>
+                <th>Candidates</th>
+                <th>SOPN</th>
             </thead>
             <tbody>
-            {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
+                {% include "moderation_queue/includes/inline-lock-table-view.html" with ballot=ballot %}
             </tbody>
         </table>
 
