@@ -275,9 +275,14 @@
    {# Only include these if the user can alter memberships #}
       {% include "elections/includes/_ballot_candidates_might_stand.html" %}
       {% include "elections/includes/_ballot_candidates_not_standing.html" %}
-
-
-      {% if user.is_authenticated and logged_actions %}
+    </div>
+    <div class="columns large-3">
+      {% include "uk/data_timeline.html" %}
+    </div>
+  </div>
+  {% if user.is_authenticated and logged_actions %}
+    <div class="row">
+      <div class="column">
         <h2 id="history">History for this ballot</h2>
         {% for action in logged_actions %}
           <div class="version">
@@ -289,12 +294,8 @@
             </dl>
           </div>
         {% endfor %}
-      {% endif %}
-
+      </div>
     </div>
-    <div class="columns large-3">
-      {% include "uk/data_timeline.html" %}
-    </div>
-  </div>
+  {% endif %}
 
 {% endblock %}
