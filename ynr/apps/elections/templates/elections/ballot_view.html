@@ -275,26 +275,25 @@
    {# Only include these if the user can alter memberships #}
       {% include "elections/includes/_ballot_candidates_might_stand.html" %}
       {% include "elections/includes/_ballot_candidates_not_standing.html" %}
-
-
-      {% if user.is_authenticated and logged_actions %}
-        <h2 id="history">History for this ballot</h2>
-        {% for action in logged_actions %}
-          <div class="version">
-            <dl>
-              <dt>Description</dt>
-              <dd>{{ action.friendly_description }}</dd>
-              <dt>Timestamp</dt>
-              <dd>{{ action.created }}</dd>
-            </dl>
-          </div>
-        {% endfor %}
-      {% endif %}
-
     </div>
     <div class="columns large-3">
       {% include "uk/data_timeline.html" %}
     </div>
   </div>
+  {% if user.is_authenticated and logged_actions %}
+    <div class="row">
+      <h2 id="history">History for this ballot</h2>
+      {% for action in logged_actions %}
+        <div class="version">
+          <dl>
+            <dt>Description</dt>
+            <dd>{{ action.friendly_description }}</dd>
+            <dt>Timestamp</dt>
+            <dd>{{ action.created }}</dd>
+          </dl>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
 {% endblock %}
