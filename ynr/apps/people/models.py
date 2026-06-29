@@ -127,7 +127,7 @@ class PersonIdentifier(TimeStampedModel):
         unique_together = (
             ("person", "internal_identifier", "value_type"),
             # TODO: Remove this.
-            # At the moemnt the version history can't deal with more than one
+            # At the moment the version history can't deal with more than one
             # value per value_type. This prevents creating duplicates, and
             # therefore means we'll be able to merge and revert people.
             # This constraint should be removed when the version history can
