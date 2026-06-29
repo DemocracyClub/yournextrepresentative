@@ -29,6 +29,8 @@ HTTP_IDENTIFIERS = [
 
 
 def clean_email(email):
+    if email.lower().startswith("mailto:"):
+        email = email[len("mailto:") :]
     validate_email(email)
     if email.lower().endswith("parliament.uk"):
         raise ValueError(
