@@ -75,7 +75,7 @@ csv_fields["person_name"] = CSVField(
 csv_fields["honorific_prefix"] = CSVField(
     value=F("person__honorific_prefix"),
     type="expr",
-    core=True,
+    core=False,
     value_group="person",
     label="Honorific Prefix",
 )
@@ -83,7 +83,7 @@ csv_fields["honorific_prefix"] = CSVField(
 csv_fields["honorific_suffix"] = CSVField(
     value=F("person__honorific_suffix"),
     type="expr",
-    core=True,
+    core=False,
     value_group="person",
     label="Honorific Suffix",
 )
