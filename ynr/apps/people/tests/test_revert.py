@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType, EditType
@@ -304,7 +304,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             change_metadata={
                 "information_source": "initial version",
                 "version_id": "1",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
                 "username": self.user.username,
             }
         )
@@ -317,7 +317,7 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
             change_metadata={
                 "information_source": "cleared the previous_party_affiliations",
                 "version_id": "2",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
                 "username": self.user.username,
             }
         )
