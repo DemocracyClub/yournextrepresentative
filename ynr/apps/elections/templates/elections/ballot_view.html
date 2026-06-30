@@ -258,6 +258,12 @@
             </form>
           {% endif %}
 
+          {% if ballot.has_results and ballot.resultset %}
+            <a class="button small" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Edit results</a>
+          {% else %}
+            <a class="button small" href="{% url "ballot_paper_results_form" ballot.ballot_paper_id %}">Add results</a>
+          {% endif %}
+
           {% if has_missing_list_positions %}
             <p>Some candidates on this party list ballot are missing list positions. Can you add them?</p>
           {% endif %}
