@@ -72,8 +72,6 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "election_id": "parl.2010-05-06",
                 "party_id": "PP53",
                 "party_name": "Labour Party",
-                "honorific_prefix": "",
-                "honorific_suffix": "",
                 "person_id": f"{expected_person_id}",
                 "person_name": f"John Doe {expected_person_id}",
                 "post_label": "Member of Parliament for Edinburgh East",
@@ -130,8 +128,6 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             [
                 "person_id",
                 "person_name",
-                "honorific_prefix",
-                "honorific_suffix",
                 "election_id",
                 "ballot_paper_id",
                 "election_date",
@@ -152,8 +148,6 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             [
                 "person_id",
                 "person_name",
-                "honorific_prefix",
-                "honorific_suffix",
                 "election_id",
                 "ballot_paper_id",
                 "election_date",
@@ -197,8 +191,6 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             [
                 "person_id",
                 "person_name",
-                "honorific_prefix",
-                "honorific_suffix",
                 "election_id",
                 "ballot_paper_id",
                 "election_date",
@@ -233,8 +225,6 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             [
                 "person_id",
                 "person_name",
-                "honorific_prefix",
-                "honorific_suffix",
                 "election_id",
                 "ballot_paper_id",
                 "election_date",
@@ -244,6 +234,8 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "post_label",
                 "cancelled_poll",
                 "seats_contested",
+                "honorific_prefix",
+                "honorific_suffix",
                 "email",
                 "facebook_page_url",
                 "facebook_personal_url",
