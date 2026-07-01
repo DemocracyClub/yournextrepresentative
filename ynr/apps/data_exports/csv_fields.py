@@ -290,7 +290,7 @@ csv_fields["turnout_reported"] = CSVField(
     type="expr",
     value=F("ballot_paper__resultset__num_turnout_reported"),
     value_group="results",
-    label="Reported turnout",
+    label="Ballot papers issued",
 )
 csv_fields["spoilt_ballots"] = CSVField(
     type="expr",
