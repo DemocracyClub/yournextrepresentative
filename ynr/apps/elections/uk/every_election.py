@@ -362,7 +362,7 @@ class EveryElectionImporter(object):
             }
         # never import referendums
         # NB if this requirement changes, should add election types as an
-        # option to uk_create_elections_fromn_every_election management command
+        # option to uk_create_elections_from_every_election management command
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 
