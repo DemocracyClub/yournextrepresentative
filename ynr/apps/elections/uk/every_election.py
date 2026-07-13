@@ -278,6 +278,8 @@ class EEElection(dict):
             "by_election_reason": self.get("by_election_reason", ""),
             "voting_system": voting_system.get("slug", ""),
             "ee_modified": self.get("modified"),
+            "close_of_nominations": self["timetable"]["close_of_nominations"],
+            "sopn_publish_deadline": self["timetable"]["sopn_publish_deadline"],
         }
         if ballot_data["cancelled"]:
             ballot_data["candidates_locked"] = True
