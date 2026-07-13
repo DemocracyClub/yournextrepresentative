@@ -37,6 +37,14 @@ current_elections_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     }
   ]
@@ -102,6 +110,14 @@ current_elections = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -152,6 +168,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -205,6 +229,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -258,6 +290,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -311,6 +351,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -364,6 +412,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -417,6 +473,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -470,6 +534,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -523,6 +595,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -576,6 +656,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -629,6 +717,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -682,6 +778,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -735,6 +839,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -788,6 +900,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -841,6 +961,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -897,6 +1025,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -950,6 +1086,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1003,6 +1147,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1056,6 +1208,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1109,6 +1269,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1162,6 +1330,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1215,6 +1391,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1268,6 +1452,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1321,6 +1513,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1374,6 +1574,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1427,6 +1635,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1480,6 +1696,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1533,6 +1757,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1586,6 +1818,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1639,6 +1879,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1692,6 +1940,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1745,6 +2001,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1798,6 +2062,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1851,6 +2123,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1904,6 +2184,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -1955,6 +2243,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2008,6 +2304,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2061,6 +2365,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2114,6 +2426,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2167,6 +2487,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2220,6 +2548,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2273,6 +2609,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2326,6 +2670,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2379,6 +2731,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2432,6 +2792,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2485,6 +2853,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2538,6 +2914,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2591,6 +2975,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2644,6 +3036,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2697,6 +3097,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2742,6 +3150,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2795,6 +3211,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2848,6 +3272,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2901,6 +3333,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -2954,6 +3394,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3007,6 +3455,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3060,6 +3516,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3113,6 +3577,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3166,6 +3638,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3230,6 +3710,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3283,6 +3771,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3336,6 +3832,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3389,6 +3893,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3442,6 +3954,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3495,6 +4015,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3548,6 +4076,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3601,6 +4137,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3654,6 +4198,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3707,6 +4259,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3760,6 +4320,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3813,6 +4381,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3866,6 +4442,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3919,6 +4503,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -3972,6 +4564,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4025,6 +4625,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4078,6 +4686,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4131,6 +4747,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4184,6 +4808,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4237,6 +4869,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4290,6 +4930,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4343,6 +4991,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4396,6 +5052,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4449,6 +5113,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4502,6 +5174,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4555,6 +5235,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4608,6 +5296,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4661,6 +5357,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4719,6 +5423,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4772,6 +5484,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4825,6 +5545,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4878,6 +5606,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4931,6 +5667,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -4984,6 +5728,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5037,6 +5789,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5090,6 +5850,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5143,6 +5911,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5196,6 +5972,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5249,6 +6033,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5302,6 +6094,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5355,6 +6155,14 @@ current_elections = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     }
   ]
@@ -5419,6 +6227,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5472,6 +6288,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5525,6 +6349,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5578,6 +6410,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5631,6 +6471,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5684,6 +6532,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5737,6 +6593,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5790,6 +6654,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5843,6 +6715,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5902,6 +6782,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -5955,6 +6843,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6008,6 +6904,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6061,6 +6965,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6114,6 +7026,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6167,6 +7087,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6220,6 +7148,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6273,6 +7209,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6326,6 +7270,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6379,6 +7331,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6432,6 +7392,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6485,6 +7453,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6538,6 +7514,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6591,6 +7575,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6644,6 +7636,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6697,6 +7697,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6750,6 +7758,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6803,6 +7819,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6856,6 +7880,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6909,6 +7941,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -6962,6 +8002,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7015,6 +8063,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7068,6 +8124,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7121,6 +8185,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7174,6 +8246,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7227,6 +8307,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7280,6 +8368,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7333,6 +8429,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7386,6 +8490,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7439,6 +8551,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7492,6 +8612,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7545,6 +8673,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7598,6 +8734,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7651,6 +8795,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7704,6 +8856,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7757,6 +8917,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7810,6 +8978,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7863,6 +9039,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7916,6 +9100,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -7969,6 +9161,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8036,6 +9236,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8089,6 +9297,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8142,6 +9358,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8195,6 +9419,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8248,6 +9480,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8301,6 +9541,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8354,6 +9602,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8407,6 +9663,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8460,6 +9724,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8513,6 +9785,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8566,6 +9846,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8619,6 +9907,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8672,6 +9968,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8725,6 +10029,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8778,6 +10090,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8831,6 +10151,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8884,6 +10212,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8937,6 +10273,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -8990,6 +10334,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9043,6 +10395,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9096,6 +10456,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9149,6 +10517,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9202,6 +10578,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9255,6 +10639,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9308,6 +10700,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9361,6 +10761,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9414,6 +10822,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9467,6 +10883,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9520,6 +10944,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9573,6 +11005,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9626,6 +11066,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9693,6 +11141,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9746,6 +11202,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9799,6 +11263,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9852,6 +11324,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9905,6 +11385,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -9958,6 +11446,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10011,6 +11507,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10064,6 +11568,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10117,6 +11629,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10170,6 +11690,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10223,6 +11751,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10276,6 +11812,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10329,6 +11873,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10382,6 +11934,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10435,6 +11995,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10488,6 +12056,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10541,6 +12117,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10594,6 +12178,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10647,6 +12239,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     },
     {
@@ -10700,6 +12300,14 @@ current_elections_page_2 = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-01-18",
+        "close_of_nominations": "2018-01-25",
+        "sopn_publish_deadline": "2018-01-26",
+        "registration_deadline": "2018-02-08",
+        "postal_vote_application_deadline": "2018-02-09",
+        "vac_application_deadline": "2018-02-15"
+      },
       "cancelled": false
     }
   ]
@@ -10735,6 +12343,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10760,6 +12376,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10797,6 +12421,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10833,6 +12465,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10870,6 +12510,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10894,6 +12542,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -10931,6 +12587,14 @@ each_type_of_election_on_one_day_parents = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     }
   ]
@@ -10976,6 +12640,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11014,6 +12686,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11067,6 +12747,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11092,6 +12780,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11130,6 +12826,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11168,6 +12872,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11205,6 +12917,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11249,6 +12969,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11307,6 +13035,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11365,6 +13101,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11409,6 +13153,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11467,6 +13219,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11525,6 +13285,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11561,6 +13329,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11616,6 +13392,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11653,6 +13437,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11708,6 +13500,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11763,6 +13563,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11787,6 +13595,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11825,6 +13641,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11862,6 +13686,14 @@ each_type_of_election_on_one_day = json.loads(
       "voting_system": null,
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11906,6 +13738,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -11964,6 +13804,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -12022,6 +13870,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -12066,6 +13922,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -12124,6 +13988,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     },
     {
@@ -12182,6 +14054,14 @@ each_type_of_election_on_one_day = json.loads(
       },
       "current": true,
       "explanation": null,
+      "timetable": {
+        "notice_of_election_deadline": "2018-12-13",
+        "close_of_nominations": "2018-12-20",
+        "sopn_publish_deadline": "2018-12-21",
+        "registration_deadline": "2019-01-03",
+        "postal_vote_application_deadline": "2019-01-04",
+        "vac_application_deadline": "2019-01-10"
+      },
       "cancelled": false
     }
   ]
@@ -12220,6 +14100,14 @@ local_highland_parent = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     }
   ]
@@ -12274,6 +14162,14 @@ local_highland = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     },
     {
@@ -12331,6 +14227,14 @@ local_highland = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     }
   ]
@@ -12367,6 +14271,14 @@ duplicate_post_names_parent = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
       "cancelled": false,
       "replaces": null,
       "replaced_by": null
@@ -12420,6 +14332,14 @@ duplicate_post_names = json.loads(
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12479,6 +14399,14 @@ duplicate_post_names = json.loads(
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12523,6 +14451,14 @@ duplicate_post_names = json.loads(
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12582,6 +14518,14 @@ duplicate_post_names = json.loads(
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12621,6 +14565,14 @@ get_changing_identifier_code_result_parent = json.loads(
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12676,6 +14628,14 @@ def get_changing_identifier_code_result(identifier):
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12735,6 +14695,14 @@ def get_changing_identifier_code_result(identifier):
             "explanation": null,
             "metadata": null,
             "deleted": false,
+      "timetable": {
+        "notice_of_election_deadline": "2019-03-28",
+        "close_of_nominations": "2019-04-04",
+        "sopn_publish_deadline": "2019-04-05",
+        "registration_deadline": "2019-04-18",
+        "postal_vote_application_deadline": "2019-04-19",
+        "vac_application_deadline": "2019-04-25"
+      },
             "cancelled": false,
             "replaces": null,
             "replaced_by": null
@@ -12779,6 +14747,14 @@ replaced_election_parents = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     }
     ]
@@ -12834,6 +14810,14 @@ replaced_election = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     },
     {
@@ -12891,6 +14875,14 @@ replaced_election = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false,
       "replaces": "local.highland.wester-ross-strathpeffer-and-lochalsh.by.2017-12-06"
     }
@@ -12929,6 +14921,14 @@ duplicate_post_and_election_parents = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     }
     ]}
@@ -12985,6 +14985,14 @@ duplicate_post_and_election = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false
     },
     {
@@ -13042,6 +15050,14 @@ duplicate_post_and_election = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": true,
       "replaces": null
     },
@@ -13100,6 +15116,14 @@ duplicate_post_and_election = json.loads(
       "explanation": null,
       "metadata": null,
       "deleted": true,
+      "timetable": {
+        "notice_of_election_deadline": "2018-11-01",
+        "close_of_nominations": "2018-11-08",
+        "sopn_publish_deadline": "2018-11-09",
+        "registration_deadline": "2018-11-22",
+        "postal_vote_application_deadline": "2018-11-23",
+        "vac_application_deadline": "2018-11-29"
+      },
       "cancelled": false,
       "replaces": null
     }
