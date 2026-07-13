@@ -79,7 +79,12 @@
             {% if ballot.has_sopn %}
               <p>These candidates need to be double-checked against the <a href="{{ ballot.sopn.get_absolute_url }}">official Statement of Persons Nominated</a>.</p>
             {% else %}
-              <p>These candidates will not be confirmed until the council publishes the official candidate list on {{ballot.expected_sopn_date}}.
+              <p>These candidates will not be confirmed until the council publishes the official candidate list
+                {% if ballot.close_of_nominations and ballot.sopn_publish_deadline %}
+                  between
+                  <strong>{{ ballot.close_of_nominations }}</strong> and
+                  <strong>{{ ballot.sopn_publish_deadline }}</strong>.
+                {% endif %}
                 Once nomination papers are published, we will manually verify each candidate.
               </p>
             {% endif %}
@@ -90,13 +95,16 @@
           <h2>Candidates</h2>
           <p>
             We don’t know of any candidates in {{ ballot.post.label }} for the {{ ballot.election.name }} yet.
-            We expect the official list of candidates to be published on or after
-            <strong>{{ ballot.expected_sopn_date }}</strong>.</p>
-          <p class="clearfix">
-            {% if not ballot.has_sopn %}
-              {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+            {% if ballot.close_of_nominations and ballot.sopn_publish_deadline %}
+              We expect the official list of candidates to be published between
+              <strong>{{ ballot.close_of_nominations }}</strong> and
+              <strong>{{ ballot.sopn_publish_deadline }}</strong>.
             {% endif %}
-          </p>
+            <p class="clearfix">
+              {% if not ballot.has_sopn %}
+                {% include "elections/includes/_ballot_add_candidate.html" with position='left' %}
+              {% endif %}
+            </p>
         {% endif %}
       </div>
 
