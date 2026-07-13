@@ -372,6 +372,13 @@ class Ballot(EEModifiedMixin, models.Model):
         help_text=urlize(ByElectionReason.__doc__),
     )
 
+    close_of_nominations = models.DateField(
+        blank=True, null=True, help_text="Close of Nominations"
+    )
+    sopn_publish_deadline = models.DateField(
+        blank=True, null=True, help_text="Deadline to publish SOPN document"
+    )
+
     UnsafeToDelete = UnsafeToDelete
 
     objects = BallotQueryset.as_manager()
