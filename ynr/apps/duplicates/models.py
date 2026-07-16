@@ -81,9 +81,6 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
 
     objects = DuplicateSuggestionQuerySet.as_manager()
 
-    class Meta:
-        unique_together = ("person", "other_person")
-
     def save(self, **kwargs):
         """
         Force the order of the IDs, making self.person always

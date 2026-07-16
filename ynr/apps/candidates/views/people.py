@@ -21,6 +21,7 @@ from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, TemplateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from duplicates.forms import DuplicateSuggestionForm
+from duplicates.helpers import get_previous_rejections
 from elections.mixins import ElectionMixin
 from elections.models import Election
 from elections.uk.forms import SelectBallotForm
@@ -287,6 +288,19 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
         context["user_can_merge"] = user_in_group(
             self.request.user, TRUSTED_TO_MERGE_GROUP_NAME
         )
+        raw_other_id = self.request.GET.get(
+            "other_person"
+        ) or self.request.POST.get("other_person")
+        try:
+            other_person_id = int(raw_other_id)
+        except (TypeError, ValueError):
+            context["previous_rejections"] = []
+            return context
+
+        p1_id, p2_id = sorted([self.object.pk, other_person_id])
+        rejections_map = get_previous_rejections([(p1_id, p2_id)])
+        context["previous_rejections"] = rejections_map.get((p1_id, p2_id), [])
+
         return context
 
 
