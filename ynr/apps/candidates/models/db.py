@@ -182,11 +182,11 @@ class LoggedAction(models.Model):
 
     @property
     def subject_url(self):
+        if self.person:
+            return reverse("person-view", kwargs={"person_id": self.person.id})
         ballot = self.ballot
         if ballot:
             return ballot.get_absolute_url()
-        if self.person:
-            return reverse("person-view", kwargs={"person_id": self.person.id})
         return "/"
 
     @property
