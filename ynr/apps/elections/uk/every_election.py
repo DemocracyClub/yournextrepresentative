@@ -278,6 +278,8 @@ class EEElection(dict):
             "by_election_reason": self.get("by_election_reason", ""),
             "voting_system": voting_system.get("slug", ""),
             "ee_modified": self.get("modified"),
+            "close_of_nominations": self["timetable"]["close_of_nominations"],
+            "sopn_publish_deadline": self["timetable"]["sopn_publish_deadline"],
         }
         if ballot_data["cancelled"]:
             ballot_data["candidates_locked"] = True
@@ -362,7 +364,7 @@ class EveryElectionImporter(object):
             }
         # never import referendums
         # NB if this requirement changes, should add election types as an
-        # option to uk_create_elections_fromn_every_election management command
+        # option to uk_create_elections_from_every_election management command
         query_args["exclude_election_id_regex"] = r"^ref\..*"
         self.query_args = query_args
 

@@ -714,6 +714,14 @@ class TestEEElection:
             "replaces": None,
             "modified": modified,
             "voting_system": {"slug": "FPTP"},
+            "timetable": {
+                "notice_of_election_deadline": "2021-09-16",
+                "close_of_nominations": "2021-09-23",
+                "sopn_publish_deadline": "2021-09-24",
+                "registration_deadline": "2021-10-07",
+                "postal_vote_application_deadline": "2021-10-08",
+                "vac_application_deadline": "2021-10-14",
+            },
         }
         ee_election = every_election.EEElection(data)
         ee_election.post_object = mock.MagicMock()
@@ -737,6 +745,8 @@ class TestEEElection:
                     "by_election_reason": "",
                     "voting_system": "FPTP",
                     "ee_modified": modified,
+                    "close_of_nominations": "2021-09-23",
+                    "sopn_publish_deadline": "2021-09-24",
                 },
             )
             mock_get_or_create_post.assert_called_once()
@@ -812,6 +822,14 @@ class TestEEElection:
             "replaces": None,
             "modified": None,
             "voting_system": {"slug": "FPTP"},
+            "timetable": {
+                "notice_of_election_deadline": None,
+                "close_of_nominations": None,
+                "sopn_publish_deadline": None,
+                "registration_deadline": None,
+                "postal_vote_application_deadline": None,
+                "vac_application_deadline": None,
+            },
         }
         ee_election = every_election.EEElection(data)
         ee_election.post_object = existing_ballot.post
@@ -848,6 +866,14 @@ class TestEEElection:
             "replaces": None,
             "modified": None,
             "voting_system": {"slug": "FPTP"},
+            "timetable": {
+                "notice_of_election_deadline": None,
+                "close_of_nominations": None,
+                "sopn_publish_deadline": None,
+                "registration_deadline": None,
+                "postal_vote_application_deadline": None,
+                "vac_application_deadline": None,
+            },
         }
         ee_election = every_election.EEElection(data)
         ee_election.post_object = existing_ballot.post

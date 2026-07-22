@@ -120,7 +120,8 @@ jobs:
             docker cp $container_id:/dc/ynr/code/coverage.xml .
             docker cp $container_id:/dc/ynr/code/junit.xml test-results/junit.xml
             docker rm $container_id
-      - coveralls/upload
+      - coveralls/upload:
+          fail_on_error: false
 
       - when:
           condition:
