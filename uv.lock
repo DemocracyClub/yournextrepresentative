@@ -1903,15 +1903,6 @@ wheels = [
 ]
 
 [[package]]
-name = "uk-election-timetables"
-version = "5.0.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/33/06/34e1ad5f782b6e72f56d3d950d7f364dfe1554362aff7d218f494218ff7f/uk_election_timetables-5.0.0.tar.gz", hash = "sha256:f6d6db174d9e0fcc9a29a8167047530b6d7b93a27af4958c0195fa293e307fba", size = 20743, upload-time = "2026-07-08T08:14:15.173Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/52/8a/1220516bc7c3fe46b5dce6d7a8b67bf601e3c5d1757a9e66a2f804b8ba41/uk_election_timetables-5.0.0-py3-none-any.whl", hash = "sha256:3f85d746b7778bb8b901b1cce0dd92b16592d5fe5a3f7ce2c5c6ebd2ceb71d28", size = 23120, upload-time = "2026-07-08T08:14:14.084Z" },
-]
-
-[[package]]
 name = "uritemplate"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2121,7 +2112,6 @@ dependencies = [
     { name = "sorl-thumbnail" },
     { name = "sorl-thumbnail-serializer-field" },
     { name = "uk-election-ids" },
-    { name = "uk-election-timetables" },
     { name = "whitenoise" },
     { name = "wreq" },
 ]
@@ -2207,7 +2197,6 @@ requires-dist = [
     { name = "sorl-thumbnail", specifier = "==12.11.0" },
     { name = "sorl-thumbnail-serializer-field", git = "https://github.com/dessibelle/sorl-thumbnail-serializer-field.git?tag=0.2" },
     { name = "uk-election-ids", specifier = "==0.10.1" },
-    { name = "uk-election-timetables", specifier = "==5.0.0" },
     { name = "whitenoise", specifier = "==6.5.0" },
     { name = "wreq", specifier = "==0.10.2" },
 ]
