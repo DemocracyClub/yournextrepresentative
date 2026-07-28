@@ -1,4 +1,3 @@
-import cgi
 from io import BytesIO
 
 import requests
@@ -90,7 +89,7 @@ class UploadPersonPhotoURLForm(forms.Form):
             msg = "That URL produced an HTTP error status code: {0}"
             raise ValidationError(msg.format(response.status_code))
         content_type = response.headers["content-type"]
-        main, sub = cgi.parse_header(content_type)
+        main = content_type.split(";", 1)[0].strip()
         if not main.startswith("image/"):
             msg = "This URL isn't for an image - it had Content-Type: {0}"
             raise ValidationError(msg.format(main))
