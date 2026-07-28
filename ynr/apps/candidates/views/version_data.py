@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from random import randint
 
 
@@ -18,7 +18,7 @@ def create_version_id():
 
 
 def get_current_timestamp():
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
 
 
 def get_change_metadata(request, information_source, user=None):
