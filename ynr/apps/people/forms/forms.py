@@ -206,7 +206,7 @@ class PersonIdentifierForm(forms.ModelForm):
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance: Membership = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance")
         person: Person = kwargs.pop("person", None)
         if instance:
             if instance.party_description:
@@ -504,7 +504,7 @@ class SopnNameForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance: Membership = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance")
         if instance:
             initial = {}
             if hasattr(instance.ballot, "sopn"):
