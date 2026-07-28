@@ -85,7 +85,7 @@ dev = [
     "pytest-cov==4.0.0",
     "pytest-django==4.5.2",
     "pytest-freezegun==0.4.2",
-    "pytest-ruff==0.2.1",
+    "pytest-ruff==0.5",
     "ruff==0.15.22",
     "watchdog==4.0.2",
     "WebTest==3.0.0",
