@@ -286,9 +286,9 @@ class BulkAddSOPNReconcileView(BaseSOPNBulkAddView):
                 )
                 if party_description:
                     form["description_id"] = party_description
-                    form[
-                        "party_description_text"
-                    ] = party_description.description
+                    form["party_description_text"] = (
+                        party_description.description
+                    )
 
             form["name"] = candidacy["name"]
             form["party_id"] = party_obj.ec_id

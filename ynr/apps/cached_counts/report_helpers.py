@@ -808,8 +808,8 @@ class GenderSplitBySeatsContested(BaseReport):
             ] = gender["gender_count"]
         for seats_contested, data in grouped_rows.items():
             ratio = (
-                f'{round(data["M"] / data["F"], 2)}'
-                f':{round(data["F"] / data["F"], 2)}'
+                f"{round(data['M'] / data['F'], 2)}"
+                f":{round(data['F'] / data['F'], 2)}"
             )
             report_list.append([seats_contested, data["F"], data["M"], ratio])
 

@@ -22,9 +22,9 @@ app = cdk.App(context=app_wide_context)
 # Set the DC Environment early on. This is important to be able to conditionally
 # change the stack configurations
 dc_environment = app.node.try_get_context("dc-environment") or None
-assert (
-    dc_environment in valid_environments
-), f"context `dc-environment` must be one of {valid_environments}"
+assert dc_environment in valid_environments, (
+    f"context `dc-environment` must be one of {valid_environments}"
+)
 
 
 YnrStack(

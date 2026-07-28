@@ -204,12 +204,12 @@ def results_progress(context):
             output_field=TextField(),
         )
 
-        context[
-            "results_progress_by_election_type"
-        ] = results_progress_by_value(
-            ballot_qs.annotate(election_type=election_type),
-            lookup_value="election_type",
-            label_field="election__for_post_role",
+        context["results_progress_by_election_type"] = (
+            results_progress_by_value(
+                ballot_qs.annotate(election_type=election_type),
+                lookup_value="election_type",
+                label_field="election__for_post_role",
+            )
         )
 
     shortcuts = filter_shortcuts(context["request"])["list"]

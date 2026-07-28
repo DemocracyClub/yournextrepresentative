@@ -140,9 +140,9 @@ class DataShortcutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get loads of recent elections for this page
-        context[
-            "charismatic_elections"
-        ] = ElectionReport.objects.all().order_by("-election_date")
+        context["charismatic_elections"] = (
+            ElectionReport.objects.all().order_by("-election_date")
+        )
         context["special_reports"] = [
             {
                 "only_by_elections": True,

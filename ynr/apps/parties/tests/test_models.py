@@ -2,6 +2,7 @@
 Test some of the basic model use cases
 
 """
+
 from candidates.tests.helpers import TmpMediaRootMixin
 from django.conf import settings
 from django.core.files.storage import DefaultStorage

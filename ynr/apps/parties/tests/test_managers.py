@@ -2,6 +2,7 @@
 Test some of the basic model use cases
 
 """
+
 from collections import namedtuple
 
 from django.test import TestCase

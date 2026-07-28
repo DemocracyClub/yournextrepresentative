@@ -26,8 +26,7 @@ def populate_favourite_biscuit_from_extrafieldvalue(apps, schema_editor):
 
     if too_long.exists():
         msg = [
-            "Value is too long for the following people. "
-            "Please manually fix:"
+            "Value is too long for the following people. Please manually fix:"
         ]
         for value_field in too_long:
             msg.append(str(value_field.person.pk))

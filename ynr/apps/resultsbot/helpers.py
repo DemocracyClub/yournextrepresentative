@@ -54,9 +54,9 @@ class ResultsBot(object):
                     edit_type=EditType.BOT.name,
                 )
             else:
-                change_metadata[
-                    "information_source"
-                ] = 'Setting as "not elected" by implication'
+                change_metadata["information_source"] = (
+                    'Setting as "not elected" by implication'
+                )
                 membership.person.record_version(change_metadata)
                 membership.person.save()
 
@@ -74,9 +74,9 @@ class ResultsBot(object):
             }
             # Only include num_turnout_reported if it was reported in Modgov
             if division.numballotpapersissued > 0:
-                defaults[
-                    "num_turnout_reported"
-                ] = division.numballotpapersissued
+                defaults["num_turnout_reported"] = (
+                    division.numballotpapersissued
+                )
             # Same for total electorate
             if division.electorate > 0:
                 defaults["total_electorate"] = division.electorate

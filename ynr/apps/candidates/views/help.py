@@ -30,8 +30,8 @@ class HelpResultsView(TemplateView):
                 for role_data in elections:
                     for election_dict in role_data["elections"]:
                         election = election_dict["election"]
-                        election_dict[
-                            "results_file_exists"
-                        ] = self.results_file_exists(election.slug)
+                        election_dict["results_file_exists"] = (
+                            self.results_file_exists(election.slug)
+                        )
 
         return context

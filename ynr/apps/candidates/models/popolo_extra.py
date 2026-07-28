@@ -210,9 +210,9 @@ class BallotQueryset(models.QuerySet):
         """
         nuts_codes = []
         for nation_code in nation_codes:
-            assert (
-                nation_code in settings.NUTS_TO_NATION
-            ), f"Unknown nation {nation_code}"
+            assert nation_code in settings.NUTS_TO_NATION, (
+                f"Unknown nation {nation_code}"
+            )
             nuts_codes += settings.NUTS_TO_NATION[nation_code]
 
         return self.filter(tags__NUTS1__key__in=nuts_codes)

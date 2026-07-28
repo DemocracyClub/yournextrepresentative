@@ -167,8 +167,7 @@ class TestTwitterImageQueueCommand(TestUserMixin, TestCase):
                 "  That person already had an image in the queue, so skipping.",
                 "Considering adding a photo for Person With An Existing "
                 "Image But None In The Queue with Twitter user ID: 1006",
-                "  Adding that person's Twitter avatar to the moderation "
-                "queue",
+                "  Adding that person's Twitter avatar to the moderation queue",
                 "Considering adding a photo for Person With Only Rejected "
                 "Images In The Queue with Twitter user ID: 1003",
                 "  That person already had an image in the queue, so skipping.",

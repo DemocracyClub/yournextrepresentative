@@ -12,14 +12,14 @@ from ynr_refactoring.settings import PersonIdentifierFields
 class CompletenessFilter(django_filters.FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         for identifier in PersonIdentifierFields:
-            self.base_filters[
-                f"has_{identifier.name}"
-            ] = django_filters.ChoiceFilter(
-                field_name=identifier.name,
-                method="filter_null_or_empty_str",
-                label=f"Has {identifier.value}",
-                choices=[("yes", "Yes"), ("no", "No")],
-                widget=forms.HiddenInput,
+            self.base_filters[f"has_{identifier.name}"] = (
+                django_filters.ChoiceFilter(
+                    field_name=identifier.name,
+                    method="filter_null_or_empty_str",
+                    label=f"Has {identifier.value}",
+                    choices=[("yes", "Yes"), ("no", "No")],
+                    widget=forms.HiddenInput,
+                )
             )
 
         super().__init__(data, queryset, request=request, prefix=prefix)
