@@ -111,15 +111,55 @@ class WafStack(Stack):
                 sampled_requests_enabled=True,
             ),
             rules=[
-                # Rate limiting rule: 500 requests per 5 min per IP
+                # Rate limiting rule: 150 requests per 5 min per IP
                 wafv2.CfnWebACL.RuleProperty(
                     name="RateLimitRule",
                     priority=1,
                     action=wafv2.CfnWebACL.RuleActionProperty(block={}),
                     statement=wafv2.CfnWebACL.StatementProperty(
                         rate_based_statement=wafv2.CfnWebACL.RateBasedStatementProperty(
-                            limit=500,
+                            limit=150,
                             aggregate_key_type="IP",
+                            scope_down_statement=wafv2.CfnWebACL.StatementProperty(
+                                not_statement=wafv2.CfnWebACL.NotStatementProperty(
+                                    statement=wafv2.CfnWebACL.StatementProperty(
+                                        or_statement=wafv2.CfnWebACL.OrStatementProperty(
+                                            statements=[
+                                                wafv2.CfnWebACL.StatementProperty(
+                                                    byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                                                        search_string="/media",
+                                                        field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
+                                                            uri_path={},
+                                                        ),
+                                                        text_transformations=[
+                                                            wafv2.CfnWebACL.TextTransformationProperty(
+                                                                priority=0,
+                                                                type="NONE",
+                                                            )
+                                                        ],
+                                                        positional_constraint="STARTS_WITH",
+                                                    )
+                                                ),
+                                                wafv2.CfnWebACL.StatementProperty(
+                                                    byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                                                        search_string="/static",
+                                                        field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
+                                                            uri_path={},
+                                                        ),
+                                                        text_transformations=[
+                                                            wafv2.CfnWebACL.TextTransformationProperty(
+                                                                priority=0,
+                                                                type="NONE",
+                                                            )
+                                                        ],
+                                                        positional_constraint="STARTS_WITH",
+                                                    )
+                                                ),
+                                            ]
+                                        )
+                                    )
+                                )
+                            ),
                         )
                     ),
                     visibility_config=wafv2.CfnWebACL.VisibilityConfigProperty(
