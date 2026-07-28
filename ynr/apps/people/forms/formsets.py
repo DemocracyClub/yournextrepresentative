@@ -37,6 +37,32 @@ class MembershipFormSet(BaseInlineFormSet):
         kwargs["person"] = self.instance
         return kwargs
 
+    def clean(self):
+        # Reject adding the same person to two ballots from the same
+        # election (e.g. two wards in the same council on the same date) -
+        # that combination otherwise blew up downstream with a 500 (#2685).
+        super().clean()
+        seen_elections = {}
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+            if form.cleaned_data.get(DELETION_FIELD_NAME):
+                continue
+            ballot = form.cleaned_data.get("ballot_paper_id")
+            if not ballot:
+                continue
+            election_id = ballot.election_id
+            other = seen_elections.get(election_id)
+            if other is not None:
+                form.add_error(
+                    "ballot_paper_id",
+                    "This person is already standing in another ballot "
+                    "in the same election ({}); please remove one before "
+                    "saving.".format(other.ballot_paper_id),
+                )
+            else:
+                seen_elections[election_id] = ballot
+
 
 PersonMembershipFormsetFactory = forms.inlineformset_factory(
     Person,
