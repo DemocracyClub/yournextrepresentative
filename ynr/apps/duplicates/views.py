@@ -17,7 +17,8 @@ class DuplicateSuggestionListView(GroupRequiredMixin, ListView):
 
     def get_queryset(self):
         """
-        Only display suggestions that are open
+        Only display suggestions that are open, in a random order so the
+        gnarly ones don't permanently camp out at the top.
         """
         return (
             DuplicateSuggestion.objects.open()
@@ -34,6 +35,7 @@ class DuplicateSuggestionListView(GroupRequiredMixin, ListView):
                 "person__other_names",
                 "other_person__other_names",
             )
+            .order_by("?")
         )
 
 
