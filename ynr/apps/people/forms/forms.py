@@ -181,6 +181,8 @@ class PersonIdentifierForm(forms.ModelForm):
             raise ValidationError(e)
 
     def clean_email(self, email):
+        if email.lower().startswith("mailto:"):
+            email = email[len("mailto:") :]
         validate_email(email)
         if email.lower().endswith("parliament.uk"):
             raise ValidationError(
