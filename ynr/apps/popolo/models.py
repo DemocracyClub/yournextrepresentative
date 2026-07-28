@@ -415,7 +415,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
     @property
     def previous_party_affiliations_string(self):
         """
-        Return a comma seperated list of EC-ID's for previous party affiliations
+        Return a comma separated list of EC-ID's for previous party affiliations
         relations
         """
         return "; ".join(

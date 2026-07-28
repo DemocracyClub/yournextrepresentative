@@ -299,7 +299,7 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
     @patch("parties.importer.ECEmblem.download_emblem")
     def test_bilingual_description_marked_inactive(self, FakeEmblemPath):
         """
-        We used to import these as a single pipe seperated description e.g:
+        We used to import these as a single pipe separated description e.g:
         "Make Good Use of Bad Rubbish | Gwneud Defnydd Da o Sbwriel Gwael"
         We now import
         - "Make Good Use of Bad Rubbish" and

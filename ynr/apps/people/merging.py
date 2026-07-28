@@ -187,7 +187,7 @@ class PersonMerger:
             "patronymic_name",
             "summary",
         ]
-        # name is handled seperately because it does not
+        # name is handled separately because it does not
         attrs_to_merge.remove("name")
         return attrs_to_merge
 
