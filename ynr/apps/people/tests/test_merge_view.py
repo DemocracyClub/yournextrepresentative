@@ -626,9 +626,9 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Elizabeth Bennet"
         form["tmp_person_identifiers-0-value"] = "lizzie@example.com"
         form["tmp_person_identifiers-0-value_type"] = "email"
-        form[
-            "tmp_person_identifiers-1-value"
-        ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        form["tmp_person_identifiers-1-value"] = (
+            "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        )
         form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
 
         form["party_identifier_1"] = self.labour_party.ec_id
@@ -739,9 +739,9 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Foo Bar"
         form["party_identifier_1"] = self.labour_party.ec_id
-        form[
-            "ballot_paper_id"
-        ] = self.dulwich_post_ballot_earlier.ballot_paper_id
+        form["ballot_paper_id"] = (
+            self.dulwich_post_ballot_earlier.ballot_paper_id
+        )
         form["source"] = "foo bar"
 
         response = form.submit()

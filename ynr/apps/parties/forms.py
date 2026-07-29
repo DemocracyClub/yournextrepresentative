@@ -39,9 +39,7 @@ def party_and_description_dict_from_string(value):
             )
         return ret
     except Party.DoesNotExist:
-        raise ValidationError(
-            f"'{value}' is not a current party " f"identifier"
-        )
+        raise ValidationError(f"'{value}' is not a current party identifier")
 
 
 class PartyIdentifierInput(forms.CharField):

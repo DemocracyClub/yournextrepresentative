@@ -82,9 +82,12 @@ class TestMembership(TestCase):
         Membership.is_welsh_run_ballot returns the same
         """
         for case in [True, False]:
-            with self.subTest(msg=case), patch.object(
-                Ballot, "is_welsh_run", new_callable=PropertyMock
-            ) as mock:
+            with (
+                self.subTest(msg=case),
+                patch.object(
+                    Ballot, "is_welsh_run", new_callable=PropertyMock
+                ) as mock,
+            ):
                 mock.return_value = case
                 membership = Membership(ballot=Ballot())
                 assert membership.is_welsh_run_ballot is case

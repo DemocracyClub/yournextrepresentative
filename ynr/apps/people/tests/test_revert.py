@@ -144,9 +144,9 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = self.app.get("/person/2009/update", user=self.user)
         revert_form = response.forms["revert-form-5469de7db0cbd155"]
-        revert_form[
-            "source"
-        ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
+        revert_form["source"] = (
+            "Reverting to version 5469de7db0cbd155 for testing purposes"
+        )
         response = revert_form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/person/2009")
@@ -255,9 +255,9 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = self.app.get("/person/2009/update", user=self.user)
         revert_form = response.forms["revert-form-5469de7db0cbd155"]
-        revert_form[
-            "source"
-        ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
+        revert_form["source"] = (
+            "Reverting to version 5469de7db0cbd155 for testing purposes"
+        )
         response = revert_form.submit()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/person/2009")
@@ -288,9 +288,9 @@ class TestRevertPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
 
         response = self.app.get(person.get_edit_url(), user=self.user)
         revert_form = response.forms["revert-form-5469de7db0cbd155"]
-        revert_form[
-            "source"
-        ] = "Reverting to version 5469de7db0cbd155 for testing purposes"
+        revert_form["source"] = (
+            "Reverting to version 5469de7db0cbd155 for testing purposes"
+        )
         response = revert_form.submit()
 
     def test_revert_with_memberships_previous_party_affiliations(self):

@@ -275,9 +275,9 @@ class PhotoReviewTests(UK2015ExamplesMixin, WebTest):
             )
             form = review_page_response.forms["photo-review-form"]
             form["decision"] = "rejected"
-            form[
-                "rejection_reason"
-            ] = "There's no clear source or copyright statement"
+            form["rejection_reason"] = (
+                "There's no clear source or copyright statement"
+            )
             response = form.submit(user=self.test_reviewer)
             self.assertEqual(response.status_code, 302)
             split_location = urlsplit(response.location)

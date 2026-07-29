@@ -66,9 +66,9 @@ def add_notification_data(request):
                 .count()
             )
         if TRUSTED_TO_MERGE_GROUP_NAME in groups:
-            result[
-                "duplicate_suggestions"
-            ] = DuplicateSuggestion.objects.open().count()
+            result["duplicate_suggestions"] = (
+                DuplicateSuggestion.objects.open().count()
+            )
         if TRUSTED_TO_EDIT_NAME in groups:
             result["person_name_edits"] = OtherName.objects.filter(
                 needs_review=True

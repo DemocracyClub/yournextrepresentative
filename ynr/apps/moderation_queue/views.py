@@ -257,10 +257,10 @@ class PhotoReview(GroupRequiredMixin, TemplateView):
         context["google_image_search_url"] = self.get_google_image_search_url(
             person
         )
-        context[
-            "google_reverse_image_search_url"
-        ] = self.get_google_reverse_image_search_url(
-            self.queued_image.image.url
+        context["google_reverse_image_search_url"] = (
+            self.get_google_reverse_image_search_url(
+                self.queued_image.image.url
+            )
         )
         context["person"] = person
         return context

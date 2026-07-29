@@ -81,9 +81,9 @@ def get_person_as_version_data(person, new_person=False):
             if membership.elected is not None:
                 candidacy["elected"] = membership.elected
             if membership.party_list_position is not None:
-                candidacy[
-                    "party_list_position"
-                ] = membership.party_list_position
+                candidacy["party_list_position"] = (
+                    membership.party_list_position
+                )
             if ballot.is_welsh_run:
                 ec_ids = membership.previous_party_affiliations.values_list(
                     "ec_id", flat=True

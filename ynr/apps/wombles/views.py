@@ -54,9 +54,9 @@ class SingleWombleView(LoginRequiredMixin, DetailView):
             .order_by("day")
         )
 
-        context[
-            "edits_over_time"
-        ] = self.object.womble_profile.edits_over_time()
+        context["edits_over_time"] = (
+            self.object.womble_profile.edits_over_time()
+        )
         return context
 
 
@@ -82,9 +82,9 @@ class LoginView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context[
-            "new_user_creation_allowed"
-        ] = settings.NEW_USER_ACCOUNT_CREATION_ALLOWED
+        context["new_user_creation_allowed"] = (
+            settings.NEW_USER_ACCOUNT_CREATION_ALLOWED
+        )
         return context
 
     def make_fake_username(self, email):

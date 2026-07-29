@@ -308,7 +308,7 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         However, there are existing candidacies with FKs out to the old
         bilingual ones. They should be kept around and marked inactive.
         """
-        bilingual_description = f'{FAKE_PARTY_DICT["PartyDescriptions"][0]["Description"]} | {FAKE_PARTY_DICT["PartyDescriptions"][0]["Translation"]}'
+        bilingual_description = f"{FAKE_PARTY_DICT['PartyDescriptions'][0]['Description']} | {FAKE_PARTY_DICT['PartyDescriptions'][0]['Translation']}"
 
         FakeEmblemPath.return_value = make_tmp_file_from_source(
             EXAMPLE_IMAGE_FILENAME
