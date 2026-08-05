@@ -30,7 +30,7 @@ def verify_slack_request(request):
     verified. Callers MUST NOT process the request body unless this
     function returns without raising.
     """
-    signing_secret = getattr(settings, "SLACK_SIGNING_SECRET", None)
+    signing_secret = settings.SLACK_SIGNING_SECRET
     if not signing_secret:
         raise SlackSignatureVerificationError(
             "SLACK_SIGNING_SECRET is not configured"

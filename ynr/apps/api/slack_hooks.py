@@ -1,6 +1,7 @@
 import json
 import logging
 
+import sentry_sdk
 from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -21,10 +22,11 @@ class SlackHookRouter(View):
     def post(self, *args, **kwargs):
         try:
             verify_slack_request(self.request)
-        except SlackSignatureVerificationError:
+        except SlackSignatureVerificationError as e:
             logger.warning(
                 "Rejected POST to slack-hooks: failed signature verification"
             )
+            sentry_sdk.capture_exception(e)
             return HttpResponseForbidden()
 
         payload = json.loads(self.request.POST["payload"])
