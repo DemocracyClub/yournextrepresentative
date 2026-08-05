@@ -24,7 +24,7 @@ dependencies = [
     "django-sesame==3.2.3",
     "django-storages==1.14.6",
     "django-svelte==0.2.1",
-    "django==5.2.15",
+    "django==5.2.16",
     "djangorestframework-jsonp==1.0.2",
     "djangorestframework-csv==3.0.2",
     "djangorestframework==3.16.1",
@@ -44,7 +44,7 @@ dependencies = [
     # for compatibility with openai==1.30.3
     # TODO: review/remove when we upgrade openai package
     "httpx==0.27.0",
-    "pillow==12.2.0",
+    "pillow==12.3.0",
     "psycopg==3.1.12",
     "python-dateutil==2.8.2",
     "python-magic==0.4.27",
@@ -56,7 +56,7 @@ dependencies = [
     "sorl-thumbnail-serializer-field",
     "slacker2",
     "pypandoc_binary==1.14",
-    "pypdf==6.13.3",
+    "pypdf==6.14.2",
     "pandas>=3.0.0",
     "wreq==0.10.2",
     "djhtml==3.0.11",
@@ -64,8 +64,8 @@ dependencies = [
 
 [dependency-groups]
 cdk = [
-    "aws-cdk-lib==2.178.0",
-    "constructs==10.4.2",
+    "aws-cdk-lib==2.253.0",
+    "constructs==10.5.0",
     "pytest==9.0.3",
 ]
 production = []
