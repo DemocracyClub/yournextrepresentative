@@ -239,6 +239,10 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
         kwargs = super().get_form_kwargs()
         kwargs["person"] = self.object
         kwargs["user"] = self.request.user
+        # The reason is collected on this review page, so it isn't
+        # available yet on the initial GET request, and shouldn't be
+        # required until the form is actually submitted.
+        kwargs["require_reason"] = self.request.method == "POST"
         if self.request.method == "GET":
             kwargs["data"] = self.request.GET
         return kwargs
@@ -255,6 +259,11 @@ class DuplicatePersonView(LoginRequiredMixin, FormView, DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context["errors"] = True
+        return self.render_to_response(context)
 
     def form_valid(self, form):
         """
