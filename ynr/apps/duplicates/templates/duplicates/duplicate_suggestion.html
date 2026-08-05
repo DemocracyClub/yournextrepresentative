@@ -35,6 +35,13 @@
     <form method="post" id="{{ SUGGESTION_FORM_ID }}">
       {% csrf_token %}
       {{ form.other_person }}
+      <p>
+        {{ form.suggestion_reason.label_tag }}
+        {{ form.suggestion_reason }}
+        {% for error in form.suggestion_reason.errors %}
+          <p><code>{{ error }}</code></p>
+        {% endfor %}
+      </p>
       <button class="button primary" type="submit">Suggest</button>
     </form>
 

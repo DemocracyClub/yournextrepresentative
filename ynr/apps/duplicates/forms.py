@@ -6,21 +6,41 @@ from duplicates.models import DuplicateSuggestion
 class DuplicateSuggestionForm(forms.ModelForm):
     class Meta:
         model = DuplicateSuggestion
-        fields = ["other_person"]
-        widgets = {"other_person": forms.HiddenInput()}
+        fields = ["other_person", "suggestion_reason"]
+        labels = {"suggestion_reason": "Reason"}
+        widgets = {
+            "other_person": forms.HiddenInput(),
+            "suggestion_reason": forms.Textarea(
+                attrs={
+                    "placeholder": "Please explain why you think these two people are duplicates",
+                    "rows": 3,
+                    "required": "",
+                }
+            ),
+        }
         error_messages = {
             "other_person": {
                 "invalid_choice": "The other person ID provided was invalid",
                 "required": "Other person ID was not provided",
-            }
+            },
+            "suggestion_reason": {
+                "required": "Reason for suggesting duplicate was not provided"
+            },
         }
 
     def __init__(self, *args, **kwargs):
         person = kwargs.pop("person")
         user = kwargs.pop("user")
+        require_reason = kwargs.pop("require_reason", True)
         super().__init__(*args, **kwargs)
         self.instance.person = person
         self.instance.user = user
+        # The model field allows blank for legacy data, but new
+        # suggestions submitted via this form should always include a
+        # reason. The initial GET request (used to check the other person
+        # ID before the reason has been entered on the review page) opts
+        # out of this by passing require_reason=False.
+        self.fields["suggestion_reason"].required = require_reason
 
     def clean(self):
         cleaned_data = super().clean()
