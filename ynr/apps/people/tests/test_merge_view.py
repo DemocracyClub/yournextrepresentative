@@ -702,10 +702,11 @@ class TestMergeViewFullyFrontEnd(TestUserMixin, UK2015ExamplesMixin, WebTest):
         suggestion_form["other_person"] = source
         response = suggestion_form.submit()
 
-        #  merge form not in the response as user doesnt have merge permission
+        #  merge form not in the response as user doesnt have merge permission
         assert MERGE_FORM_ID not in response.forms
         # instead confirm the suggestion
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["suggestion_reason"] = "They look like the same person"
         suggestion_form.submit()
 
         # still 2 people

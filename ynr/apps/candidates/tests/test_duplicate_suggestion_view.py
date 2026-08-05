@@ -107,6 +107,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
 
         # submit the suggestion form and expect object to be created
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["suggestion_reason"] = "They look like the same person"
         response = suggestion_form.submit()
 
         suggestion = DuplicateSuggestion.objects.filter(
@@ -114,6 +115,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
         ).first()
         assert DuplicateSuggestion.objects.count() == 1
         assert bool(suggestion) is True
+        assert suggestion.suggestion_reason == "They look like the same person"
 
     def test_duplicate_suggestion_already_open(self):
         # created an open suggestion from another user
@@ -153,6 +155,7 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
 
         # submit the suggestion form and expect object to be created
         suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        suggestion_form["suggestion_reason"] = "They look like the same person"
         response = suggestion_form.submit()
 
         # we're allowed to suggest the same person again

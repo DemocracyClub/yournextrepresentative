@@ -78,6 +78,9 @@ class DuplicateSuggestion(StatusModel, TimeStampedModel):
     rejection_reasoning = models.TextField(
         blank=True, help_text="Reason for rejecting duplicate suggestion"
     )
+    suggestion_reason = models.TextField(
+        blank=True, help_text="Reason for suggesting duplicates"
+    )
 
     objects = DuplicateSuggestionQuerySet.as_manager()
 
