@@ -141,5 +141,9 @@ urlpatterns = [
         v09views.UpcomingElectionsView.as_view(),
         name="upcoming-elections",
     ),
-    re_path("api/slack-hooks", slack_hooks.SlackHookRouter.as_view()),
+    re_path(
+        "api/slack-hooks",
+        slack_hooks.SlackHookRouter.as_view(),
+        name="slack-hooks",
+    ),
 ]

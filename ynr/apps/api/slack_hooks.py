@@ -1,10 +1,14 @@
 import json
+import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from moderation_queue.slack import FlaggedEditSlackReplyer
+from utils.slack import SlackSignatureVerificationError, verify_slack_request
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -15,6 +19,14 @@ class SlackHookRouter(View):
     """
 
     def post(self, *args, **kwargs):
+        try:
+            verify_slack_request(self.request)
+        except SlackSignatureVerificationError:
+            logger.warning(
+                "Rejected POST to slack-hooks: failed signature verification"
+            )
+            return HttpResponseForbidden()
+
         payload = json.loads(self.request.POST["payload"])
 
         # callback = payload.get('callback_id')
