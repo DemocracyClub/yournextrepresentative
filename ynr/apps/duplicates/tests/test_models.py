@@ -1,5 +1,4 @@
 from candidates.tests.auth import TestUserMixin
-from django.db import IntegrityError
 from django.test import TestCase
 from duplicates.models import DuplicateSuggestion
 from people.tests.factories import PersonFactory
@@ -44,24 +43,6 @@ class TestDuplicateSuggestion(TestUserMixin, TestCase):
                 self.person_2, self.person_1
             )
         )
-
-    def test_not_duplicate_duplicates_create_method(self):
-        """
-        Make sure we can't make a duplicate duplicate suggestion using create()
-        """
-        DuplicateSuggestion.objects.create(
-            person=self.person_1,
-            other_person=self.person_2,
-            user=self.user,
-            status=DuplicateSuggestion.STATUS.not_duplicate,
-        )
-        with self.assertRaises(IntegrityError):
-            DuplicateSuggestion.objects.create(
-                person=self.person_2,
-                other_person=self.person_1,
-                user=self.user,
-                status=DuplicateSuggestion.STATUS.not_duplicate,
-            )
 
     def test_not_duplicate_duplicates_upsert(self):
         DuplicateSuggestion.objects.create(

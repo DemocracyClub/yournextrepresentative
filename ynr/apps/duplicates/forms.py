@@ -33,25 +33,19 @@ class DuplicateSuggestionForm(forms.ModelForm):
             msg = f"You can't suggest a duplicate person ({self.instance.person.pk}) with themself ({other_person.pk})"
             self.add_error(field="other_person", error=msg)
 
-        existing_suggestion = DuplicateSuggestion.objects.for_both_people(
-            person=self.instance.person, other_person=other_person
-        ).first()
+        existing_suggestion = (
+            DuplicateSuggestion.objects.for_both_people(
+                person=self.instance.person, other_person=other_person
+            )
+            .open()
+            .first()
+        )
         if not existing_suggestion:
             return cleaned_data
 
-        if existing_suggestion.open:
-            raise ValidationError(
-                "A suggestion between these people is already open"
-            )
-
-        if existing_suggestion.rejected:
-            msg = (
-                "A suggestion between these two people has already been "
-                "checked and rejected as not duplicate because: "
-                f"{existing_suggestion.rejection_reasoning}"
-            )
-            raise ValidationError(msg)
-        return None
+        raise ValidationError(
+            "A suggestion between these people is already open"
+        )
 
 
 class RejectionForm(forms.ModelForm):
