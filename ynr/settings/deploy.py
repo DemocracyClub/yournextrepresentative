@@ -105,8 +105,13 @@ if DC_ENVIRONMENT == "production":
     SLACK_TOKEN = os.environ["SLACK_TOKEN"]
     if SLACK_TOKEN == "DISABLED":
         SLACK_TOKEN = None
+
+    SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET") or None
+    if SLACK_SIGNING_SECRET == "DISABLED":
+        SLACK_SIGNING_SECRET = None
 else:
     SLACK_TOKEN = None
+    SLACK_SIGNING_SECRET = None
 
 
 ALWAYS_ALLOW_RESULT_RECORDING = True
