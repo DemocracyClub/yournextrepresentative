@@ -77,6 +77,12 @@ class PersonImage(TimeStampedModel):
 
     objects = PersonImageManager()
 
+    def delete(self, *args, **kwargs):
+        if self.image and self.image.storage.exists(self.image.name):
+            self.image.delete(save=False)
+
+        super().delete(*args, **kwargs)
+
 
 class PersonIdentifier(TimeStampedModel):
     """
