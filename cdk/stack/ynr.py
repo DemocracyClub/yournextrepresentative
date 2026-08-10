@@ -228,14 +228,13 @@ class YnrStack(Stack):
                 )
             ),
         }
-        if self.dc_environment == "production":
-            self.common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
-                ssm.StringParameter.from_string_parameter_name(
-                    self,
-                    "SLACK_TOKEN",
-                    "SLACK_TOKEN",
-                )
+        self.common_secrets["SLACK_TOKEN"] = ecs.Secret.from_ssm_parameter(
+            ssm.StringParameter.from_string_parameter_name(
+                self,
+                "SLACK_TOKEN",
+                "SLACK_TOKEN",
             )
+        )
 
         # `alb_basic_auth_token` prevents anyone from accessing the ALB without
         # passing this header. We use it to limit hosts to valid hostnames
