@@ -151,7 +151,10 @@ class TestDuplicatePersonViewIntegrationTests(TestUserMixin, WebTest, TestCase):
         url = f"{url}?other_person={self.other_person.pk}"
         response = self.app.get(url, user=self.user)
 
-        self.assertContains(
-            response,
-            "A suggestion between these two people has already been checked and rejected as not duplicate",
-        )
+        # submit the suggestion form and expect object to be created
+        suggestion_form = response.forms[SUGGESTION_FORM_ID]
+        response = suggestion_form.submit()
+
+        # we're allowed to suggest the same person again
+        # if the first one was rejected
+        assert DuplicateSuggestion.objects.count() == 2

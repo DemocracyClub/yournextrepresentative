@@ -7,6 +7,7 @@ from django.views.generic import ListView, UpdateView
 from popolo.models import Membership
 
 from .forms import RejectionForm
+from .helpers import get_previous_rejections
 from .models import DuplicateSuggestion
 
 
@@ -35,6 +36,20 @@ class DuplicateSuggestionListView(GroupRequiredMixin, ListView):
                 "other_person__other_names",
             )
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object_list = context["object_list"]
+
+        pairs = [(obj.person_id, obj.other_person_id) for obj in object_list]
+        rejection_map = get_previous_rejections(pairs)
+
+        for obj in object_list:
+            obj.previous_rejections = rejection_map.get(
+                (obj.person_id, obj.other_person_id), []
+            )
+
+        return context
 
 
 class RejectSuggestion(GroupRequiredMixin, UpdateView):

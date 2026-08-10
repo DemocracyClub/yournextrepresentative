@@ -1,3 +1,13 @@
+{% if previous_rejections %}
+  <div>
+    <p><strong>This pair has been rejected {{ previous_rejections|length }} time{{ previous_rejections|length|pluralize }} previously.</strong></p>
+    <ul>
+      {% for rejection in previous_rejections %}
+        <li>Rejected on {{ rejection.modified|date:"j F Y" }} by {{ rejection.user }}{% if rejection.rejection_reasoning %}: {{ rejection.rejection_reasoning }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 <table class="table">
   <thead>
     <tr>
