@@ -64,7 +64,7 @@ class FlaggedEditSlackPoster:
         header_text = """
 *{flagged_reason}*\n\n
 
-{username} edited <https://candidates.democracyclub.org.uk{candidate_url}|{candidate_name}>\n
+{username} edited <https://dev.ynr.womblelabs.co.uk{candidate_url}|{candidate_name}>\n
 with the source: \n> {source}
 """.format(
             flagged_reason=self.logged_action.flagged_reason,
@@ -190,7 +190,7 @@ with the source: \n> {source}
                         "text": "Edit",
                     },
                     "value": "Edit",
-                    "url": "https://candidates.democracyclub.org.uk{}".format(
+                    "url": "https://dev.ynr.womblelabs.co.uk{}".format(
                         self.logged_action.person.get_edit_url()
                     ),
                 },
@@ -235,7 +235,7 @@ with the source: \n> {source}
 
     def post_message(self):
         self.sh.post_message(
-            getattr(settings, "SLACK_REVIEW_CHANNEL", "C59LHLH7A"),
+            "C080MGZ7CJ1",
             "Edit to {}".format(self.logged_action.person.name),
             blocks=self.message,
         )
