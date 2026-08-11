@@ -102,8 +102,10 @@ SOPN_UPDATE_NOTIFICATION_EMAILS = os.environ[
 # TODO: remove this hack and make an ENABLE_SLACK_NOTIFICATIONS setting
 # this exists because we can't set a var to empty string in param store
 SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
 if SLACK_TOKEN == "DISABLED":
     SLACK_TOKEN = None
+    SLACK_SIGNING_SECRET = None
 
 
 ALWAYS_ALLOW_RESULT_RECORDING = True
