@@ -127,6 +127,7 @@ jobs:
           condition:
             or:
               - equal: [ "ci/test", << pipeline.git.branch >> ]
+              - equal: [ "dev20260812", << pipeline.git.branch >> ]
               - equal: [ "staging", << pipeline.git.branch >> ]
               - equal: [ "master", << pipeline.git.branch >> ]
           steps:
@@ -307,7 +308,7 @@ workflows:
             - static_tests
             - build_and_test
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "dev20260812"] } }
           dc-environment: development
       - deploy_cdk_environment:
           name: DEV cdk deploy
@@ -315,20 +316,20 @@ workflows:
           requires:
             - cdk_test
             - DEV push container
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "dev20260812"] } }
           dc-environment: development
       - db_migrate:
           name: DEV db migrate
           requires:
             - DEV cdk deploy
           context: [ deployment-ecs-development-ynr ]
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "dev20260812"] } }
       - post_deploy_checks:
           name: DEV post deploy checks
           requires:
             - DEV db migrate
           dc-environment: development
-          filters: { branches: { only: [ "ci/test"] } }
+          filters: { branches: { only: [ "ci/test", "dev20260812"] } }
 
       #########
       # Staging
