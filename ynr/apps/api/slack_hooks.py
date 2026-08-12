@@ -20,6 +20,8 @@ class SlackHookRouter(View):
     """
 
     def post(self, *args, **kwargs):
+        logger.warning(self.request.headers)
+        logger.warning(self.request.body)
         try:
             verify_slack_request(self.request)
         except SlackSignatureVerificationError as e:
