@@ -44,6 +44,10 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         desired_storage_path = join("queued-images", "pilot.jpg")
         with open(cls.example_image_filename, "rb") as f:
             cls.storage_filename = storage.save(desired_storage_path, f)
+        with open(cls.rotated_image_filename, "rb") as f:
+            cls.rotated_storage_filename = storage.save(
+                join("queued-images", "rotated.jpg"), f
+            )
         mkdir_p(TEST_MEDIA_ROOT)
 
     @classmethod
@@ -140,7 +144,8 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
             "already has images in the queue waiting for review.You can review them here",
         )
 
-    def test_photo_upload_through_image_field(self):
+    @patch("moderation_queue.models.QueuedImage.detect_faces")
+    def test_photo_upload_through_image_field(self, _mock_detect_faces):
         queued_images = QueuedImage.objects.all()
         initial_count = queued_images.count()
         upload_form_url = reverse("photo-upload", kwargs={"person_id": "2009"})
@@ -181,7 +186,8 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         response = self.app.get(upload_form_url, user=self.test_upload_user)
         self.assertContains(response, "Photo policy")
 
-    def test_resize_image(self, *all_mock_requests):
+    @patch("moderation_queue.models.QueuedImage.detect_faces")
+    def test_resize_image(self, _mock_detect_faces, *all_mock_requests):
         # Test that the image is less than or equal to 5MB after
         # upload and before saving to the database.
         image_size = os.path.getsize(self.xl_image_filename)
@@ -198,7 +204,81 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         image_size = queued_image.image.size
         self.assertLessEqual(image_size, 5000000)
 
+    def test_normalise_image_converts_to_png(self):
+        qi = QueuedImage.objects.create(
+            image=self.rotated_storage_filename,
+            person_id=2009,
+            why_allowed="public-domain",
+        )
+        qi.normalise_image()
+        self.assertEqual(PillowImage.open(qi.image).format, "PNG")
 
+    @patch("boto3.client")
+    def test_detect_faces_sets_face_detection_tried(self, mock_boto3):
+        mock_boto3.return_value.detect_faces.return_value = {"FaceDetails": []}
+        qi = QueuedImage.objects.create(
+            image=self.rotated_storage_filename,
+            person_id=2009,
+            why_allowed="public-domain",
+        )
+        qi.detect_faces()
+        qi.refresh_from_db()
+        self.assertTrue(qi.face_detection_tried)
+
+    @patch("boto3.client")
+    def test_detect_faces_sets_crop_bounds_when_face_found(self, mock_boto3):
+        mock_boto3.return_value.detect_faces.return_value = {
+            "FaceDetails": [
+                {
+                    "BoundingBox": {
+                        "Left": 0.1,
+                        "Top": 0.2,
+                        "Width": 0.5,
+                        "Height": 0.6,
+                    }
+                }
+            ]
+        }
+        qi = QueuedImage.objects.create(
+            image=self.rotated_storage_filename,
+            person_id=2009,
+            why_allowed="public-domain",
+        )
+        qi.detect_faces()
+        qi.refresh_from_db()
+        self.assertEqual(qi.crop_min_x, 21)
+        self.assertEqual(qi.crop_min_y, 42)
+        self.assertEqual(qi.crop_max_x, 195)
+        self.assertEqual(qi.crop_max_y, 234)
+        self.assertIn("FaceDetails", qi.detection_metadata)
+
+    @patch("boto3.client")
+    def test_detect_faces_no_crop_bounds_when_no_face_found(self, mock_boto3):
+        mock_boto3.return_value.detect_faces.return_value = {"FaceDetails": []}
+        qi = QueuedImage.objects.create(
+            image=self.rotated_storage_filename,
+            person_id=2009,
+            why_allowed="public-domain",
+        )
+        qi.detect_faces()
+        qi.refresh_from_db()
+        self.assertIsNone(qi.crop_min_x)
+
+    @patch("boto3.client")
+    def test_detect_faces_sets_flag_on_exception(self, mock_boto3):
+        mock_boto3.side_effect = Exception("AWS unavailable")
+        qi = QueuedImage.objects.create(
+            image=self.rotated_storage_filename,
+            person_id=2009,
+            why_allowed="public-domain",
+        )
+        with self.assertRaises(Exception):
+            qi.detect_faces()
+        qi.refresh_from_db()
+        self.assertTrue(qi.face_detection_tried)
+
+
+@patch("moderation_queue.models.QueuedImage.detect_faces")
 @patch("moderation_queue.forms.requests")
 @patch("moderation_queue.helpers.requests")
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
@@ -237,10 +317,14 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
             for attr in ("get", "head")
         ]
 
-    def successful_get_image(self, *all_mock_requests, **kwargs):
+    def successful_get_image(
+        self, *all_mock_requests, image_filename=None, **kwargs
+    ):
         content_type = kwargs.get("content_type", "image/jpeg")
         headers = {"content-type": content_type}
-        with open(self.example_image_filename, "rb") as image:
+        if image_filename is None:
+            image_filename = self.example_image_filename
+        with open(image_filename, "rb") as image:
             image_data = image.read()
             for mock_method in self.get_and_head_methods(*all_mock_requests):
                 setattr(
