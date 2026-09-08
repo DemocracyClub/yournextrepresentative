@@ -62,5 +62,6 @@ EMAIL_HOST = None
 EMAIL_HOST_USER = None
 EMAIL_HOST_PASSWORD = None
 SLACK_TOKEN = None
+SLACK_SIGNING_SECRET = "test-slack-signing-secret"  # noqa: S105
 DEFAULT_FROM_EMAIL = "candidates@example.com"
 ENABLE_SCHEDULED_JOBS = False

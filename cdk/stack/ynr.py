@@ -236,6 +236,15 @@ class YnrStack(Stack):
                     "SLACK_TOKEN",
                 )
             )
+            self.common_secrets[
+                "SLACK_SIGNING_SECRET"
+            ] = ecs.Secret.from_ssm_parameter(
+                ssm.StringParameter.from_string_parameter_name(
+                    self,
+                    "SLACK_SIGNING_SECRET",
+                    "SLACK_SIGNING_SECRET",
+                )
+            )
 
         # `alb_basic_auth_token` prevents anyone from accessing the ALB without
         # passing this header. We use it to limit hosts to valid hostnames
@@ -642,6 +651,8 @@ class YnrStack(Stack):
                         "x-csrfmiddlewaretoken",
                         "X-CSRFToken",
                         "x-requested-with",
+                        "X-Slack-Request-Timestamp",
+                        "X-Slack-Signature",
                         "Accept",
                         "Accept-Language",
                         "Authorization",
@@ -673,6 +684,8 @@ class YnrStack(Stack):
                 "x-csrfmiddlewaretoken",
                 "X-CSRFToken",
                 "x-requested-with",
+                "X-Slack-Request-Timestamp",
+                "X-Slack-Signature",
                 "Accept",
                 "Authorization",
                 "Cache-Control",
@@ -697,6 +710,8 @@ class YnrStack(Stack):
                 "x-csrfmiddlewaretoken",
                 "X-CSRFToken",
                 "x-requested-with",
+                "X-Slack-Request-Timestamp",
+                "X-Slack-Signature",
                 "Accept",
                 "Authorization",
                 "Cache-Control",
