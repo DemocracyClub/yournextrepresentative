@@ -478,6 +478,10 @@ class ECEmblem:
             # LA is luminance + alpha. e.g. greyscale with transparency
             if img.mode == "LA":
                 img = img.convert("L")
+            # Other modes PNG can't write directly (e.g. CMYK from some
+            # JPEGs published by the EC) need converting to RGB first.
+            if img.mode not in ("RGB", "L", "P", "1"):
+                img = img.convert("RGB")
             # Save the image as a PNG without alpha
             png_tempfile = NamedTemporaryFile(delete=False, suffix=".png")
             img.save(png_tempfile.name, "PNG")
