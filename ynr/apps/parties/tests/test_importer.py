@@ -19,6 +19,7 @@ from parties.importer import ECParty, ECPartyImporter, clean_description_text
 from parties.management.commands.parties_import_from_ec import Command
 from parties.models import Party, PartyDescription, PartyEmblem
 from parties.tests.fixtures import DefaultPartyFixtures
+from PIL import Image
 from sorl.thumbnail import get_thumbnail
 
 from .factories import PartyDescriptionFactory, PartyEmblemFactory, PartyFactory
@@ -66,6 +67,12 @@ def make_tmp_file_from_source(source):
         with open(ntf.name, "wb") as f:
             f.write(source_file.read())
             return ntf.name
+
+
+def make_cmyk_image():
+    ntf = NamedTemporaryFile(delete=False, suffix=".jpg")
+    Image.new("CMYK", (10, 10)).save(ntf.name, "JPEG")
+    return ntf.name
 
 
 class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
@@ -354,6 +361,18 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         party = ECParty(FAKE_PARTY_DICT)
         party.save()
         self.assertFalse(PartyEmblem.objects.all().exists())
+
+    @patch("parties.importer.ECEmblem.download_emblem")
+    def test_save_with_cmyk_emblem(self, FakeEmblemPath):
+        """
+        The EC sometimes publishes emblems as CMYK JPEGs. PNG doesn't
+        support CMYK, so saving one out should not raise an OSError.
+        """
+        FakeEmblemPath.return_value = make_cmyk_image()
+        self.assertFalse(PartyEmblem.objects.all().exists())
+        party = ECParty(FAKE_PARTY_DICT)
+        party.save()
+        self.assertTrue(PartyEmblem.objects.all().exists())
 
     def test_raises_on_bad_dict(self):
         with self.assertRaises(ValueError):
