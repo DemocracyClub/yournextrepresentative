@@ -41,9 +41,9 @@ class LeaderboardView(ContributorsMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["leaderboards"] = self.get_leaderboards()
-        context[
-            "num_new_users_since_date"
-        ] = self.get_num_new_users_since_date()
+        context["num_new_users_since_date"] = (
+            self.get_num_new_users_since_date()
+        )
         return context
 
 
@@ -52,9 +52,9 @@ class UserContributions(View):
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="contributions.csv"'
+        response["Content-Disposition"] = (
+            'attachment; filename="contributions.csv"'
+        )
         headers = ["rank", "username", "contributions"]
         writer = csv.DictWriter(response, fieldnames=headers)
         writer.writerow({k: k for k in headers})

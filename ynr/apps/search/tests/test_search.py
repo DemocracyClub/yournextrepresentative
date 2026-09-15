@@ -140,7 +140,7 @@ class TestSearchView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         PersonFactory(name="Henry Jekyll")
         self.assertTrue(
             search_person_by_name(
-                "` ' £$$^*   ($ £%  Henry   " "Jekyll \t"
+                "` ' £$$^*   ($ £%  Henry   Jekyll \t"
             ).exists()
         )
 

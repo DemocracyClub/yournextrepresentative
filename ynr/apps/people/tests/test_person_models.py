@@ -123,9 +123,9 @@ class TestPersonModels(
         form = response.forms["person-details"]
         form["memberships-0-ballot_paper_id"].value = ballot.ballot_paper_id
         form["memberships-0-party_identifier_0"].value = self.labour_party.ec_id
-        form[
-            "source"
-        ] = "Test adding a person to a ballot removes them from the not standing list"
+        form["source"] = (
+            "Test adding a person to a ballot removes them from the not standing list"
+        )
         form.submit()
 
         # check that the person is no longer marked as not standing in the election

@@ -65,11 +65,14 @@ class ElectionSOPNPageSplitterTestCase(UK2015ExamplesMixin, TestCase):
     def test_dependency_error_raises_pdf_processing_error(self):
         ballot_to_pages = {"ballot1": [0]}
         splitter = ElectionSOPNPageSplitter(self.election_sopn, ballot_to_pages)
-        with patch.object(
-            PdfWriter,
-            "add_page",
-            side_effect=DependencyError("missing dependency"),
-        ), self.assertRaises(PDFProcessingError):
+        with (
+            patch.object(
+                PdfWriter,
+                "add_page",
+                side_effect=DependencyError("missing dependency"),
+            ),
+            self.assertRaises(PDFProcessingError),
+        ):
             splitter.split()
 
     def test_split_pages(self):

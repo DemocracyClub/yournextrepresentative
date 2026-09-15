@@ -133,10 +133,10 @@ class Party(TimeStampedModel):
             "fallback": "{} {}".format(self.name, url),
         }
         if self.default_emblem:
-            attachment[
-                "image_url"
-            ] = "http://search.electoralcommission.org.uk/Api/Registrations/Emblems/{}".format(
-                self.default_emblem.ec_emblem_id
+            attachment["image_url"] = (
+                "http://search.electoralcommission.org.uk/Api/Registrations/Emblems/{}".format(
+                    self.default_emblem.ec_emblem_id
+                )
             )
         if self.descriptions.exists():
             attachment["fields"] = [

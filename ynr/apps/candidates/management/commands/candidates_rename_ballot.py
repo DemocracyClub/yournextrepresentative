@@ -2,6 +2,7 @@
 Foo Bar
 
 """
+
 import json
 import sys
 from argparse import ArgumentParser

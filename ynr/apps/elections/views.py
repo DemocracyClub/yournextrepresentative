@@ -242,11 +242,11 @@ class BallotPaperView(TemplateView):
 
         # Lock Suggestions
         if ballot.has_lock_suggestion:
-            context[
-                "current_user_suggested_lock"
-            ] = ballot.suggestedpostlock_set.filter(
-                user=self.request.user
-            ).exists()
+            context["current_user_suggested_lock"] = (
+                ballot.suggestedpostlock_set.filter(
+                    user=self.request.user
+                ).exists()
+            )
         else:
             context["suggest_lock_form"] = SuggestedPostLockForm(ballot=ballot)
 
@@ -264,20 +264,20 @@ class BallotPaperView(TemplateView):
             context["identifiers_formset"] = PersonIdentifierFormsetFactory()
 
             # Previous candidate suggestions
-            context["previous_ballot"] = (
-                previous_ballot
-            ) = Ballot.objects.get_previous_ballot_for_post(ballot)
+            context["previous_ballot"] = previous_ballot = (
+                Ballot.objects.get_previous_ballot_for_post(ballot)
+            )
             if previous_ballot and not ballot.polls_closed:
-                context[
-                    "people_not_standing"
-                ] = ballot.people_not_standing_again(previous_ballot)
+                context["people_not_standing"] = (
+                    ballot.people_not_standing_again(previous_ballot)
+                )
 
-                context[
-                    "candidates_might_stand_again"
-                ] = Membership.objects.memberships_for_ballot(
-                    previous_ballot,
-                    exclude_memberships_qs=context["candidates"],
-                    exclude_people_qs=context["people_not_standing"],
+                context["candidates_might_stand_again"] = (
+                    Membership.objects.memberships_for_ballot(
+                        previous_ballot,
+                        exclude_memberships_qs=context["candidates"],
+                        exclude_people_qs=context["people_not_standing"],
+                    )
                 )
 
         context["logged_actions"] = (
@@ -558,7 +558,7 @@ class BallotsForSelectAjaxView(View):
             attrs_str = " ".join(
                 [f"{k}='{v}'" for k, v in option_attrs.items()]
             )
-            data.append(f"<option {attrs_str}>" f"{ballot_label}" f"</option>")
+            data.append(f"<option {attrs_str}>{ballot_label}</option>")
         data.append("</optgroup>")
         # empty option needs to be included for select2 to display a placeholder
         # see https://select2.org/placeholders#single-select-placeholders

@@ -256,9 +256,9 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
         form["party_identifier_1"] = self.green_party.ec_id
-        form[
-            "source"
-        ] = "Testing adding a new candidate to a locked constituency"
+        form["source"] = (
+            "Testing adding a new candidate to a locked constituency"
+        )
         submission_response = form.submit()
         self.assertEqual(submission_response.status_code, 302)
         # Find the person this should have redirected to:
@@ -279,9 +279,9 @@ class TestBallotLockWorks(TestUserMixin, UK2015ExamplesMixin, WebTest):
             form["memberships-0-ballot_paper_id"].value,
             self.dulwich_post_ballot.ballot_paper_id,
         )
-        form[
-            "memberships-0-ballot_paper_id"
-        ] = self.camberwell_post_ballot.ballot_paper_id
+        form["memberships-0-ballot_paper_id"] = (
+            self.camberwell_post_ballot.ballot_paper_id
+        )
         submission_response = form.submit()
         self.assertEqual(
             submission_response.context["memberships_formset"].errors,

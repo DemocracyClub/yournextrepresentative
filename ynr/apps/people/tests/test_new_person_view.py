@@ -33,9 +33,9 @@ class TestNewPersonView(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form["name"] = "Elizabeth Bennet"
         form["tmp_person_identifiers-0-value"] = "lizzie@example.com"
         form["tmp_person_identifiers-0-value_type"] = "email"
-        form[
-            "tmp_person_identifiers-1-value"
-        ] = "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        form["tmp_person_identifiers-1-value"] = (
+            "http://en.wikipedia.org/wiki/Lizzie_Bennet"
+        )
         form["tmp_person_identifiers-1-value_type"] = "wikipedia_url"
 
         form["party_identifier_1"] = self.labour_party.ec_id
