@@ -25,7 +25,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "action",
-            choices=["list", "delete"],
+            choices=["list", "delete", "move"],
             help="Action to perform",
         )
 
@@ -72,7 +72,20 @@ class Command(BaseCommand):
         self.stdout.write(f"found {linked_images_count} linked images")
         self.stdout.write(f"found {orphan_images_count} orphan images")
 
-        if action == "delete":
+        if action == "move":
+            self.stdout.write("Moving orphan images..")
+            for obj in orphan_images:
+                s3.copy_object(
+                    Bucket=bucket_name,
+                    CopySource={"Bucket": bucket_name, "Key": obj},
+                    Key=obj.replace(
+                        "media/images/people/", "delete/images/people/"
+                    ),
+                )
+                s3.delete_object(Bucket=bucket_name, Key=obj)
+            self.stdout.write(f"Moved {orphan_images_count} orphan images")
+
+        elif action == "delete":
             self.stdout.write("Deleting orphan images..")
             for obj in orphan_images:
                 s3.delete_object(Bucket=bucket_name, Key=obj)
