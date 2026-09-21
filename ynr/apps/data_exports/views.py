@@ -95,15 +95,13 @@ class DataExportView(DataFilterMixin, View):
     def should_block(self, request):
         # block this one very specific query
         # https://app.asana.com/1/1204880536137786/project/1204880927741389/task/1210132746447867?focus=true
-        if (
+        return (
             request.GET.get("election_id") == "parl.2024-07-04"
             and request.GET.get("party_id") == "PP52"
             and request.GET.get("field_group") == "results"
             and request.GET.get("format") == "csv"
             and request.GET.get("extra_fields") == "image"
-        ):
-            return True
-        return False
+        )
 
     def get(self, request, *args, **kwargs):
         if self.should_block(request):
