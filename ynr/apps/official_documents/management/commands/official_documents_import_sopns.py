@@ -92,10 +92,7 @@ class Command(BaseCommand):
         election = Election.objects.get(
             ballot__ballot_paper_id=ballot_data[0]["ballot_paper_id"]
         )
-        if len(ballot_data) == election.ballot_set.count():
-            return True
-
-        return False
+        return len(ballot_data) == election.ballot_set.count()
 
     def process_group(self, source_url, ballot_data, delete_existing=False):
         if len(ballot_data) == 1:

@@ -130,10 +130,14 @@ class QueuedImage(models.Model):
         """
         Returns a temporary file containing the cropped image
         """
-        original = PillowImage.open(self.image.file)
-        cropped = original.crop(self.crop_bounds)
-        ntf = NamedTemporaryFile(delete=False)
-        cropped.save(ntf.name, "PNG")
+        with (
+            PillowImage.open(self.image.file) as original,
+            NamedTemporaryFile(delete=False) as ntf,
+        ):
+            # PIL crops lazily, so the save has to happen while the source
+            # image is still open
+            cropped = original.crop(self.crop_bounds)
+            cropped.save(ntf, "PNG")
         return ntf
 
     @property

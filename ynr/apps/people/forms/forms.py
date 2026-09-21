@@ -110,9 +110,9 @@ class PersonIdentifierForm(forms.ModelForm):
         if self.cleaned_data.get("value_type") in self.HTTP_IDENTIFIERS:
             # Add https schema if missing
             if not self.cleaned_data.get("value").startswith("http"):
-                self.cleaned_data[
-                    "value"
-                ] = f"https://{self.cleaned_data['value']}"
+                self.cleaned_data["value"] = (
+                    f"https://{self.cleaned_data['value']}"
+                )
             URLValidator()(value=self.cleaned_data["value"])
         if (
             "value_type" in self.cleaned_data
@@ -206,7 +206,7 @@ class PersonIdentifierForm(forms.ModelForm):
 class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance: Membership = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance")
         person: Person = kwargs.pop("person", None)
         if instance:
             if instance.party_description:
@@ -233,9 +233,9 @@ class PersonMembershipForm(PopulatePartiesMixin, forms.ModelForm):
         )
 
         if self.show_previous_party_affiliations:
-            self.fields[
-                "previous_party_affiliations"
-            ] = PreviousPartyAffiliationsField(membership=self.instance)
+            self.fields["previous_party_affiliations"] = (
+                PreviousPartyAffiliationsField(membership=self.instance)
+            )
 
     @property
     def show_previous_party_affiliations(self):
@@ -504,7 +504,7 @@ class SopnNameForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
-        instance: Membership = kwargs.get("instance", None)
+        instance: Membership = kwargs.get("instance")
         if instance:
             initial = {}
             if hasattr(instance.ballot, "sopn"):

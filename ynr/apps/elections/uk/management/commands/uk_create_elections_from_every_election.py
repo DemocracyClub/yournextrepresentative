@@ -135,9 +135,9 @@ class Command(BaseCommand):
         local_current_ballots = Ballot.objects.filter(
             election__current=True
         ).count()
-        assert (
-            ee_current_ballots == local_current_ballots
-        ), f"Local and EE current ballots don't match EE: {ee_current_ballots} Local: {local_current_ballots}"
+        assert ee_current_ballots == local_current_ballots, (
+            f"Local and EE current ballots don't match EE: {ee_current_ballots} Local: {local_current_ballots}"
+        )
 
     def delete_deleted_elections(self, recently_updated_timestamp):
         # Get all deleted elections from EE

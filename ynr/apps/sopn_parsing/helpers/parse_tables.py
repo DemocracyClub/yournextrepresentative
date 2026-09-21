@@ -83,18 +83,14 @@ def clean_row(row):
 
 def contains_header_like_strings(row):
     row_string = clean_text(row.to_string())
-    if any(s in row_string for s in NAME_FIELDS):
-        return True
-    return False
+    return any(s in row_string for s in NAME_FIELDS)
 
 
 def looks_like_header(row, avg_row):
     avg_row = avg_row - 3
-    if len(merge_row_cells(row)) >= avg_row and contains_header_like_strings(
-        row
-    ):
-        return True
-    return False
+    return len(
+        merge_row_cells(row)
+    ) >= avg_row and contains_header_like_strings(row)
 
 
 def order_name_fields(name_fields):
@@ -486,9 +482,11 @@ def parse_dataframe(ballot: Ballot, df: DataFrame):
     df.reset_index(drop=True, inplace=True)
     polling_station_index = df[
         df.apply(
-            lambda row: row.astype(str)
-            .str.contains("polling station", case=False)
-            .any(),
+            lambda row: (
+                row.astype(str)
+                .str.contains("polling station", case=False)
+                .any()
+            ),
             axis=1,
         )
     ].index

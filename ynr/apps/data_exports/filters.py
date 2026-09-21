@@ -179,8 +179,7 @@ def create_materialized_membership_filter(
     :return:
     """
 
-    class DynamicMaterializedMembershipFilter(MaterializedMembershipFilter):
-        ...
+    class DynamicMaterializedMembershipFilter(MaterializedMembershipFilter): ...
 
     for field_name, field in fields:
         if not field.dynamic_filter:

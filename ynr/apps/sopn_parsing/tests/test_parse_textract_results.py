@@ -1,6 +1,7 @@
 """
 Tests for the code that converts a raw Textract result into a pandas data frame for parsing.
 """
+
 from pathlib import Path
 
 from candidates.tests.uk_examples import UK2015ExamplesMixin

@@ -280,9 +280,7 @@ class ModGovElectionMatcher(object):
             self.http_only = True
             req = requests.get(self.format_elections_index_url(), timeout=2)
         print(req.url)
-        if "No published elections found." in req.text:
-            return False
-        return True
+        return "No published elections found." not in req.text
 
     def find_elections(self):
         if not self.uses_election_feature():

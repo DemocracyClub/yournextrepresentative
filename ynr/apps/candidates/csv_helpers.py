@@ -10,7 +10,7 @@ def list_to_csv(membership_list):
     csv_fields = settings.CSV_ROW_FIELDS
     writer = BufferDictWriter(fieldnames=csv_fields)
     writer.writeheader()
-    for row in sorted(membership_list, key=lambda d: (d["election_date"])):
+    for row in sorted(membership_list, key=lambda d: d["election_date"]):
         writer.writerow(row)
     return writer.output
 

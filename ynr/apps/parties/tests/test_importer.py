@@ -62,11 +62,12 @@ def make_tmp_file_from_source(source):
     Copy a file to a tmp location, so we can test deleting it without
     deleting the checked in source file.
     """
-    with open(source, "rb") as source_file:
-        ntf = NamedTemporaryFile(delete=False)
-        with open(ntf.name, "wb") as f:
-            f.write(source_file.read())
-            return ntf.name
+    with (
+        open(source, "rb") as source_file,
+        NamedTemporaryFile(delete=False) as ntf,
+    ):
+        ntf.write(source_file.read())
+    return ntf.name
 
 
 def make_cmyk_image():
@@ -315,7 +316,7 @@ class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):
         However, there are existing candidacies with FKs out to the old
         bilingual ones. They should be kept around and marked inactive.
         """
-        bilingual_description = f'{FAKE_PARTY_DICT["PartyDescriptions"][0]["Description"]} | {FAKE_PARTY_DICT["PartyDescriptions"][0]["Translation"]}'
+        bilingual_description = f"{FAKE_PARTY_DICT['PartyDescriptions'][0]['Description']} | {FAKE_PARTY_DICT['PartyDescriptions'][0]['Translation']}"
 
         FakeEmblemPath.return_value = make_tmp_file_from_source(
             EXAMPLE_IMAGE_FILENAME

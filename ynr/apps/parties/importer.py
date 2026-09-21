@@ -458,10 +458,9 @@ class ECEmblem:
 
     def download_emblem(self):
         url = "{}/{}".format(EC_EMBLEM_BASE, self.emblem_dict["Id"])
-        ntf = NamedTemporaryFile(delete=False)
         r = requests.get(url)
-        with open(ntf.name, "wb") as f:
-            f.write(r.content)
+        with NamedTemporaryFile(delete=False) as ntf:
+            ntf.write(r.content)
         return ntf.name
 
     def clean_image(self, image_file_name):
@@ -483,8 +482,10 @@ class ECEmblem:
             if img.mode not in ("RGB", "L", "P", "1"):
                 img = img.convert("RGB")
             # Save the image as a PNG without alpha
-            png_tempfile = NamedTemporaryFile(delete=False, suffix=".png")
-            img.save(png_tempfile.name, "PNG")
+            with NamedTemporaryFile(
+                delete=False, suffix=".png"
+            ) as png_tempfile:
+                img.save(png_tempfile, "PNG")
 
         return png_tempfile.name
 

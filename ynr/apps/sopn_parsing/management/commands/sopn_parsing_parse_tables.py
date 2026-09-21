@@ -31,9 +31,9 @@ class Command(BaseSOPNParsingCommand):
             return filter_kwargs
 
         if options.get("reparse"):
-            filter_kwargs[
-                "rawpeople__source_type"
-            ] = RawPeople.SOURCE_PARSED_PDF
+            filter_kwargs["rawpeople__source_type"] = (
+                RawPeople.SOURCE_PARSED_PDF
+            )
             return filter_kwargs
 
         return filter_kwargs

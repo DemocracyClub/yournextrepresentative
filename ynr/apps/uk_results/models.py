@@ -47,7 +47,7 @@ class ResultSet(TimeStampedModel):
         """
         Check if the result set has all the required fields filled in
         """
-        if (
+        return (
             all(
                 [
                     self.num_turnout_reported is not None,
@@ -57,9 +57,7 @@ class ResultSet(TimeStampedModel):
                 ]
             )
             and self.ballot.elected_count is not None
-        ):
-            return True
-        return False
+        )
 
     @property
     def rank(self):

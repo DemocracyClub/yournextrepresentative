@@ -551,9 +551,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
         form["party_identifier_1"] = self.green_party.ec_id
-        form[
-            "source"
-        ] = "Testing adding a new candidate to a locked constituency"
+        form["source"] = (
+            "Testing adding a new candidate to a locked constituency"
+        )
         response = form.submit().follow()
         person_1 = response.context["person"]
 
@@ -562,9 +562,9 @@ class TestMerging(TestUserMixin, UK2015ExamplesMixin, WebTest):
         form = response.forms["new-candidate-form"]
         form["name"] = "Imaginary Candidate"
         form["party_identifier_1"] = self.green_party.ec_id
-        form[
-            "source"
-        ] = "Testing adding a new candidate to a locked constituency"
+        form["source"] = (
+            "Testing adding a new candidate to a locked constituency"
+        )
         response = form.submit().follow()
         person_2 = response.context["person"]
 

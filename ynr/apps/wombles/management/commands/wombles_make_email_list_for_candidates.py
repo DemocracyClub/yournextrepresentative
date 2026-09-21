@@ -9,8 +9,7 @@ from popolo.models import Membership
 from sesame.utils import get_token
 
 
-class NoEmailError(ValueError):
-    ...
+class NoEmailError(ValueError): ...
 
 
 def make_fake_username(email):

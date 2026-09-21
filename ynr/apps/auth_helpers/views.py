@@ -12,7 +12,6 @@ def user_in_group(user, group_name):
 
 
 class GroupRequiredMixin(object):
-
     """A mixin that requires the user is a member of a particular group
 
     You should set 'required_group_name' on the class that uses this

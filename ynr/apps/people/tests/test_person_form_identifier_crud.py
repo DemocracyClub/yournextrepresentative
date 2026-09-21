@@ -372,9 +372,9 @@ class PersonFormsIdentifierCRUDTestCase(TestUserMixin, WebTest):
         form["tmp_person_identifiers-0-value_type"] = "email"
         form["tmp_person_identifiers-0-value"] = "person@example.com"
 
-        form[
-            "tmp_person_identifiers-1-value"
-        ] = "https://www.facebook.com/example"
+        form["tmp_person_identifiers-1-value"] = (
+            "https://www.facebook.com/example"
+        )
         form["tmp_person_identifiers-1-value_type"] = "facebook_page_url"
 
         form["tmp_person_identifiers-2-id"] = pi.pk

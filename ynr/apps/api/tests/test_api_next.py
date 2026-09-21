@@ -210,7 +210,7 @@ class TestAPI(
                             },
                             {
                                 "id": "PP53__1",
-                                "text": "Labour Party " "Candidate",
+                                "text": "Labour Party Candidate",
                                 "register": "GB",
                             },
                         ],

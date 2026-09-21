@@ -220,7 +220,7 @@ class TestBallotMethods(TestCase, SingleBallotStatesMixin):
             "gla.",
             "ref.",
             # TODO confirm if these could be welsh run?
-            "pcc." "mayor.",
+            "pcc.mayor.",
             # TODO check this one
             "naw.",
         ]

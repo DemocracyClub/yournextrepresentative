@@ -17,9 +17,9 @@ class ResultsHomeView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         elections_list = reverse("election_list_view")
-        context[
-            "elections_without_results_url"
-        ] = f"{elections_list}?has_results=0&is_cancelled=0"
+        context["elections_without_results_url"] = (
+            f"{elections_list}?has_results=0&is_cancelled=0"
+        )
         return context
 
     def test_func(self, user):

@@ -210,9 +210,9 @@ class BallotQueryset(models.QuerySet):
         """
         nuts_codes = []
         for nation_code in nation_codes:
-            assert (
-                nation_code in settings.NUTS_TO_NATION
-            ), f"Unknown nation {nation_code}"
+            assert nation_code in settings.NUTS_TO_NATION, (
+                f"Unknown nation {nation_code}"
+            )
             nuts_codes += settings.NUTS_TO_NATION[nation_code]
 
         return self.filter(tags__NUTS1__key__in=nuts_codes)
@@ -498,9 +498,7 @@ class Ballot(EEModifiedMixin, models.Model):
     @cached_property
     def has_results(self):
         """Return a boolean if the ballot has candidate results"""
-        if self.membership_set.filter(elected=True).exists():
-            return True
-        return False
+        return self.membership_set.filter(elected=True).exists()
 
     @cached_property
     def has_sopn(self):
@@ -516,9 +514,7 @@ class Ballot(EEModifiedMixin, models.Model):
     def uncontested(self):
         if not self.candidates_locked:
             return False
-        if self.winner_count >= self.membership_set.count():
-            return True
-        return False
+        return self.winner_count >= self.membership_set.count()
 
     @property
     def looks_uncontested(self):
@@ -670,10 +666,9 @@ class Ballot(EEModifiedMixin, models.Model):
 
         # Special case where elections are cancelled before they are locked
         # Don't allow most people to edit them, but do allow staff to
-        if self.cancelled and not self.candidates_locked and user.is_staff:
-            return True
-
-        return False
+        return bool(
+            self.cancelled and not self.candidates_locked and user.is_staff
+        )
 
     def people_not_standing_again(self, previous_ballot):
         """
