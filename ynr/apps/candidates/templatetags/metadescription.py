@@ -18,7 +18,7 @@ def metadescription(person, last_candidacy, today):
             "post": last_candidacy.ballot.post.label,
         }
         if is_post_election(election, today):
-            if last_party_name == "Independent" % args:
+            if last_party_name == "Independent":
                 output = (
                     "%(name)s stood as an independent candidate in %(post)s in %(election)s"
                 ) % args
@@ -27,7 +27,7 @@ def metadescription(person, last_candidacy, today):
                     "%(name)s stood for %(party)s in %(post)s in %(election)s"
                 ) % args
         else:
-            if last_party_name == "Independent" % args:
+            if last_party_name == "Independent":
                 output = (
                     "%(name)s is standing as an independent candidate in %(post)s in %(election)s"
                     % args
