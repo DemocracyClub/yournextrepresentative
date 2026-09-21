@@ -61,11 +61,12 @@ def make_tmp_file_from_source(source):
     Copy a file to a tmp location, so we can test deleting it without
     deleting the checked in source file.
     """
-    with open(source, "rb") as source_file:
-        ntf = NamedTemporaryFile(delete=False)
-        with open(ntf.name, "wb") as f:
-            f.write(source_file.read())
-            return ntf.name
+    with (
+        open(source, "rb") as source_file,
+        NamedTemporaryFile(delete=False) as ntf,
+    ):
+        ntf.write(source_file.read())
+    return ntf.name
 
 
 class TestECPartyImporter(DefaultPartyFixtures, TmpMediaRootMixin, TestCase):

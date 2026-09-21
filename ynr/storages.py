@@ -20,17 +20,9 @@ class PatchedS3Boto3Storage(S3Storage):
 
         # Create a temporary file that will write to disk after a specified
         # size
-        content_autoclose = SpooledTemporaryFile()
-
-        # Write our original content into our copy that will be closed by boto3
-        content_autoclose.write(content.read())
-        # Upload the object which will auto close the content_autoclose
-        # instance
-        super()._save_content(obj, content_autoclose, parameters)
-
-        # Cleanup if this is fixed upstream our duplicate should always close
-        if not content_autoclose.closed:
-            content_autoclose.close()
+        with SpooledTemporaryFile() as content_copy:
+            content_copy.write(content.read())
+            super()._save_content(obj, content_copy, parameters)
 
 
 class StaticStorage(PipelineMixin, CompressedStaticFilesStorage):
