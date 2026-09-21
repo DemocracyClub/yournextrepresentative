@@ -14,7 +14,7 @@ class OpenAPISchemaMixin:
         keys = sorted(od.keys())
         new_od = OrderedDict()
         for key in keys:
-            if type(od[key]) == OrderedDict:
+            if type(od[key]) is OrderedDict:
                 od[key] = self._sort_ordered_dict_by_keys(od[key])
             new_od[key] = od[key]
         return new_od

@@ -1237,7 +1237,7 @@ class CandidatesWithWithoutStatement(BaseReport):
 
 ALL_REPORT_CLASSES = []
 for x in list(locals().values()):
-    if type(x) == type and issubclass(x, BaseReport):
+    if isinstance(x, type) and issubclass(x, BaseReport):
         if x.__name__ == "BaseReport":
             continue
         ALL_REPORT_CLASSES.append(x.__name__)
