@@ -11,6 +11,10 @@ from django.conf import settings
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 
 PREVIOUSLY_APPROVED_COUNT = 20
+# Edit types that never need review, and so don't count towards a user's first
+# edits. These are ActionType values, but candidates.models.db imports this
+# module so we can't import ActionType at the top level here.
+NO_REVIEW_TYPES = ["photo-upload"]
 
 
 class BaseReviewRequiredDecider(metaclass=abc.ABCMeta):
@@ -63,7 +67,9 @@ class FirstByUserEditsDecider(BaseReviewRequiredDecider):
 
     def needs_review(self):
         if self.logged_action.user:
-            user_edits = self.logged_action.user.loggedaction_set.count()
+            user_edits = self.logged_action.user.loggedaction_set.exclude(
+                action_type__in=NO_REVIEW_TYPES
+            ).count()
             if user_edits < settings.NEEDS_REVIEW_FIRST_EDITS:
                 return self.Status.NEEDS_REVIEW
         return self.Status.UNDECIDED
@@ -246,7 +252,6 @@ class EditTypesThatNeverNeedReview(BaseReviewRequiredDecider):
         return "Type of edit that never needs a review"
 
     def needs_review(self):
-        NO_REVIEW_TYPES = ["photo-upload"]
         if self.logged_action.action_type in NO_REVIEW_TYPES:
             return self.Status.NO_REVIEW_NEEDED
         return self.Status.UNDECIDED

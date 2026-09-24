@@ -14,7 +14,10 @@ from django.utils.timezone import make_aware
 from django_webtest import WebTest
 from lxml import etree
 from mock import patch
-from moderation_queue.review_required_helper import PREVIOUSLY_APPROVED_COUNT
+from moderation_queue.review_required_helper import (
+    NO_REVIEW_TYPES,
+    PREVIOUSLY_APPROVED_COUNT,
+)
 from parties.models import Party
 from people.models import Person
 from people.tests.test_version_diffs import tidy_html_whitespace
@@ -70,6 +73,39 @@ class TestFlaggedEdits(UK2015ExamplesMixin, TestUserMixin, WebTest):
         self.assertEqual(
             LoggedAction.objects.needs_review().count(),
             settings.NEEDS_REVIEW_FIRST_EDITS,
+        )
+
+    def test_no_review_types_dont_count_towards_first_edits(self):
+        example_person = people.tests.factories.PersonFactory.create(
+            id="2009", name="Tessa Jowell"
+        )
+
+        # Edits of these types never need review, so a user shouldn't be able
+        # to use them to get past having their first edits reviewed.
+        for action_type in NO_REVIEW_TYPES:
+            for i in range(settings.NEEDS_REVIEW_FIRST_EDITS + 2):
+                LoggedAction.objects.create(
+                    user=self.user,
+                    action_type=action_type,
+                    person=example_person,
+                    source="Just for tests...",
+                )
+        self.assertFalse(LoggedAction.objects.needs_review().exists())
+
+        for i in range(settings.NEEDS_REVIEW_FIRST_EDITS + 2):
+            LoggedAction.objects.create(
+                user=self.user,
+                action_type=ActionType.PERSON_UPDATE,
+                person=example_person,
+                popit_person_new_version=random_person_id(),
+                source="Just for tests...",
+            )
+
+        flagged = LoggedAction.objects.needs_review()
+        self.assertEqual(flagged.count(), settings.NEEDS_REVIEW_FIRST_EDITS)
+        self.assertEqual(
+            set(flagged.values_list("action_type", "flagged_type")),
+            {(ActionType.PERSON_UPDATE, "needs_review_due_to_first_edits")},
         )
 
     def test_needs_review_due_to_candidate_having_died(self):
