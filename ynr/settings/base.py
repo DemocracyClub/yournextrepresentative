@@ -153,6 +153,8 @@ AUTHENTICATION_BACKENDS = (
 SESAME_MAX_AGE = 60 * 60  # 1 hour
 SESAME_ONE_TIME = False
 SESAME_TOKEN_NAME = "login_token"
+# 4 weeks
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4
 
 BASIC_AUTH_ALLOWLIST = [
     "/status_check/",  # load balancer health check
