@@ -137,6 +137,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "candidates.middleware.LogoutDisabledUsersMiddleware",
+    "candidates.middleware.RollingSessionExpiryMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
@@ -152,6 +153,8 @@ AUTHENTICATION_BACKENDS = (
 SESAME_MAX_AGE = 60 * 60  # 1 hour
 SESAME_ONE_TIME = False
 SESAME_TOKEN_NAME = "login_token"
+# 4 weeks
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4
 
 BASIC_AUTH_ALLOWLIST = [
     "/status_check/",  # load balancer health check
@@ -308,7 +311,8 @@ DATABASES = {
         "USER": os.environ.get("POSTGRES_USERNAME", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", ""),
-        "CONN_MAX_AGE": 0,
+        "CONN_MAX_AGE": 0 if DEBUG else 60,
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 
