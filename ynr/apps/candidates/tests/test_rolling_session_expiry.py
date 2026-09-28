@@ -9,7 +9,7 @@ from django.utils import timezone
 
 
 class TestRollingSessionExpiryMiddleware(TestCase):
-    url = "/status_check/"
+    url = "/"
 
     def setUp(self):
         self.user = User.objects.create_user(
