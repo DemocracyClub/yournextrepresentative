@@ -13,6 +13,7 @@ from django.db import models
 from django.urls import reverse
 from django_q.tasks import async_chain
 from PIL import Image as PillowImage
+from storages.backends.s3 import S3Storage
 
 from .helpers import convert_image_to_png
 
@@ -190,14 +191,9 @@ class QueuedImage(models.Model):
 
     def detect_faces(self):
         try:
-            from storages.backends.s3 import S3Storage
-        except ImportError:
-            S3Storage = None
-
-        try:
             rekognition = boto3.client("rekognition", region_name="eu-west-1")
             storage = self.image.storage
-            if S3Storage and isinstance(storage, S3Storage):
+            if isinstance(storage, S3Storage):
                 rekognition_image = {
                     "S3Object": {
                         "Bucket": storage.bucket_name,

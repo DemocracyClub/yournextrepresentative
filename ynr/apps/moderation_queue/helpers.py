@@ -43,10 +43,7 @@ def check_png_size(photo) -> Tuple[Optional[BytesIO], int]:
 
 
 def convert_image_to_png(photo):
-    # If the photo is not already a PillowImage object
-    # coming from the form, then we need to
-    # open it as a PillowImage object before
-    # converting it to RGBA.
+    # Accept either a PillowImage or a file-like object
     if not isinstance(photo, PillowImage.Image):
         photo = PillowImage.open(photo)
 
@@ -56,7 +53,6 @@ def convert_image_to_png(photo):
     w, h = photo.size
 
     # Render at full size first; return immediately if already within the limit.
-    # Try full-size first.
     png_image, size = check_png_size(photo)
     if png_image:
         return png_image
