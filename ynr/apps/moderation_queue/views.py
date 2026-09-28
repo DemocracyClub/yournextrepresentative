@@ -1,6 +1,7 @@
 import re
+from pathlib import PurePosixPath
 from typing import Any, Dict
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import nh3
 from auth_helpers.views import GroupRequiredMixin
@@ -96,9 +97,7 @@ def upload_photo_url(request, person_id):
     except ImageDownloadException as ide:
         return HttpResponseBadRequest(str(ide).encode("utf-8"))
 
-    filename = image_url.split("/")[-1]
-    extension = filename.split(".")[-1]
-    filename = filename.replace(extension, "png")
+    filename = PurePosixPath(urlparse(image_url).path).name
     queued_image = QueuedImage(
         why_allowed=url_form.cleaned_data["why_allowed_url"],
         justification_for_use=url_form.cleaned_data[
