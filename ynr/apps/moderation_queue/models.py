@@ -3,6 +3,7 @@ import json
 import uuid
 from datetime import date
 from os.path import join, splitext
+from pathlib import PurePosixPath
 from tempfile import NamedTemporaryFile
 
 import boto3
@@ -154,11 +155,10 @@ class QueuedImage(models.Model):
     def normalise_image(self):
         pil_img = PillowImage.open(self.image.file)
         png_buffer = convert_image_to_png(pil_img)
-        filename = self.image.name
-        extension = filename.split(".")[-1]
-        filename = filename.replace(extension, "png")
-        self.image.save(filename, png_buffer, save=True)
-        sorl.thumbnail.delete(self.image.name, delete_file=False)
+        old_name = self.image.name
+        new_name = str(PurePosixPath(old_name).with_suffix(".png"))
+        self.image.save(new_name, png_buffer, save=True)
+        sorl.thumbnail.delete(old_name, delete_file=True)
 
     def _face_crop_bound(self, bound, im_size, scaling_factor):
         return max(0, bound * im_size * scaling_factor)
