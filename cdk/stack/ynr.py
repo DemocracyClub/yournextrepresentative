@@ -236,13 +236,13 @@ class YnrStack(Stack):
                     "SLACK_TOKEN",
                 )
             )
-            self.common_secrets[
-                "SLACK_SIGNING_SECRET"
-            ] = ecs.Secret.from_ssm_parameter(
-                ssm.StringParameter.from_string_parameter_name(
-                    self,
-                    "SLACK_SIGNING_SECRET",
-                    "SLACK_SIGNING_SECRET",
+            self.common_secrets["SLACK_SIGNING_SECRET"] = (
+                ecs.Secret.from_ssm_parameter(
+                    ssm.StringParameter.from_string_parameter_name(
+                        self,
+                        "SLACK_SIGNING_SECRET",
+                        "SLACK_SIGNING_SECRET",
+                    )
                 )
             )
 
