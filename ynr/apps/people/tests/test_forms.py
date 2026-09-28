@@ -7,6 +7,7 @@ from django.test import TestCase
 from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.forms import PersonMembershipForm
+from people.forms.formsets import PersonMembershipFormsetFactory
 from people.tests.factories import PersonFactory
 
 
@@ -98,4 +99,29 @@ class TestPersonMembershipForm(
         self.assertIn(
             '<option value="PP53" selected register="GB">Labour Party</option>',
             select_html,
+        )
+
+    def test_formset_rejects_two_ballots_from_same_election(self):
+        person = PersonFactory()
+        data = {
+            "memberships-TOTAL_FORMS": "2",
+            "memberships-INITIAL_FORMS": "0",
+            "memberships-MIN_NUM_FORMS": "0",
+            "memberships-MAX_NUM_FORMS": "1000",
+            "memberships-0-ballot_paper_id": (
+                self.dulwich_post_ballot.ballot_paper_id
+            ),
+            "memberships-0-party_identifier_0": "",
+            "memberships-0-party_identifier_1": self.labour_party.ec_id,
+            "memberships-1-ballot_paper_id": (
+                self.camberwell_post_ballot.ballot_paper_id
+            ),
+            "memberships-1-party_identifier_0": "",
+            "memberships-1-party_identifier_1": self.labour_party.ec_id,
+        }
+        formset = PersonMembershipFormsetFactory(data=data, instance=person)
+        self.assertFalse(formset.is_valid())
+        self.assertIn(
+            "already standing in another ballot in the same election",
+            str(formset.errors),
         )
