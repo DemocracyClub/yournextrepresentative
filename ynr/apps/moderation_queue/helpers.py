@@ -1,5 +1,4 @@
 from io import BytesIO
-from tempfile import NamedTemporaryFile
 from typing import Optional, Tuple
 
 import requests
@@ -110,34 +109,42 @@ class ImageDownloadException(Exception):
 
 
 def download_image_from_url(image_url, max_size_bytes=(50 * 2**20)):
-    """This downloads an image to a temporary file and returns the filename
+    """This downloads an image and returns it, unconverted, as a BytesIO
 
     It raises an ImageDownloadException if a GET for the URL results
     in a HTTP response with status code other than 200, or the
-    downloaded resource doesn't seem to be an image. It's the
-    responsibility of the caller to delete the image once they're
-    finished with it.  If the download exceeds max_size_bytes (default
-    50MB) then this will also throw an ImageDownloadException."""
-    with NamedTemporaryFile(delete=True) as image_ntf:
-        image_response = requests.get(image_url, stream=True)
-        if image_response.status_code != 200:
-            msg = (
-                "  Ignoring an image URL with non-200 status code "
-                "({status_code}): {url}"
-            )
-            raise ImageDownloadException(
-                msg.format(
-                    status_code=image_response.status_code, url=image_url
-                )
-            )
-        # Download no more than a megabyte at a time:
-        downloaded_so_far = 0
-        for chunk in image_response.iter_content(chunk_size=(2 * 20)):
-            downloaded_so_far += len(chunk)
-            if downloaded_so_far > max_size_bytes:
-                raise ImageDownloadException(
-                    "The image exceeded the maximum allowed size"
-                )
-            image_ntf.write(chunk)
+    downloaded resource doesn't seem to be an image. If the download
+    exceeds max_size_bytes (default 50MB) then this will also throw an
+    ImageDownloadException.
 
-        return convert_image_to_png(image_ntf.file)
+    Conversion to PNG happens later, in an async task."""
+    image_buf = BytesIO()
+    image_response = requests.get(image_url, stream=True)
+    if image_response.status_code != 200:
+        msg = (
+            "  Ignoring an image URL with non-200 status code "
+            "({status_code}): {url}"
+        )
+        raise ImageDownloadException(
+            msg.format(status_code=image_response.status_code, url=image_url)
+        )
+    # Download no more than a megabyte at a time:
+    downloaded_so_far = 0
+    for chunk in image_response.iter_content(chunk_size=(2**20)):
+        downloaded_so_far += len(chunk)
+        if downloaded_so_far > max_size_bytes:
+            raise ImageDownloadException(
+                "The image exceeded the maximum allowed size"
+            )
+        image_buf.write(chunk)
+
+    # verify() only reads enough to check the file is an image, so this is
+    # cheap. It lets us tell the user in the request/response cycle, rather
+    # than failing in the task.
+    image_buf.seek(0)
+    try:
+        PillowImage.open(image_buf).verify()
+    except (OSError, SyntaxError, PillowImage.DecompressionBombError):
+        raise ImageDownloadException("The URL didn't contain a valid image")
+    image_buf.seek(0)
+    return image_buf
