@@ -466,4 +466,15 @@ class PhotoUploadURLTests(UK2015ExamplesMixin, WebTest):
     def test_download_image_from_url_helper(self, *all_mock_requests):
         self.successful_get_image(*all_mock_requests)
         image = download_image_from_url("http://foo.com/bar.jpg")
-        self.assertEqual(PillowImage.open(image).format, "PNG")
+        # Conversion to PNG happens later, in the image processing task
+        self.assertEqual(PillowImage.open(image).format, "JPEG")
+
+    def test_download_image_from_url_rejects_non_images(
+        self, *all_mock_requests
+    ):
+        self.successful_get_image(*all_mock_requests, image_filename=__file__)
+        with self.assertRaises(ImageDownloadException) as context:
+            download_image_from_url("http://foo.com/bar.jpg")
+        self.assertEqual(
+            str(context.exception), "The URL didn't contain a valid image"
+        )
