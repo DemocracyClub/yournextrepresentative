@@ -71,8 +71,8 @@ def make_tmp_file_from_source(source):
 
 
 def make_cmyk_image():
-    ntf = NamedTemporaryFile(delete=False, suffix=".jpg")
-    Image.new("CMYK", (10, 10)).save(ntf.name, "JPEG")
+    with NamedTemporaryFile(delete=False, suffix=".jpg") as ntf:
+        Image.new("CMYK", (10, 10)).save(ntf.name, "JPEG")
     return ntf.name
 
 
