@@ -133,15 +133,20 @@ class QueuedImage(models.Model):
         return "a robot 🤖"
 
     def start_image_processing(self):
+        # Shorter than the global timeout, but still long enough to deal with
+        # larger images, hopefully.
+        timeout = 120
         async_chain(
             [
                 (
                     "moderation_queue.tasks.normalise_queued_image",
                     (self.id,),
+                    {"timeout": timeout},
                 ),
                 (
                     "moderation_queue.tasks.detect_faces_for_queued_image",
                     (self.id,),
+                    {"timeout": timeout},
                 ),
             ]
         )
