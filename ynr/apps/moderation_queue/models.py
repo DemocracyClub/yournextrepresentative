@@ -157,7 +157,10 @@ class QueuedImage(models.Model):
         png_buffer = convert_image_to_png(pil_img)
         old_name = self.image.name
         new_name = str(PurePosixPath(old_name).with_suffix(".png"))
-        self.image.save(new_name, png_buffer, save=True)
+        # Only save the fields we've changed, so we don't overwrite changes
+        # made (e.g. by a moderator) since this task loaded the object.
+        self.image.save(new_name, png_buffer, save=False)
+        self.save(update_fields=["image", "updated"])
         sorl.thumbnail.delete(old_name, delete_file=True)
 
     def _face_crop_bound(self, bound, im_size, scaling_factor):
@@ -211,7 +214,19 @@ class QueuedImage(models.Model):
         finally:
             self.face_detection_tried = True
             self.rotation_tried = True
-            self.save()
+            # As in normalise_image, only save the fields this method sets
+            self.save(
+                update_fields=[
+                    "crop_min_x",
+                    "crop_min_y",
+                    "crop_max_x",
+                    "crop_max_y",
+                    "detection_metadata",
+                    "face_detection_tried",
+                    "rotation_tried",
+                    "updated",
+                ]
+            )
 
     def crop_image(self):
         """
