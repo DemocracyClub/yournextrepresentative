@@ -214,6 +214,31 @@ class PhotoUploadImageTests(UK2015ExamplesMixin, WebTest):
         self.assertEqual(PillowImage.open(qi.image).format, "PNG")
 
     @patch("boto3.client")
+    def test_image_processing_does_not_overwrite_moderation(self, mock_boto3):
+        mock_boto3.return_value.detect_faces.return_value = {"FaceDetails": []}
+        # normalise_image deletes the original, so use a copy of it
+        with open(self.rotated_image_filename, "rb") as f:
+            image_name = FileSystemStorage().save(
+                join("queued-images", "race.jpg"), f
+            )
+        qi = QueuedImage.objects.create(
+            image=image_name, person_id=2009, why_allowed="public-domain"
+        )
+        # The tasks load the object before a moderator makes a decision
+        stale_qi = QueuedImage.objects.get(pk=qi.pk)
+        QueuedImage.objects.filter(pk=qi.pk).update(
+            decision=QueuedImage.APPROVED
+        )
+
+        stale_qi.normalise_image()
+        stale_qi.detect_faces()
+
+        qi.refresh_from_db()
+        self.assertEqual(qi.decision, QueuedImage.APPROVED)
+        self.assertTrue(qi.face_detection_tried)
+        self.assertTrue(qi.image.name.endswith(".png"))
+
+    @patch("boto3.client")
     def test_detect_faces_sets_face_detection_tried(self, mock_boto3):
         mock_boto3.return_value.detect_faces.return_value = {"FaceDetails": []}
         qi = QueuedImage.objects.create(
