@@ -1,7 +1,10 @@
+from io import StringIO
+
 from candidates.models import LoggedAction
 from candidates.models.db import ActionType
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.core.management import CommandError, call_command
 from django.test import TestCase
 from people.models import Person
 from people.tests.factories import PersonFactory
@@ -228,3 +231,100 @@ class TestPersonSplitter(TestUserMixin, UK2015ExamplesMixin, TestCase):
             f"Person {self.person.pk} will have no candidacies left",
             plan.warnings,
         )
+
+
+class TestSplitCandidacyCommand(TestUserMixin, UK2015ExamplesMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.person = PersonFactory(name="Jo Smith")
+        self.person.memberships.create(
+            ballot=self.local_ballot, party=self.green_party
+        )
+
+    def run_command(self, *args):
+        out = StringIO()
+        call_command(
+            "splitting_split_person",
+            str(self.person.pk),
+            self.local_ballot.ballot_paper_id,
+            *args,
+            stdout=out,
+        )
+        return out.getvalue()
+
+    def report(self, out):
+        """The report's header and row, as lists of cells"""
+        header, row = out.strip().split("\n")
+        return header.split("\t"), row.split("\t")
+
+    def test_dry_run_report(self):
+        header, row = self.report(self.run_command())
+        self.assertEqual(
+            header,
+            [
+                "Person URL",
+                "Person ID",
+                "Ballot",
+                "Destination person ID",
+                "Result",
+                "Notes",
+            ],
+        )
+        self.assertEqual(
+            row,
+            [
+                f"http://localhost:8080/person/{self.person.pk}/jo-smith",
+                str(self.person.pk),
+                self.local_ballot.ballot_paper_id,
+                "new",
+                "Ready to split",
+                f"Person {self.person.pk} will have no candidacies left",
+            ],
+        )
+        self.assertEqual(Person.objects.count(), 1)
+        self.assertEqual(self.person.memberships.count(), 1)
+
+    def test_commit_report_gives_new_id(self):
+        out = self.run_command("--commit", "--username", self.user.username)
+        new_person = Person.objects.exclude(pk=self.person.pk).get()
+        _, row = self.report(out)
+        self.assertEqual(row[3], f"{new_person.pk} (new)")
+        self.assertEqual(row[4], "Split")
+        self.assertEqual(new_person.memberships.count(), 1)
+        self.assertFalse(self.person.memberships.exists())
+
+    def test_existing_destination(self):
+        other = PersonFactory()
+        _, row = self.report(self.run_command("--to-person", str(other.pk)))
+        self.assertEqual(row[3], str(other.pk))
+
+    def test_no_header(self):
+        out = self.run_command("--no-header")
+        self.assertEqual(len(out.strip().split("\n")), 1)
+        self.assertNotIn("Person URL", out)
+
+    def test_details(self):
+        out = self.run_command("--details")
+        self.assertIn("to a new person called 'Jo Smith'", out)
+        self.assertIn("Ready to split", out)
+
+    def test_invalid_plan_errors(self):
+        other = PersonFactory()
+        other.memberships.create(
+            ballot=self.local_ballot, party=self.labour_party
+        )
+        out = StringIO()
+        with self.assertRaisesMessage(CommandError, "already standing"):
+            call_command(
+                "splitting_split_person",
+                str(self.person.pk),
+                self.local_ballot.ballot_paper_id,
+                "--to-person",
+                str(other.pk),
+                "--commit",
+                stdout=out,
+            )
+        _, row = self.report(out.getvalue())
+        self.assertEqual(row[4], "Can't split")
+        self.assertIn("already standing", row[5])
+        self.assertEqual(self.person.memberships.count(), 1)
