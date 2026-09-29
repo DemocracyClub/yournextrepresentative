@@ -402,7 +402,13 @@ class Person(TimeStampedModel, models.Model):
         ).select_related("person", "party", "post")
         return list(result)
 
-    def record_version(self, change_metadata, new_person=False):
+    def record_version(self, change_metadata, new_person=False, force=False):
+        """
+        Add a version of this person's current data to their history.
+
+        Versions identical to the latest one are skipped, unless `force` is
+        set: use it when a LoggedAction will point at the new version.
+        """
         # Needed because of a circular import
         from candidates.models.versions import get_person_as_version_data
 
@@ -419,7 +425,10 @@ class Person(TimeStampedModel, models.Model):
             # Don't create empty versions
             should_insert = False
 
-        if new_version["information_source"].startswith("After merging person"):
+        if (
+            new_version["information_source"].startswith("After merging person")
+            or force
+        ):
             # Always create a version if this is a merge
             should_insert = True
 
