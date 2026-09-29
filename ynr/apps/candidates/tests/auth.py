@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group, User
 from moderation_queue.models import VERY_TRUSTED_USER_GROUP_NAME
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 from people.models import TRUSTED_TO_EDIT_NAME
+from splitting.models import TRUSTED_TO_SPLIT_GROUP_NAME
 
 
 class TestUserMixin(object):
@@ -32,6 +33,7 @@ class TestUserMixin(object):
                 [RESULT_RECORDERS_GROUP_NAME],
             ),
             ("george", "user_can_edit_name", [TRUSTED_TO_EDIT_NAME]),
+            ("harriet", "user_who_can_split", [TRUSTED_TO_SPLIT_GROUP_NAME]),
         ):
             u = User.objects.create_user(
                 username, username + "@example.com", "notagoodpassword"
