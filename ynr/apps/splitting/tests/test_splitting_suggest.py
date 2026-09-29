@@ -1,4 +1,5 @@
 import copy
+from io import StringIO
 
 from candidates.models import LoggedAction, PersonRedirect
 from candidates.models.db import ActionType
@@ -6,6 +7,7 @@ from candidates.models.versions import get_versions_parent_map
 from candidates.tests.auth import TestUserMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from candidates.views.version_data import get_change_metadata
+from django.core.management import CommandError, call_command
 from django.test import TestCase
 from freezegun import freeze_time
 from people.merging import PersonMerger
@@ -507,3 +509,92 @@ class TestSuggestionOptions(SplitSuggestionMixin, TestCase):
         self.assertTrue(plan.warnings)
         self.assertEqual(new_person.memberships.count(), 1)
         self.assertFalse(Person.objects.get(pk=self.jo.pk).memberships.exists())
+
+
+class TestSuggestCommand(SplitSuggestionMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.jo = self.make_person(
+            "Jo Smith",
+            "2026-01-01",
+            [(self.dulwich_post_ballot_earlier, self.labour_party)],
+        )
+        joanne = self.make_person(
+            "Joanne Smith",
+            "2026-02-01",
+            [(self.local_ballot, self.green_party)],
+            identifiers={"email": "joanne@example.com"},
+        )
+        self.joanne_pk = joanne.pk
+        self.merge(self.jo, joanne)
+
+    def run_command(self, *args):
+        out = StringIO()
+        with on(SPLIT_DAY):
+            call_command(
+                "splitting_split_person",
+                str(self.jo.pk),
+                self.local_ballot.ballot_paper_id,
+                "--suggest",
+                *args,
+                stdout=out,
+            )
+        return out.getvalue()
+
+    def test_report_shows_restored_destination(self):
+        out = self.run_command()
+        self.assertIn(f"\t{self.joanne_pk} (restored)\tReady to split\t", out)
+        self.assertNotIn("Fields:", out)
+        self.assertFalse(Person.objects.filter(pk=self.joanne_pk).exists())
+
+    def test_details_show_the_plan(self):
+        out = self.run_command("--details")
+        self.assertIn(
+            f"Origin: merged from person {self.joanne_pk} on 2026-03-01", out
+        )
+        self.assertIn(f"Restore person {self.joanne_pk} (old ID)", out)
+        self.assertIn("Fields:", out)
+        self.assertIn("MOVE    email", out)
+        self.assertIn('"joanne@example.com"', out)
+        self.assertIn("Ready to split", out)
+
+    def test_report_flags_details_to_check(self):
+        self.jo.refresh_from_db()
+        self.jo.tmp_person_identifiers.filter(value_type="email").update(
+            value="new@example.com"
+        )
+        self.record(self.jo, "2026-04-01")
+        out = self.run_command()
+        self.assertIn("1 detail(s) need checking: run with --details", out)
+
+    def test_commit_restores_the_person(self):
+        out = self.run_command("--commit")
+        self.assertIn(f"\t{self.joanne_pk} (restored)\tSplit\t", out)
+        restored = Person.objects.get(pk=self.joanne_pk)
+        self.assertEqual(
+            restored.get_single_identifier_value("email"), "joanne@example.com"
+        )
+
+    def test_keep_field_override(self):
+        self.run_command("--keep-field", "email", "--commit")
+        restored = Person.objects.get(pk=self.joanne_pk)
+        self.assertIsNone(restored.get_single_identifier_value("email"))
+        self.jo.refresh_from_db()
+        self.assertEqual(
+            self.jo.get_single_identifier_value("email"), "joanne@example.com"
+        )
+
+    def test_unknown_field_errors(self):
+        with self.assertRaisesMessage(CommandError, "Unknown field 'bogus'"):
+            self.run_command("--keep-field", "bogus")
+
+    def test_field_options_need_suggest(self):
+        with self.assertRaisesMessage(CommandError, "needs suggestions"):
+            call_command(
+                "splitting_split_person",
+                str(self.jo.pk),
+                self.local_ballot.ballot_paper_id,
+                "--move-field",
+                "email",
+                stdout=StringIO(),
+            )
