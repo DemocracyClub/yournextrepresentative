@@ -1,0 +1,189 @@
+// The page for splitting a candidacy off a person (splitting/split_person.html)
+
+.person-split {
+  max-width: rem-calc(960);
+
+  fieldset {
+    margin: 0 0 rem-calc(24);
+  }
+
+  // Ballot paper IDs are long and have few break points
+  .split-ballots label,
+  .split-table td {
+    overflow-wrap: anywhere;
+  }
+
+  // Keep wrapped label text aligned with the text, not under the radio
+  .split-ballots label {
+    display: flex;
+    align-items: baseline;
+    gap: rem-calc(8);
+    margin-bottom: rem-calc(8);
+    line-height: 1.4;
+
+    input {
+      flex-shrink: 0;
+      margin: 0;
+    }
+  }
+
+  .split-destination {
+    margin-bottom: rem-calc(24);
+
+    input {
+      max-width: rem-calc(320);
+      margin-bottom: rem-calc(4);
+    }
+  }
+
+  .split-hint {
+    color: $footer-text-color;
+    font-size: rem-calc(14);
+    max-width: rem-calc(640);
+    margin-bottom: 0;
+  }
+
+  .split-preview {
+    margin-bottom: rem-calc(24);
+
+    h2 {
+      margin-top: 0;
+    }
+  }
+
+  // Wide tables scroll inside themselves rather than widening the page
+  .split-table-wrap {
+    overflow-x: auto;
+    margin-bottom: rem-calc(16);
+
+    table {
+      margin-bottom: 0;
+    }
+  }
+
+  .split-fields {
+    width: 100%;
+    min-width: rem-calc(720);
+
+    td,
+    tbody th {
+      vertical-align: top;
+      text-align: left;
+    }
+
+    select {
+      margin-bottom: 0;
+      min-width: rem-calc(160);
+    }
+  }
+
+  // On small screens, each detail becomes a stacked block with its own
+  // labels, rather than a table that has to scroll sideways
+  @media #{$small-only} {
+    .split-fields {
+      min-width: 0;
+
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      tr,
+      tbody th,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      tr {
+        border-top: 1px solid $message-border-color;
+        padding: rem-calc(8 0);
+      }
+
+      tbody th {
+        font-size: rem-calc(18);
+        padding-bottom: rem-calc(4);
+      }
+
+      td {
+        padding-top: rem-calc(4);
+        padding-bottom: rem-calc(4);
+
+        &::before {
+          content: attr(data-label);
+          display: block;
+          font-weight: bold;
+          font-size: rem-calc(13);
+          color: $footer-text-color;
+        }
+      }
+
+      select {
+        width: 100%;
+      }
+    }
+  }
+
+  .split-unchanged {
+    color: $footer-text-color;
+    font-size: rem-calc(14);
+  }
+
+  .split-message {
+    border: 1px solid;
+    border-radius: 3px;
+    padding: rem-calc(12 16);
+    margin-bottom: rem-calc(16);
+
+    ul {
+      margin-bottom: 0;
+    }
+
+    li + li {
+      margin-top: rem-calc(4);
+    }
+
+    label {
+      margin: rem-calc(12) 0 0;
+      font-weight: bold;
+    }
+  }
+
+  .split-message--error {
+    background: $error-background-color;
+    border-color: $error-border-color;
+    color: $error-text-color;
+  }
+
+  .split-message--warning {
+    background: $message-background-color;
+    border-color: $message-border-color;
+  }
+
+  .split-details {
+    margin: 0 0 rem-calc(24);
+
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    h3 {
+      font-size: rem-calc(20);
+      margin-top: rem-calc(20);
+    }
+
+    .split-cutoff input {
+      max-width: rem-calc(120);
+    }
+  }
+
+  .split-actions {
+    .button {
+      margin-right: rem-calc(8);
+    }
+  }
+}
