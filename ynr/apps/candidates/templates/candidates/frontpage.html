@@ -91,6 +91,10 @@
                   User <strong>{{ username }}</strong>
                   merged another candidate into <a href="{{ person_url }}">{{ person_name }}</a>
                   <span class="when">{{ when }} ago</span>
+                {% elif action.action_type == 'person-split' %}
+                  User <strong>{{ username }}</strong>
+                  split a candidacy off <a href="{{ person_url }}">{{ person_name }}</a>
+                  <span class="when">{{ when }} ago</span>
                 {% elif action.action_type == 'photo-upload' %}
                   User <strong>{{ username }}</strong>
                   uploaded a photo of <a href="{{ person_url }}">{{ person_name }}</a> for moderation
