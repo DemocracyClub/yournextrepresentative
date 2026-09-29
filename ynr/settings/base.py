@@ -140,6 +140,7 @@ MIDDLEWARE = [
     "candidates.middleware.RollingSessionExpiryMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "candidates.middleware.ApiAnonymousCacheMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
     "ynr_refactoring.middleware.BasicAuthMiddleware",
