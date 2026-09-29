@@ -122,6 +122,7 @@ INSTALLED_APPS = [
     "facebook_data",
     "search",
     "duplicates",
+    "splitting",
     "data_exports",
     "django_svelte",
     "hcaptcha",
