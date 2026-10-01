@@ -44,6 +44,7 @@ class ApiAnonymousCacheMiddleware:
     API_PATH_PREFIX = "/api/"
     # 1 hour, plus a day where a stale response can be served while revalidating
     ANON_CACHE_CONTROL = "max-age=3600, stale-while-revalidate=86400"
+    SAFE_METHODS = ("GET", "HEAD")
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -53,7 +54,8 @@ class ApiAnonymousCacheMiddleware:
 
     def process_response(self, request, response):
         if (
-            request.path.startswith(self.API_PATH_PREFIX)
+            request.method in self.SAFE_METHODS
+            and request.path.startswith(self.API_PATH_PREFIX)
             and "Cache-Control" not in response
             and "auth_token" not in request.GET
             and "HTTP_AUTHORIZATION" not in request.META
