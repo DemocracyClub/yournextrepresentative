@@ -32,6 +32,38 @@ class DisableCachingForAuthenticatedUsers:
         return response
 
 
+class ApiAnonymousCacheMiddleware:
+    """
+    Adds a long-lived, stale-while-revalidate Cache-Control header to /api/
+    responses that have neither an auth_token query param nor an
+    Authorization header, and that don't already set their own
+    Cache-Control (e.g. via a view's @cache_control decorator, or
+    DisableCachingForAuthenticatedUsers for session-authenticated requests).
+    """
+
+    API_PATH_PREFIX = "/api/"
+    # 1 hour, plus a day where a stale response can be served while revalidating
+    ANON_CACHE_CONTROL = "max-age=3600, stale-while-revalidate=86400"
+    SAFE_METHODS = ("GET", "HEAD")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.process_response(request, self.get_response(request))
+
+    def process_response(self, request, response):
+        if (
+            request.method in self.SAFE_METHODS
+            and request.path.startswith(self.API_PATH_PREFIX)
+            and "Cache-Control" not in response
+            and "auth_token" not in request.GET
+            and "HTTP_AUTHORIZATION" not in request.META
+        ):
+            response["Cache-Control"] = self.ANON_CACHE_CONTROL
+        return response
+
+
 class LogoutDisabledUsersMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
