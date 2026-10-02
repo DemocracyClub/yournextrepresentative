@@ -122,6 +122,7 @@ INSTALLED_APPS = [
     "facebook_data",
     "search",
     "duplicates",
+    "splitting",
     "data_exports",
     "django_svelte",
     "hcaptcha",
@@ -293,6 +294,9 @@ PIPELINE = {
 
 SASS_INCLUDE_PATHS = (
     os.path.abspath(os.path.join(BASE_DIR, "vendor_assets/scss")),
+    # Lets the main stylesheet import partials from other apps, which need
+    # its variables and Foundation mixins, e.g. "splitting/split"
+    os.path.abspath(os.path.join(BASE_DIR, "ynr/apps/splitting/static")),
 )
 SASS_ARGUMENT_LIST = ["-I " + p for p in SASS_INCLUDE_PATHS]
 SASS_ARGUMENT_LIST.append("--style compressed")
