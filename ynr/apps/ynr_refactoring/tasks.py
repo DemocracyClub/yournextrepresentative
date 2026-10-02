@@ -22,15 +22,6 @@ def uk_create_elections_from_every_election_recently_updated():
 
 
 @register_task(
-    name="Process images in moderation queue",
-    schedule_type=Schedule.CRON,
-    cron="1-59/5 * * * *",
-)
-def moderation_queue_process_queued_images():
-    call_command("moderation_queue_process_queued_images")
-
-
-@register_task(
     name="Parse raw data from SOPNs",
     schedule_type=Schedule.CRON,
     cron="2-59/5 * * * *",
