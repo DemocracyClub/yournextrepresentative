@@ -73,6 +73,8 @@ services:
   dbpsql:
     image: public.ecr.aws/docker/library/postgres:16.4
     pull_policy: missing
+    # Give postgres more memory
+    shm_size: 1g
     environment:
       POSTGRES_DB: ynr
       POSTGRES_USER: ynr
