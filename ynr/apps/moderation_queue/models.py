@@ -1,13 +1,21 @@
 import ast
+import json
 import uuid
 from datetime import date
 from os.path import join, splitext
+from pathlib import PurePosixPath
 from tempfile import NamedTemporaryFile
 
+import boto3
+import sorl.thumbnail
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django_q.tasks import async_chain
 from PIL import Image as PillowImage
+from storages.backends.s3 import S3Storage
+
+from .helpers import convert_image_to_png
 
 PHOTO_REVIEWERS_GROUP_NAME = "Photo Reviewers"
 VERY_TRUSTED_USER_GROUP_NAME = "Very Trusted User"
@@ -125,6 +133,96 @@ class QueuedImage(models.Model):
         if self.user:
             return self.user.username
         return "a robot 🤖"
+
+    def start_image_processing(self):
+        # Shorter than the global timeout, but still long enough to deal with
+        # larger images, hopefully.
+        timeout = 120
+        async_chain(
+            [
+                (
+                    "moderation_queue.tasks.normalise_queued_image",
+                    (self.id,),
+                    {"timeout": timeout},
+                ),
+                (
+                    "moderation_queue.tasks.detect_faces_for_queued_image",
+                    (self.id,),
+                    {"timeout": timeout},
+                ),
+            ]
+        )
+
+    def normalise_image(self):
+        pil_img = PillowImage.open(self.image.file)
+        png_buffer = convert_image_to_png(pil_img)
+        old_name = self.image.name
+        new_name = str(PurePosixPath(old_name).with_suffix(".png"))
+        # Only save the fields we've changed, so we don't overwrite changes
+        # made (e.g. by a moderator) since this task loaded the object.
+        self.image.save(new_name, png_buffer, save=False)
+        self.save(update_fields=["image", "updated"])
+        sorl.thumbnail.delete(old_name, delete_file=True)
+
+    def _face_crop_bound(self, bound, im_size, scaling_factor):
+        return max(0, bound * im_size * scaling_factor)
+
+    def _apply_face_detection(self, detected):
+        if not (detected and detected.get("FaceDetails")):
+            return
+        # AWS crops faces tightly by default. these scaling factors give a
+        # slightly wider crop that includes more context around the face.
+        MIN_SCALING_FACTOR = 0.7
+        MAX_SCALING_FACTOR = 1.3
+        bb = detected["FaceDetails"][0]["BoundingBox"]
+        self.crop_min_x = self._face_crop_bound(
+            bb["Left"], self.image.width, MIN_SCALING_FACTOR
+        )
+        self.crop_min_y = self._face_crop_bound(
+            bb["Top"], self.image.height, MIN_SCALING_FACTOR
+        )
+        self.crop_max_x = self._face_crop_bound(
+            bb["Width"], self.image.width, MAX_SCALING_FACTOR
+        )
+        self.crop_max_y = self._face_crop_bound(
+            bb["Height"], self.image.height, MAX_SCALING_FACTOR
+        )
+        self.detection_metadata = json.dumps(detected, indent=4)
+
+    def detect_faces(self):
+        try:
+            rekognition = boto3.client("rekognition", region_name="eu-west-1")
+            storage = self.image.storage
+            if isinstance(storage, S3Storage):
+                rekognition_image = {
+                    "S3Object": {
+                        "Bucket": storage.bucket_name,
+                        "Name": storage._normalize_name(self.image.name),
+                    }
+                }
+            else:
+                with self.image.open("rb") as f:
+                    rekognition_image = {"Bytes": f.read()}
+            detected = rekognition.detect_faces(
+                Image=rekognition_image, Attributes=["ALL"]
+            )
+            self._apply_face_detection(detected)
+        finally:
+            self.face_detection_tried = True
+            self.rotation_tried = True
+            # As in normalise_image, only save the fields this method sets
+            self.save(
+                update_fields=[
+                    "crop_min_x",
+                    "crop_min_y",
+                    "crop_max_x",
+                    "crop_max_y",
+                    "detection_metadata",
+                    "face_detection_tried",
+                    "rotation_tried",
+                    "updated",
+                ]
+            )
 
     def crop_image(self):
         """
