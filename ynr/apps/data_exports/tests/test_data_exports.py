@@ -32,7 +32,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
     def test_csv_simple_memberships(self):
         self.assertFalse(CSVDownloadLog.objects.exists())
         req = self.client.get(csv_url({}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         self.assertEqual(
             csv_data.fieldnames,
             get_core_fieldnames(),
@@ -41,14 +41,14 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
 
     def test_extra_fields_show_in_export(self):
         req = self.client.get(csv_url({"extra_fields": "votes_cast"}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         self.assertTrue(
             "votes_cast" in csv_data.fieldnames,
         )
 
     def test_random_header_cant_be_added(self):
         req = self.client.get(csv_url({"extra_fields": "made_up"}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         self.assertFalse(
             "made_up" in csv_data.fieldnames,
         )
@@ -60,7 +60,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         MaterializedMemberships.refresh_view()
 
         req = self.client.get(csv_url({}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         expected_person_id = Person.objects.all().first().pk
         self.assertDictEqual(
             next(csv_data),
@@ -121,7 +121,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         MaterializedMemberships.refresh_view()
 
         req = self.client.get(csv_url({}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         headers = list(next(csv_data).keys())
         self.assertListEqual(
             headers,
@@ -141,7 +141,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         )
 
         req = self.client.get(csv_url({"field_group": "results"}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         headers = list(next(csv_data).keys())
         self.assertListEqual(
             headers,
@@ -184,7 +184,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 }
             )
         )
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         headers = list(next(csv_data).keys())
         self.assertListEqual(
             headers,
@@ -217,7 +217,7 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         MaterializedMemberships.refresh_view()
 
         req = self.client.get(csv_url({"field_group": "person"}))
-        csv_data = csv_to_dicts(req.content)
+        csv_data = csv_to_dicts(req.getvalue())
         headers = list(next(csv_data).keys())
         self.maxDiff = None
         self.assertListEqual(

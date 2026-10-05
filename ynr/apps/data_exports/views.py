@@ -4,7 +4,11 @@ from urllib.parse import urlencode
 
 from cached_counts.models import ElectionReport
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    StreamingHttpResponse,
+)
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import View
@@ -118,18 +122,14 @@ class DataExportView(DataFilterMixin, View):
             "Content-Disposition": f'attachment; filename="dc-candidates-{file_str}-{date_str}.csv"'
         }
 
-        response = HttpResponse(
-            content_type=content_type,
-            headers=headers,
-        )
-        context["objects"].write_csv(
-            response, extra_fields=context["extra_fields"]
-        )
-
         user = request.user if request.user.is_authenticated else None
         CSVDownloadLog.objects.create(user=user, query_params=request.GET)
 
-        return response
+        return StreamingHttpResponse(
+            context["objects"].iter_csv(extra_fields=context["extra_fields"]),
+            content_type=content_type,
+            headers=headers,
+        )
 
 
 class DataShortcutView(TemplateView):

@@ -1,4 +1,4 @@
-from typing import List, Optional, TextIO
+from typing import Iterator, List, Optional
 
 from data_exports.csv_fields import csv_fields, get_core_fieldnames
 from django.db import connection, models, transaction
@@ -51,7 +51,7 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
         self._fieldnames(extra_fields)
         return self._with_fields(extra_fields)
 
-    def write_csv(self, file_like: TextIO, extra_fields: Optional[List] = None):
+    def iter_csv(self, extra_fields: Optional[List] = None) -> Iterator[bytes]:
         """
         Asks Postgres to make a CSV for us, rather than using Django/Python to do it.
 
@@ -79,7 +79,11 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
            order. To ensure the orders can be controlled we wrap the ORM query in an outer
            query that selects the fields in the same order as the selected fields.
 
-        :param file_like: a file-like object that copy_expert can write to
+        This is a generator that yields the CSV in the chunks Postgres sends
+        them, so that it can be passed to a StreamingHttpResponse without
+        holding the whole CSV in memory. The cursor is held open until the
+        generator is exhausted or closed.
+
         :param extra_fields: exrta headers defined in `csv_fields` to add to the CSV
             (core headers always included)
 
@@ -96,7 +100,7 @@ class MaterializedMembershipsQuerySet(models.QuerySet):
             sql = cur.mogrify(sql, params)
             with cur.copy(sql) as copy:
                 for row in copy:
-                    file_like.write(row)
+                    yield row
 
     def percentage_for_fields(self):
         identifier_fields = sorted(pi.name for pi in PersonIdentifierFields)
