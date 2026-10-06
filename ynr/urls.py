@@ -14,6 +14,8 @@ urlpatterns = [
     re_path(r"^", include("elections.urls")),
     re_path(r"", include("facebook_data.urls")),
     re_path(r"^", include("candidates.urls")),
+    # Before people.urls, whose person page URL matches /person/<id>/<anything>
+    re_path(r"^", include("splitting.urls")),
     re_path(r"^", include("people.urls")),
     re_path(r"^", include("search.urls")),
     re_path(r"^admin/doc/", include("django.contrib.admindocs.urls")),
