@@ -191,9 +191,11 @@ class QueuedImage(models.Model):
 
     def detect_faces(self):
         try:
-            rekognition = boto3.client("rekognition", region_name="eu-west-1")
             storage = self.image.storage
             if isinstance(storage, S3Storage):
+                # Rekognition can only read S3 objects from a bucket in the
+                # same region as the Rekognition endpoint
+                region_name = storage.region_name
                 rekognition_image = {
                     "S3Object": {
                         "Bucket": storage.bucket_name,
@@ -201,8 +203,10 @@ class QueuedImage(models.Model):
                     }
                 }
             else:
+                region_name = "eu-west-1"
                 with self.image.open("rb") as f:
                     rekognition_image = {"Bytes": f.read()}
+            rekognition = boto3.client("rekognition", region_name=region_name)
             detected = rekognition.detect_faces(
                 Image=rekognition_image, Attributes=["ALL"]
             )
