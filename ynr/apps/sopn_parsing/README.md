@@ -61,7 +61,7 @@ will import data such as ballots from the live site that the other commands are
 reliant on
 - Then run `make download-sopns` which will download the SOPN pdf's and use them
 to create `OfficialDocument` objects that can then be used to test against. This
-command is seperated from `test-sopns` so that we can test the SOPN parsing
+command is separated from `test-sopns` so that we can test the SOPN parsing
 without making repeated unnecessary calls to the YNR api.
 - When this is completed you can now use the `make test-sopns` command.
 
@@ -76,13 +76,13 @@ returned if the number we have been able to parse has gone down.
 
 To download SOPN's for a specific election, open the Makefile and in the
 `download-sopns` command add the election slugs to the `--election-slugs=`
-argument as a comma seperated list e.g.
+argument as a comma separated list e.g.
 `--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`.
 Remember not to commit these changes in the Makefile.
 
 To run the `make test-sopns` command for a specific Election, open the Makefile
 and in the `test-sopns` command add the election slugs to the `--election-slugs=`
-argument as a comma seperated list e.g.
+argument as a comma separated list e.g.
 `--election-slugs=local.sheffield.2021-05-06,local.derbyshire.2021-05-06`.
 Remember not to commit these changes in the Makefile.
 
