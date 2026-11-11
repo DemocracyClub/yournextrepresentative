@@ -132,11 +132,6 @@ urlpatterns = [
     ),
     re_path(r"^version.json", v09views.VersionView.as_view(), name="version"),
     re_path(
-        r"^upcoming-elections",
-        v09views.UpcomingElectionsView.as_view(),
-        name="upcoming-elections",
-    ),
-    re_path(
         "api/slack-hooks",
         slack_hooks.SlackHookRouter.as_view(),
         name="slack-hooks",

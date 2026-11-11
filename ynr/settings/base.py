@@ -411,7 +411,7 @@ REST_FRAMEWORK = {
 
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r"^/(api|upcoming-elections)/.*$"
+CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOW_METHODS = ("GET", "OPTIONS")
 
 # TODO Delete this once election specific import are gone

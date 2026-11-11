@@ -54,20 +54,6 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
 
-    def test_empty_results(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
-        response = self.app.get("/upcoming-elections/?postcode=SW1A+1AA")
-
-        output = response.json
-        self.assertEqual(output, [])
-
-    def test_results_for_past_elections(self, mock_requests):
-        mock_requests.get.side_effect = fake_requests_for_every_election
-        response = self.app.get("/upcoming-elections/?postcode=SE24+0AG")
-
-        output = response.json
-        self.assertEqual(output, [])
-
     def _setup_data(self):
         one_day = timedelta(days=1)
         self.future_date = date.today() + one_day
@@ -98,36 +84,6 @@ class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
             slug="london",
             label="Assembly Member",
         )
-
-    def test_results_for_upcoming_elections(self, mock_requests):
-        self._setup_data()
-
-        mock_requests.get.side_effect = fake_requests_for_every_election
-        response = self.app.get("/upcoming-elections/?postcode=SE24+0AG")
-        output = response.json
-        self.assertEqual(len(output), 2)
-
-        self.maxDiff = None
-        expected = [
-            {
-                "organization": "London Assembly",
-                "election_date": str(self.future_date.isoformat()),
-                "election_id": "gla.c.2016-05-05",
-                "election_name": "2016 London Assembly Election (Constituencies)",
-                "post_name": "Assembly Member for Lambeth and Southwark",
-                "post_slug": "lambeth-and-southwark",
-            },
-            {
-                "organization": "London Assembly",
-                "election_date": str(self.future_date.isoformat()),
-                "election_id": "gla.a.2016-05-05",
-                "election_name": "2016 London Assembly Election (Additional)",
-                "post_name": "Assembly Member",
-                "post_slug": "london",
-            },
-        ]
-
-        self.assertEqual(expected, output)
 
     def test_results_for_candidates_for_postcode(self, mock_requests):
         self._setup_data()
