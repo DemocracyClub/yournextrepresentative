@@ -7,12 +7,13 @@ from django_webtest import WebTest
 class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
+        self.app.set_user(self.user)
 
     def test_docs_html(self):
         """
         Check that the API docs are being rendered as Markdown
         """
-        resp = self.app.get(reverse("api-home"))
+        resp = self.app.get(reverse("api-home"), user=None)
         self.assertContains(resp, "<h3>Usage terms</h3>")
 
     def test_each_endpoint(self):

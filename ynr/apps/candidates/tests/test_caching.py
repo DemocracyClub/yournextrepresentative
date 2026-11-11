@@ -57,8 +57,8 @@ class TestCaching(TestUserMixin, UK2015ExamplesMixin, WebTest):
             self.edinburgh_east_post.slug
         )
         with_slash = without_slash + "/"
-        response = self.app.get(without_slash)
+        response = self.app.get(without_slash, user=self.user)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response.location, with_slash)
-        response = self.app.get(with_slash)
+        response = self.app.get(with_slash, user=self.user)
         self.assertEqual(response.status_code, 200)

@@ -16,19 +16,22 @@ Found our data useful and want to support our work? Please consider contributing
 
 ### Authentication
 
-The API has a rate limit of 10 requests per minute for unauthenticated users.
+The API requires authentication. Requests without valid credentials receive a `401` response.
+
 {% if request.user.is_authenticated %}
-    To authenticate, pass your token in with `auth_token={{ request.user.auth_token.key }}`.
+To authenticate, pass your token in with `auth_token={{ request.user.auth_token.key }}`.
 
-    Alternatively pass in the authorization header:
+Alternatively pass in the authorization header:
 
-    `curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
+`curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
 
+While you are logged in to this site you can also browse the API in your web browser.
 {% else %}
-    To authenticate, simply create and account, and you will be given a token on your profile page.
+To authenticate, create an account, and you will be given a token on your profile page.
 
-    Pass this token in with `auth_token=[token]`.
+Pass this token in with `auth_token=[token]`, or in an `Authorization: Token [token]` header.
 
+If you are logged in to this site you can also browse the API in your web browser.
 {% endif %}
 
 

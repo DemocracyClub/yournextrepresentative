@@ -68,6 +68,103 @@ def _chunk(lst, size):
     return [lst[i : i + size] for i in range(0, len(lst), size)]
 
 
+PROTECTED_API_PREFIXES = ["/api/next/", "/api/v0.9/"]
+
+
+def _no_transform():
+    return [wafv2.CfnWebACL.TextTransformationProperty(priority=0, type="NONE")]
+
+
+def _require_api_credentials_rule(priority):
+    """
+    Block requests to the protected API prefixes unless they carry some
+    credentials. This only checks that credentials are present, not that they
+    are valid; Django does the real check.
+    """
+    Statement = wafv2.CfnWebACL.StatementProperty
+    FieldToMatch = wafv2.CfnWebACL.FieldToMatchProperty
+
+    def _path_starts_with(prefix):
+        return Statement(
+            byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                search_string=prefix,
+                field_to_match=FieldToMatch(uri_path={}),
+                text_transformations=_no_transform(),
+                positional_constraint="STARTS_WITH",
+            )
+        )
+
+    def _is_non_empty(field_to_match):
+        return Statement(
+            size_constraint_statement=wafv2.CfnWebACL.SizeConstraintStatementProperty(
+                comparison_operator="GT",
+                size=0,
+                field_to_match=field_to_match,
+                text_transformations=_no_transform(),
+            )
+        )
+
+    has_credentials = Statement(
+        or_statement=wafv2.CfnWebACL.OrStatementProperty(
+            statements=[
+                # WAF requires single_query_argument names to be lowercase
+                _is_non_empty(
+                    FieldToMatch(single_query_argument={"Name": "auth_token"})
+                ),
+                _is_non_empty(
+                    FieldToMatch(single_header={"Name": "authorization"})
+                ),
+                Statement(
+                    byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                        search_string="sessionid=",
+                        field_to_match=FieldToMatch(
+                            single_header={"Name": "cookie"}
+                        ),
+                        text_transformations=_no_transform(),
+                        positional_constraint="CONTAINS",
+                    )
+                ),
+            ]
+        )
+    )
+
+    return wafv2.CfnWebACL.RuleProperty(
+        name="RequireApiCredentials",
+        priority=priority,
+        action=wafv2.CfnWebACL.RuleActionProperty(
+            block=wafv2.CfnWebACL.BlockActionProperty(
+                custom_response=wafv2.CfnWebACL.CustomResponseProperty(
+                    response_code=401,
+                )
+            )
+        ),
+        statement=Statement(
+            and_statement=wafv2.CfnWebACL.AndStatementProperty(
+                statements=[
+                    Statement(
+                        or_statement=wafv2.CfnWebACL.OrStatementProperty(
+                            statements=[
+                                _path_starts_with(prefix)
+                                for prefix in PROTECTED_API_PREFIXES
+                            ]
+                        )
+                    ),
+                    Statement(
+                        not_statement=wafv2.CfnWebACL.NotStatementProperty(
+                            statement=has_credentials
+                        )
+                    ),
+                ]
+            )
+        ),
+        visibility_config=wafv2.CfnWebACL.VisibilityConfigProperty(
+            cloud_watch_metrics_enabled=True,
+            metric_name="RequireApiCredentials",
+            sampled_requests_enabled=True,
+        ),
+    )
+
+
 class WafStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
@@ -168,6 +265,7 @@ class WafStack(Stack):
                         sampled_requests_enabled=True,
                     ),
                 ),
+                _require_api_credentials_rule(priority=10),
                 wafv2.CfnWebACL.RuleProperty(
                     name="AWSCommonRuleSet",
                     priority=100,
