@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from urllib.parse import urljoin
 
+from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import (
     ElectionFactory,
     MembershipFactory,
@@ -50,9 +51,10 @@ def fake_requests_for_every_election(url, *args, **kwargs):
 
 
 @patch("elections.uk.geo_helpers.requests")
-class TestUpcomingElectionsAPI(UK2015ExamplesMixin, WebTest):
+class TestUpcomingElectionsAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def setUp(self):
         super().setUp()
+        self.app.set_user(self.user)
 
     def _setup_data(self):
         one_day = timedelta(days=1)
