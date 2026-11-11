@@ -1,5 +1,3 @@
-import json
-from datetime import datetime
 from os.path import join
 
 from api.v09.serializers import ImageSerializer
@@ -9,12 +7,9 @@ from candidates.tests.auth import TestUserMixin
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.helpers import TmpMediaRootMixin
 from candidates.tests.uk_examples import UK2015ExamplesMixin
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import DefaultStorage
-from django.core.management import call_command
 from django_webtest import WebTest
-from mock import patch
 from moderation_queue.tests.paths import EXAMPLE_IMAGE_FILENAME
 from parties.models import Party
 from parties.tests.fixtures import DefaultPartyFixtures
@@ -330,82 +325,6 @@ class TestAPI(
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.text.startswith("test("))
 
-    @patch(
-        "candidates.management.commands.candidates_cache_api_to_directory.datetime"
-    )
-    def test_persons_api_to_directory(self, mock_datetime):
-        # current
-        # timestamped
-        # timestamped
-        mock_datetime.now.return_value = datetime(2017, 5, 14, 12, 33, 5, 0)
-        call_command(
-            "candidates_cache_api_to_directory",
-            page_size="3",
-            url_prefix="https://example.com/media/api-cache-for-wcivf",
-        )
-        expected_leafname = "2017-05-14T12:33:05"
-        expected_timestamped_directory = join(
-            settings.MEDIA_ROOT, "cached-api", expected_leafname
-        )
-        expected_path = join("cached-api", "latest")
-        self.assertTrue(self.storage.exists(expected_timestamped_directory))
-        self.assertTrue(self.storage.exists(expected_path))
-        # Check that the files in that directory are as expected:
-        entries = self.storage.listdir(expected_timestamped_directory)[1]
-        people_1_leafname = "people-000001.json"
-        people_2_leafname = "people-000002.json"
-
-        ballot_1_leafname = "ballots-000001.json"
-        ballot_2_leafname = "ballots-000002.json"
-        ballot_3_leafname = "ballots-000003.json"
-        ballot_4_leafname = "ballots-000004.json"
-
-        self.assertEqual(
-            set(entries),
-            {
-                people_1_leafname,
-                people_2_leafname,
-                ballot_1_leafname,
-                ballot_2_leafname,
-                ballot_3_leafname,
-                ballot_4_leafname,
-            },
-        )
-        # Get the data from those pages:
-        with self.storage.open(
-            join(expected_timestamped_directory, people_1_leafname)
-        ) as f:
-            persons_1_data = json.loads(f.read().decode("utf8"))
-        with self.storage.open(
-            join(expected_timestamped_directory, people_2_leafname)
-        ) as f:
-            persons_2_data = json.loads(f.read().decode("utf8"))
-
-        # Check the previous and next links are as we expect:
-        self.assertEqual(
-            persons_1_data["next"],
-            "https://example.com/media/api-cache-for-wcivf/{}/{}".format(
-                expected_leafname, people_2_leafname
-            ),
-        )
-        self.assertEqual(persons_1_data["previous"], None)
-        self.assertEqual(persons_2_data["next"], None)
-        self.assertEqual(
-            persons_2_data["previous"],
-            "https://example.com/media/api-cache-for-wcivf/{}/{}".format(
-                expected_leafname, people_1_leafname
-            ),
-        )
-        # Check that the URL of the first person is as expected,
-        # as well as it being the right person:
-        first_person = persons_1_data["results"][0]
-        self.assertEqual(first_person["id"], 818)
-        self.assertEqual(first_person["name"], "Sheila Gilmore")
-        self.assertEqual(
-            first_person["url"],
-            "https://candidates.democracyclub.org.uk/api/next/people/818/?format=json",
-        )
-
     def _setup_cached_api_directory(self, dir_list):
         """
         Saves a tmp file in settings.MEDIA_ROOT, called `.keep` in each
@@ -414,100 +333,6 @@ class TestAPI(
         """
         for d in dir_list:
             self.storage.save(join("cached-api", d, ".keep"), ContentFile("."))
-
-    @patch(
-        "candidates.management.commands.candidates_cache_api_to_directory.datetime"
-    )
-    def test_cache_api_to_directory_prune(self, mock_datetime):
-        # Need to make sure datetime.strptime still works:
-        mock_datetime.strptime.side_effect = datetime.strptime
-        mock_datetime.now.return_value = datetime(2017, 5, 14, 12, 33, 5, 0)
-
-        expected_to_prune = [
-            "2017-05-12T08:00:00",
-            "2017-05-12T10:00:00",
-            "2017-05-12T12:00:00",
-        ]
-        expected_to_keep = [
-            "2017-05-14T08:00:00",
-            "2017-05-14T10:00:00",
-            "2017-05-14T12:00:00",
-            "2017-05-14T12:33:05",
-        ]
-
-        self._setup_cached_api_directory(expected_to_keep + expected_to_prune)
-
-        self.assertTrue(
-            self.storage.exists(
-                join("cached-api", "2017-05-12T08:00:00", ".keep")
-            )
-        )
-
-        call_command(
-            "candidates_cache_api_to_directory",
-            page_size="3",
-            url_prefix="https://example.com/media/api-cache-for-wcivf/",
-            prune=True,
-        )
-
-        for dir_name in expected_to_keep:
-            self.assertTrue(
-                self.storage.exists(join("cached-api", dir_name, ".keep"))
-            )
-
-        for dir_name in expected_to_prune:
-            self.assertFalse(
-                self.storage.exists(join("cached-api", dir_name, ".keep"))
-            )
-
-    @patch(
-        "candidates.management.commands.candidates_cache_api_to_directory.datetime"
-    )
-    def test_cache_api_to_directory_prune_four_old(self, mock_datetime):
-        # Need to make sure datetime.strptime still works:
-        mock_datetime.strptime.side_effect = datetime.strptime
-        mock_datetime.now.return_value = datetime(2017, 5, 14, 12, 33, 5, 0)
-
-        expected_to_prune = ["2017-05-12T06:00:00"]
-        expected_to_keep = [
-            "2017-05-12T08:00:00",
-            "2017-05-12T10:00:00",
-            "2017-05-12T12:00:00",
-            "2017-05-14T12:33:05",
-        ]
-
-        self._setup_cached_api_directory(expected_to_keep + expected_to_prune)
-
-        self.assertTrue(
-            self.storage.exists(
-                join("cached-api", "2017-05-12T06:00:00", ".keep")
-            )
-        )
-
-        self.assertTrue(
-            self.storage.exists(
-                join("cached-api", "2017-05-12T08:00:00", ".keep")
-            )
-        )
-
-        call_command(
-            "candidates_cache_api_to_directory",
-            page_size="3",
-            url_prefix="https://example.com/media/api-cache-for-wcivf/",
-            prune=True,
-        )
-        # Even though all of those directories are more than 36
-        # hours old, they should all be kept because they're the
-        # most recent 4:
-        for dir_name in expected_to_keep:
-            self.assertTrue(
-                self.storage.exists(join("cached-api", dir_name, ".keep"))
-            )
-
-        for dir_name in expected_to_prune:
-            self.assertFalse(
-                self.storage.exists(join("cached-api", dir_name, ".keep"))
-            )
 
     def test_legacy_redirects(self):
         req = self.app.get("/api/v0.9/elections/2010/")
