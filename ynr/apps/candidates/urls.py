@@ -7,10 +7,6 @@ from django.views.generic.base import RedirectView
 from .feeds import NeedsReviewFeed, RecentChangesFeed
 
 urlpatterns = [
-    re_path(
-        r"^api-auth/",
-        include("rest_framework.urls", namespace="rest_framework"),
-    ),
     re_path(r"^", include(settings.ELECTION_APP_FULLY_QUALIFIED + ".urls")),
     re_path(
         r"^election/(?P<ballot_paper_id>[^/]+)/record-winner$",
