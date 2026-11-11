@@ -56,7 +56,7 @@ dependencies = [
     "sorl-thumbnail-serializer-field",
     "slacker2",
     "pypandoc_binary==1.14",
-    "pypdf==6.16.1",
+    "pypdf==6.21.4",
     "pandas>=3.0.0",
     "wreq==0.10.2",
     "djhtml==3.0.11",
