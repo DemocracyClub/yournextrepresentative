@@ -124,11 +124,6 @@ urlpatterns = [
     ),
     # Standard Django views
     re_path(
-        r"^api/current-elections",
-        v09views.CurrentElectionsView.as_view(),
-        name="current-elections",
-    ),
-    re_path(
         r"^all-parties.json$",
         cache_page(60 * 60)(
             parties.api.next.api_views.AllPartiesJSONView.as_view()

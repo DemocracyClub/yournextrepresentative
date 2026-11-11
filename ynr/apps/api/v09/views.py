@@ -2,7 +2,7 @@
 import json
 import subprocess
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from os.path import dirname
 
 import django
@@ -148,29 +148,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             results.append(election)
 
         return Response(results)
-
-
-class CurrentElectionsView(View):
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        results = {}
-        qs = Election.objects.current_or_future().order_by("id")
-        if request.GET.get("future"):
-            qs = qs.future()
-        for election in qs:
-            results[election.slug] = {
-                "election_date": str(election.election_date),
-                "name": election.name,
-                "url": reverse(
-                    "election-detail",
-                    kwargs={"version": "v0.9", "slug": election.slug},
-                ),
-            }
-
-        res = HttpResponse(json.dumps(results), content_type="application/json")
-        res["Expires"] = date.today() + timedelta(days=7)
-        return res
 
 
 class VersionView(View):
