@@ -70,6 +70,12 @@ def _chunk(lst, size):
 
 PROTECTED_API_PREFIXES = ["/api/next/", "/api/v0.9/"]
 
+API_AUTH_REQUIRED_BODY_KEY = "ApiAuthRequired"
+# Same payload DRF returns for unauthenticated requests
+API_AUTH_REQUIRED_BODY = (
+    '{"detail":"Authentication credentials were not provided."}'
+)
+
 
 def _no_transform():
     return [wafv2.CfnWebACL.TextTransformationProperty(priority=0, type="NONE")]
@@ -135,6 +141,12 @@ def _require_api_credentials_rule(priority):
             block=wafv2.CfnWebACL.BlockActionProperty(
                 custom_response=wafv2.CfnWebACL.CustomResponseProperty(
                     response_code=401,
+                    custom_response_body_key=API_AUTH_REQUIRED_BODY_KEY,
+                    response_headers=[
+                        wafv2.CfnWebACL.CustomHTTPHeaderProperty(
+                            name="WWW-Authenticate", value="Token"
+                        )
+                    ],
                 )
             )
         ),
@@ -202,6 +214,12 @@ class WafStack(Stack):
             "SimpleBotProtectionWAF",
             default_action=wafv2.CfnWebACL.DefaultActionProperty(allow={}),
             scope="CLOUDFRONT",
+            custom_response_bodies={
+                API_AUTH_REQUIRED_BODY_KEY: wafv2.CfnWebACL.CustomResponseBodyProperty(
+                    content_type="APPLICATION_JSON",
+                    content=API_AUTH_REQUIRED_BODY,
+                )
+            },
             visibility_config=wafv2.CfnWebACL.VisibilityConfigProperty(
                 cloud_watch_metrics_enabled=True,
                 metric_name="SimpleBotProtectionWAF",
