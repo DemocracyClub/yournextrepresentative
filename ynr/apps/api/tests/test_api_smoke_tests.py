@@ -16,6 +16,24 @@ class TestAPI(TestUserMixin, UK2015ExamplesMixin, WebTest):
         resp = self.app.get(reverse("api-home"), user=None)
         self.assertContains(resp, "<h3>Usage terms</h3>")
 
+    def test_docs_curl_example_uses_request_host(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(
+            reverse("api-home"), HTTP_HOST="candidates.democracyclub.org.uk"
+        )
+        self.assertContains(
+            resp,
+            "curl http://candidates.democracyclub.org.uk/api/next/ "
+            f"-H 'Authorization: Token {self.user.auth_token.key}'",
+        )
+
+    def test_docs_reject_malformed_host(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(
+            reverse("api-home"), HTTP_HOST='evil.example"><script>'
+        )
+        self.assertEqual(resp.status_code, 400)
+
     def test_each_endpoint(self):
         """
         TODO: Convert to use pytest-subtest

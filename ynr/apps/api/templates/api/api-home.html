@@ -23,7 +23,7 @@ To authenticate, pass your token in with `auth_token={{ request.user.auth_token.
 
 Alternatively pass in the authorization header:
 
-`curl https://candidates.democracyclub.org.uk/api/next/ -H 'Authorization: Token {{ user.auth_token.key }}'`
+`curl {{ request.scheme }}://{{ request.get_host }}{% url "api-root" version="next" %} -H 'Authorization: Token {{ user.auth_token.key }}'`
 
 While you are logged in to this site you can also browse the API in your web browser.
 {% else %}
