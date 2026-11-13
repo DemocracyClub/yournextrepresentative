@@ -206,7 +206,7 @@ def clean_biography(bio):
 def clean_birth_date(year):
     if year:
         current_year = date.today().year
-        min_year = str(current_year - 19)
+        min_year = str(current_year - 18)
         if not "1900" < year <= min_year:
             raise ValidationError("Please enter a valid year of birth")
     return year
