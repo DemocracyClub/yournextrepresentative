@@ -2,7 +2,7 @@
 import json
 import subprocess
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from os.path import dirname
 
 import django
@@ -35,50 +35,6 @@ def parse_date(date_text):
         return datetime.strptime(date_text, "%Y-%m-%d").date()
     except ValueError:
         return None
-
-
-class UpcomingElectionsView(View):
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        postcode = request.GET.get("postcode", None)
-        coords = request.GET.get("coords", None)
-
-        # TODO: postcode may not make sense everywhere
-        errors = None
-        if not postcode and not coords:
-            errors = {"error": "Postcode or Co-ordinates required"}
-
-        try:
-            if coords:
-                ballots = get_ballots_from_coords(coords)
-            else:
-                ballots = get_ballots_from_postcode(postcode)
-        except Exception as e:
-            errors = {"error": str(e)}
-
-        if errors:
-            return HttpResponse(
-                json.dumps(errors), status=400, content_type="application/json"
-            )
-
-        results = []
-        ballots = ballots.select_related("post", "election")
-        for ballot in ballots:
-            results.append(
-                {
-                    "post_name": ballot.post.label,
-                    "post_slug": ballot.post.slug,
-                    "organization": ballot.post.organization.name,
-                    "election_date": str(ballot.election.election_date),
-                    "election_name": ballot.election.name,
-                    "election_id": ballot.election.slug,
-                }
-            )
-
-        return HttpResponse(
-            json.dumps(results), content_type="application/json"
-        )
 
 
 class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
@@ -148,29 +104,6 @@ class CandidatesAndElectionsForPostcodeViewSet(ViewSet):
             results.append(election)
 
         return Response(results)
-
-
-class CurrentElectionsView(View):
-    http_method_names = ["get"]
-
-    def get(self, request, *args, **kwargs):
-        results = {}
-        qs = Election.objects.current_or_future().order_by("id")
-        if request.GET.get("future"):
-            qs = qs.future()
-        for election in qs:
-            results[election.slug] = {
-                "election_date": str(election.election_date),
-                "name": election.name,
-                "url": reverse(
-                    "election-detail",
-                    kwargs={"version": "v0.9", "slug": election.slug},
-                ),
-            }
-
-        res = HttpResponse(json.dumps(results), content_type="application/json")
-        res["Expires"] = date.today() + timedelta(days=7)
-        return res
 
 
 class VersionView(View):

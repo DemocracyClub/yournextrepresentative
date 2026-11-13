@@ -124,11 +124,6 @@ urlpatterns = [
     ),
     # Standard Django views
     re_path(
-        r"^api/current-elections",
-        v09views.CurrentElectionsView.as_view(),
-        name="current-elections",
-    ),
-    re_path(
         r"^all-parties.json$",
         cache_page(60 * 60)(
             parties.api.next.api_views.AllPartiesJSONView.as_view()
@@ -136,11 +131,6 @@ urlpatterns = [
         name="all-parties-json-view",
     ),
     re_path(r"^version.json", v09views.VersionView.as_view(), name="version"),
-    re_path(
-        r"^upcoming-elections",
-        v09views.UpcomingElectionsView.as_view(),
-        name="upcoming-elections",
-    ),
     re_path(
         "api/slack-hooks",
         slack_hooks.SlackHookRouter.as_view(),

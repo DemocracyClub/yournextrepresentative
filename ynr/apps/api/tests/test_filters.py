@@ -1,5 +1,6 @@
 import mock
 from api.next.filters import LastUpdatedMixin
+from django.contrib.auth.models import User
 from django_webtest import WebTest
 from mock import MagicMock
 
@@ -7,7 +8,7 @@ from mock import MagicMock
 class TestLastUpdatedMixin(WebTest):
     def test_filter_last_updated(self):
         """
-        Test that the querset is filtered using the correct fieldname
+        Test that the queryset is filtered using the correct fieldname
         and expression
         """
         queryset = MagicMock()
@@ -28,6 +29,7 @@ class TestLastUpdatedMixin(WebTest):
             }
         )
 
+        self.client.force_login(User.objects.create_user("api-user"))
         resp = self.client.get("/api/next/ballots/?for_postcode=SW1A 1AA")
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(

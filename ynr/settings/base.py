@@ -140,7 +140,6 @@ MIDDLEWARE = [
     "candidates.middleware.RollingSessionExpiryMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "candidates.middleware.ApiAnonymousCacheMiddleware",
     "candidates.middleware.DisableCachingForAuthenticatedUsers",
     "wombles.middleware.CheckProfileDetailsMiddleware",
     "ynr_refactoring.middleware.BasicAuthMiddleware",
@@ -388,7 +387,10 @@ MASTODON_APP_ONLY_BEARER_TOKEN = os.environ.get(
 
 # Django Rest Framework settings:
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("candidates.api_permissions.ReadOnly",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+        "candidates.api_permissions.ReadOnly",
+    ),
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -401,17 +403,15 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        # Token first so unauthenticated requests get 401, not 403
         "api.next.authentication.TokenAuthSupportQueryString",
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    "DEFAULT_THROTTLE_CLASSES": ("rest_framework.throttling.AnonRateThrottle",),
-    "DEFAULT_THROTTLE_RATES": {"anon": "10/minute"},
-    # Tell DRF that it's behind CloudFront _and_ an ALB
-    "NUM_PROXIES": 2,
 }
 
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r"^/(api|upcoming-elections)/.*$"
+CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOW_METHODS = ("GET", "OPTIONS")
 
 # TODO Delete this once election specific import are gone
