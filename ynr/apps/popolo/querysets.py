@@ -106,6 +106,16 @@ class MembershipQuerySet(DateframeableQuerySet):
         return qs
 
 
+class MembershipManager(models.Manager.from_queryset(MembershipQuerySet)):
+    def get_queryset(self):
+        # Party.ec_data holds the raw Electoral Commission register record,
+        # which can be hundreds of kB per party and isn't used when working
+        # with memberships. Defer it by default so that
+        # `select_related("party")` doesn't load (and parse) a copy for every
+        # membership. This is a no-op when party isn't joined.
+        return super().get_queryset().defer("party__ec_data")
+
+
 class ContactDetailQuerySet(DateframeableQuerySet):
     pass
 

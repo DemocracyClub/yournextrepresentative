@@ -17,7 +17,7 @@ from ynr_refactoring.settings import PersonIdentifierFields
 from .behaviors.models import Dateframeable, GenericRelatable
 from .querysets import (
     ContactDetailQuerySet,
-    MembershipQuerySet,
+    MembershipManager,
     OrganizationQuerySet,
     OtherNameQuerySet,
     PostQuerySet,
@@ -387,7 +387,7 @@ class Membership(Dateframeable, TimeStampedModel, models.Model):
         help_text="A URL to a source document about the deselection",
     )
 
-    objects = MembershipQuerySet.as_manager()
+    objects = MembershipManager()
 
     def save(self, *args, **kwargs):
         if (

@@ -45,6 +45,7 @@ class BallotViewSet(viewsets.ReadOnlyModelViewSet):
                 "membership_set",
                 queryset=Membership.objects.all()
                 .select_related("result", "person", "party")
+                .defer("person__versions")
                 .annotate(last_name=LastWord("person__name"))
                 .annotate(
                     name_for_ordering=Coalesce(

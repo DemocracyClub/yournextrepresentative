@@ -95,7 +95,7 @@ class TestMembership(TestCase):
 
 
 class TestMembershipQueryset(UK2015ExamplesMixin, TestCase):
-    @patch("popolo.models.MembershipQuerySet.prefetch_related")
+    @patch("popolo.querysets.MembershipQuerySet.prefetch_related")
     def test_previous_party_affiliations_prefetched(
         self, mock_prefetch_related
     ):
