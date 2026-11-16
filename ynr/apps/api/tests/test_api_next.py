@@ -23,6 +23,7 @@ class TestAPI(
 ):
     def setUp(self):
         super().setUp()
+        self.app.set_user(self.user)
         self.storage = DefaultStorage()
 
         self.person = PersonFactory.create(id=2009, name="Tessa Jowell")

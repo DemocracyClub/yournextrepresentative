@@ -1,6 +1,7 @@
 from candidates.models import PersonRedirect
 from candidates.tests.factories import MembershipFactory
 from candidates.tests.uk_examples import UK2015ExamplesMixin
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 from django.utils.http import urlencode
@@ -12,6 +13,8 @@ from rest_framework.test import APIClient, APIRequestFactory
 
 class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
     def setUp(self):
+        self.api_user = User.objects.create_user("api-user")
+        self.client.force_login(self.api_user)
         self.people = PersonFactory.create_batch(size=1001)
         self.timestamp = timezone.now() - timezone.timedelta(hours=1)
 
@@ -31,6 +34,7 @@ class TestPersonViewSet(UK2015ExamplesMixin, TestCase):
             },
         ]
         client = APIClient()
+        client.force_authenticate(self.api_user)
         for case in test_cases:
             url = case["url"]
             expected = case["expected"]
