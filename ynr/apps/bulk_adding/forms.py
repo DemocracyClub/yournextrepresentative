@@ -196,6 +196,7 @@ class BaseBulkAddReconcileFormSet(BaseBulkAddFormSet):
 
         qs = (
             search_person_by_name(person_name, synonym=True)
+            .alive_now()
             .prefetch_related(
                 Prefetch(
                     "memberships",

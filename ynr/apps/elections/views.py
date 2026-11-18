@@ -28,6 +28,7 @@ from official_documents.models import BallotSOPN, ElectionSOPN
 from parties.models import Party
 from people.forms.forms import NewPersonForm
 from people.forms.formsets import PersonIdentifierFormsetFactory
+from people.models import Person
 from popolo.models import Membership
 from utils.db import LastWord, NullIfBlank
 
@@ -277,7 +278,7 @@ class BallotPaperView(TemplateView):
                         previous_ballot,
                         exclude_memberships_qs=context["candidates"],
                         exclude_people_qs=context["people_not_standing"],
-                    )
+                    ).filter(person__in=Person.objects.alive_now())
                 )
 
         context["logged_actions"] = (
