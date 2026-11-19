@@ -16,6 +16,7 @@ from django.views.generic import CreateView, TemplateView
 
 from .csv_fields import csv_fields, get_core_fieldnames
 from .filters import (
+    MaterializedMembershipFilter,
     create_materialized_membership_filter,
 )
 from .forms import AdditionalFieldsForm, CSVDownloadReasonForm, grouped_choices
@@ -170,6 +171,15 @@ def reverse_with_query_params(view_name, query_params, extra: Dict = None):
     return f"{url}&{urlencode(extra)}"
 
 
+def get_download_url(query_params):
+    allowed_params = {*MaterializedMembershipFilter.base_filters, "format"}
+    query_params = query_params.copy()
+    for key in list(query_params.keys()):
+        if key not in allowed_params:
+            del query_params[key]
+    return reverse_with_query_params("data_export", query_params)
+
+
 class CSVDownloadReasonView(CreateView):
     model = CSVDownloadReason
     form_class = CSVDownloadReasonForm
@@ -198,9 +208,7 @@ class CSVDownloadReasonView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["download_url"] = reverse_with_query_params(
-            "data_export", self.request.GET
-        )
+        context["download_url"] = get_download_url(self.request.GET)
         return context
 
     def form_valid(self, form):
@@ -222,7 +230,5 @@ class CSVDownloadThanksView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["download_url"] = reverse_with_query_params(
-            "data_export", self.request.GET
-        )
+        context["download_url"] = get_download_url(self.request.GET)
         return context

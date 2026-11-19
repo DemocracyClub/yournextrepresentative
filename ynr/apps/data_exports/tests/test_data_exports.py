@@ -6,8 +6,10 @@ from candidates.tests.uk_examples import UK2015ExamplesMixin
 from data_exports.csv_fields import get_core_fieldnames
 from data_exports.models import CSVDownloadLog, MaterializedMemberships
 from data_exports.templatetags.data_field_value import data_cell
+from data_exports.views import get_download_url
 from django.core.management import call_command
-from django.test import TestCase
+from django.http import QueryDict
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from people.models import Person
 
@@ -265,3 +267,40 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
                 "image",
             ],
         )
+
+
+class TestGetDownloadURL(SimpleTestCase):
+    def test_no_params(self):
+        self.assertEqual(
+            get_download_url(QueryDict("")), reverse("data_export") + "?"
+        )
+
+    def test_allowed_params_kept(self):
+        url = get_download_url(
+            QueryDict("election_id=parl.2024-07-04&party_id=PP52&format=csv")
+        )
+        self.assertEqual(
+            url,
+            f"{reverse('data_export')}?election_id=parl.2024-07-04&party_id=PP52&format=csv",
+        )
+
+    def test_unknown_params_removed(self):
+        url = get_download_url(
+            QueryDict(
+                "election_id=parl.2024-07-04&email=a%40example.com&page=2"
+            )
+        )
+        self.assertEqual(
+            url, f"{reverse('data_export')}?election_id=parl.2024-07-04"
+        )
+
+    def test_multi_value_params_kept(self):
+        url = get_download_url(QueryDict("party_id=PP52&party_id=PP53"))
+        self.assertEqual(
+            url, f"{reverse('data_export')}?party_id=PP52&party_id=PP53"
+        )
+
+    def test_original_query_params_not_mutated(self):
+        query_params = QueryDict("election_id=parl.2024-07-04&page=2")
+        get_download_url(query_params)
+        self.assertEqual(query_params.get("page"), "2")
