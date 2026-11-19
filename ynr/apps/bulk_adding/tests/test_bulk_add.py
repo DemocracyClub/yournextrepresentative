@@ -952,6 +952,24 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
         self.assertEqual(len(suggestion_list), 2)
         self.assertEqual(suggestion_list[0].pk, ballot_person.pk)
 
+    def test_suggested_people_excludes_dead_people(self):
+        alive_person = PersonFactory.create(name="Jane Smith")
+        PersonFactory.create(name="Jane Smith", death_date="2020")
+
+        formset = BulkAddReconcileFormSet(
+            initial=[],
+            ballot=self.dulwich_post_ballot,
+        )
+        suggestions = formset.suggested_people(
+            "Jane Smith",
+            new_party=self.labour_party.ec_id,
+            new_election=self.dulwich_post_ballot.election,
+            new_name="Jane Smith",
+            ballot=self.dulwich_post_ballot,
+        )
+
+        self.assertEqual([p.pk for p in suggestions], [alive_person.pk])
+
     def test_existing_ballot_member_same_party_is_selected_by_default(self):
         """
         When a person is already on the ballot AND has previously stood for

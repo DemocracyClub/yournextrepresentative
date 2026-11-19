@@ -359,6 +359,23 @@ class TestBallotView(
         response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
         response.mustcontain(f"Past candidates in {self.ballot.post.label}")
 
+    def test_may_be_standing_excludes_dead_people(self):
+        self.create_memberships(self.past_ballot, self.parties)
+        dead_person = Person.objects.filter(
+            memberships__ballot=self.past_ballot
+        ).first()
+        dead_person.death_date = "2020"
+        dead_person.save()
+
+        response = self.app.get(self.ballot.get_absolute_url(), user=self.user)
+
+        might_stand_again = response.context["candidates_might_stand_again"]
+        self.assertTrue(might_stand_again.exists())
+        self.assertNotIn(
+            dead_person.pk,
+            might_stand_again.values_list("person_id", flat=True),
+        )
+
     def test_constituency_with_not_standing(self):
         self.create_memberships(self.past_ballot, self.parties)
         person_not_standing = Person.objects.filter(
