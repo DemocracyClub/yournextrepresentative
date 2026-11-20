@@ -71,6 +71,7 @@ class ActionType(models.TextChoices):
     PHOTO_IGNORE = "photo-ignore", "Photo ignored"
     SUGGEST_BALLOT_LOCK = "suggest-ballot-lock", "Suggested ballot lock"
     PERSON_MERGE = "person-merge", "Person merged"
+    PERSON_SPLIT = "person-split", "Person split"
     RECORD_COUNCIL_RESULT = "record-council-result", "Recorded council result"
     CONFIRM_COUNCIL_RESULT = (
         "confirm-council-result",
@@ -239,6 +240,8 @@ class LoggedAction(models.Model):
                 desc = f"""deleted person with ID {self.person_pk}"""
             if self.action_type == ActionType.PERSON_MERGE:
                 desc = f"""merged another candidate into <a href="{url}">candidate #{self.person.id}</a>"""
+            if self.action_type == ActionType.PERSON_SPLIT:
+                desc = f"""split a candidacy off <a href="{url}">candidate #{self.person.id}</a>"""
             if self.action_type == ActionType.PHOTO_UPLOAD:
                 desc = f"""uploaded a photo of <a href="{url}">candidate #{self.person.id}</a> for moderation"""
             if self.action_type == ActionType.PHOTO_APPROVE:

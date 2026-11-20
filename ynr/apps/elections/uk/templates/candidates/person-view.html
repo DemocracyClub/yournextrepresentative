@@ -253,6 +253,14 @@
       <input type="submit" class="button alert" value="Suggest duplicate">
     </form>
 
+    {% if user_can_split and elections_to_list|length > 1 %}
+      <div class="person__actions__action person__actions__merge" id="person-split-action">
+        <h2>Candidacies mixed up?</h2>
+        <p>If one of these candidacies belongs to someone else, for example after a wrong merge, you can move it to the right person.</p>
+        <a href="{% url 'person-split' person_id=person.id %}" class="button alert">Split person</a>
+      </div>
+    {% endif %}
+
     <div class="person__actions__action person__actions__data">
       <h2>Use this data!</h2>
       <p>Open data JSON API:</p>

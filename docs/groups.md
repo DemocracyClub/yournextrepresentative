@@ -55,6 +55,19 @@ two people really are the same.
 Only users in the 'Trusted to Merge' group will get the option
 to merge two candidates on the candidate edit page.
 
+## Trusted to split
+
+Sometimes a candidacy ends up on the wrong person: two different
+people were merged, or a candidacy was added to the wrong existing
+person. Users in the 'Trusted to split' group get a "Split person"
+button on the page of anyone with more than one candidacy, which lets
+them move a candidacy (with its result, even on a locked ballot) to a
+new person or the right existing one. If the candidacy came from a
+merge, the person who was merged is restored.
+
+This is separate from 'Trusted To Merge' so splitting can be given to
+a few users first while it's new.
+
 ## Trusted To Rename
 
 One of the configuration options that you can enable in the

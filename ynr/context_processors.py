@@ -17,6 +17,7 @@ from moderation_queue.models import (
 from official_documents.models import DOCUMENT_UPLOADERS_GROUP_NAME
 from people.models import TRUSTED_TO_EDIT_NAME
 from popolo.models import OtherName
+from splitting.models import TRUSTED_TO_SPLIT_GROUP_NAME
 
 SETTINGS_TO_ADD = (
     "ELECTION_APP",
@@ -77,7 +78,7 @@ def add_notification_data(request):
 
 
 def add_group_permissions(request):
-    """Add user_can_merge and user_can_review_photos"""
+    """Add user_can_merge, user_can_split, user_can_review_photos etc."""
 
     groups = set(request.user.groups.values_list("name", flat=True))
     result = {
@@ -90,6 +91,7 @@ def add_group_permissions(request):
             ("user_can_record_results", RESULT_RECORDERS_GROUP_NAME),
             ("user_can_bulk_add", TRUSTED_TO_BULK_ADD_GROUP_NAME),
             ("user_can_edit_name", TRUSTED_TO_EDIT_NAME),
+            ("user_can_split", TRUSTED_TO_SPLIT_GROUP_NAME),
         )
     }
     result["user_can_edit"] = settings.EDITS_ALLOWED or request.user.is_staff

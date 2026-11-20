@@ -75,7 +75,8 @@ class TestLeaderboardView(TestUserMixin, WebTest):
             "5,ermintrude,0\r\n"
             "6,frankie,0\r\n"
             "7,george,0\r\n"
-            "8,johnrefused,0\r\n"
-            "9,sjorford,0\r\n"
-            "10,TwitterBot,0\r\n",
+            "8,harriet,0\r\n"
+            "9,johnrefused,0\r\n"
+            "10,sjorford,0\r\n"
+            "11,TwitterBot,0\r\n",
         )

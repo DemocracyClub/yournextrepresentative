@@ -10,5 +10,3 @@ repos:
   rev: 3.0.11
   hooks:
     - id: djhtml
-      # Pin tab width to 4 to match .editorconfig (djhtml otherwise guesses).
-      args: [--tabwidth, "4"]

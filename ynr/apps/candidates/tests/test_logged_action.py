@@ -56,3 +56,20 @@ class TestLoggedAction(TestUserMixin, UK2015ExamplesMixin, TestCase):
             action.subject_html,
             '<a href="/elections/parl.65913.2015-05-07/">Camberwell and Peckham (65913)</a>',
         )
+
+    def test_person_split_description(self):
+        person = people.tests.factories.PersonFactory.create(
+            id="9876", name="Test Candidate"
+        )
+        action = LoggedAction.objects.create(
+            user=self.user,
+            action_type=ActionType.PERSON_SPLIT,
+            person=person,
+            ballot=self.camberwell_post_ballot,
+            popit_person_new_version="1234567890abcdef",
+            source="After splitting candidacy",
+        )
+        self.assertEqual(
+            action.friendly_description(),
+            'User <strong>john</strong> split a candidacy off <a href="/person/9876">candidate #9876</a>',
+        )

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Split {{ person.name }}{% endblock %}
+
+{% block content %}
+    <div class="person-split">
+        <h1>Split <a href="{{ person.get_absolute_url }}">{{ person.name }}</a> ({{ person.pk }})</h1>
+
+        {% if not edits_allowed %}
+            <p>Edits to this person aren't allowed at the moment.</p>
+            {% include 'candidates/_edits_disallowed_message.html' %}
+        {% else %}
+            <p>
+                Use this when one of this person's candidacies belongs to someone else.
+                The candidacy moves with its result and SOPN names, including on locked ballots.
+                You'll see what will happen before anything changes.
+            </p>
+
+            <form method="post" id="person-split">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <fieldset class="split-ballots">
+                    <legend>{{ form.membership.label }}</legend>
+                    {{ form.membership.errors }}
+                    {% for radio in form.membership %}
+                        <label for="{{ radio.id_for_label }}">{{ radio.tag }} {{ radio.choice_label }}</label>
+                    {% endfor %}
+                </fieldset>
+
+                <div class="split-destination">
+                    <label for="{{ form.destination.id_for_label }}">{{ form.destination.label }}</label>
+                    {{ form.destination.errors }}
+                    <input type="text" name="{{ form.destination.html_name }}" id="{{ form.destination.id_for_label }}"
+                           value="{{ form.destination.value|default:'' }}" required aria-describedby="split-destination-hint">
+                    <p class="split-hint" id="split-destination-hint">{{ form.destination.help_text }}</p>
+                </div>
+
+                {% if plan %}
+                    <input type="hidden" name="preview_fingerprint" value="{{ fingerprint }}">
+
+                    <section class="split-preview" aria-labelledby="split-preview-heading">
+                        <h2 id="split-preview-heading">Preview</h2>
+
+                        {% if confirm_problems %}
+                            <div class="split-message split-message--error" role="alert">
+                                <ul>{% for problem in confirm_problems %}<li>{{ problem }}</li>{% endfor %}</ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="split-table-wrap">
+                            <table class="split-table split-report">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Person ID</th>
+                                        <th scope="col">Ballot</th>
+                                        <th scope="col">Destination person ID</th>
+                                        <th scope="col">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ person.pk }}</td>
+                                        <td>{{ plan.membership.ballot.ballot_paper_id }}</td>
+                                        <td>{{ destination_label }}</td>
+                                        <td><strong>{{ result }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if plan.errors %}
+                            <div class="split-message split-message--error split-errors">
+                                <ul>{% for error in plan.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                            </div>
+                        {% endif %}
+
+                        {% if plan.warnings %}
+                            <div class="split-message split-message--warning split-warnings">
+                                <ul>{% for warning in plan.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+                                {% if plan.is_valid %}
+                                    <label>{{ form.warnings_checked }} {{ form.warnings_checked.label }}</label>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if plan.details_to_check %}
+                            <p>
+                                {{ plan.details_to_check|length }} detail{{ plan.details_to_check|pluralize }}
+                                changed after the candidacy was added. Check
+                                {{ plan.details_to_check|pluralize:"it,them" }} under “Details and options”,
+                                or correct {{ plan.details_to_check|pluralize:"it,them" }} on the person's page after splitting.
+                            </p>
+                        {% endif %}
+                    </section>
+                {% endif %}
+
+                <details class="panel split-details">
+                    <summary>Details and options</summary>
+
+                    {% if plan %}
+                        {% if plan.origin %}
+                            <p>
+                                {% with username=plan.origin.added_by_username %}
+                                    {% if plan.origin.kind == "merge" %}
+                                        This candidacy was added when person {{ plan.origin.merged_from }} was merged
+                                        into this person on {{ plan.origin.added_at|date:"j F Y" }}{% if username %} by {{ username }}{% endif %}.
+                                    {% elif plan.origin.kind == "direct" %}
+                                        This candidacy was added on {{ plan.origin.added_at|date:"j F Y" }}{% if username %} by {{ username }}{% endif %}.
+                                    {% endif %}
+                                {% endwith %}
+                                {% if plan.origin.kind == "unknown" %}
+                                    We can't tell from this person's history where this candidacy came from.
+                                {% endif %}
+                            </p>
+                        {% endif %}
+
+                        {% if plan.changes %}
+                            <h3>What will happen</h3>
+                            <ul>
+                                {% for change in plan.changes %}<li>{{ change }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if field_rows %}
+                            <h3>Where each detail goes</h3>
+                            <div class="split-table-wrap">
+                                <table class="split-table split-fields">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Detail</th>
+                                            <th scope="col">Suggestion</th>
+                                            <th scope="col">{{ other_label }} gets</th>
+                                            <th scope="col">{{ person.name }} ({{ person.pk }}) ends up with</th>
+                                            <th scope="col">Why</th>
+                                            <th scope="col">Change</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in field_rows %}
+                                            {# data-label is shown on small screens, where rows stack #}
+                                            <tr class="split-field split-field--{{ row.action }}">
+                                                <th scope="row">{{ row.label }}</th>
+                                                <td data-label="Suggestion">{{ row.action_label }}</td>
+                                                <td data-label="{{ other_label }} gets" title="{{ row.target_value }}">{{ row.target_value|truncatechars:100|default:"Not set" }}</td>
+                                                <td data-label="{{ person.name }} ({{ person.pk }}) ends up with" title="{{ row.dest_value }}">
+                                                    {{ row.dest_value|truncatechars:100|default:"Not set" }}
+                                                    {% if not row.dest_changes %}<br><span class="split-unchanged">Unchanged</span>{% endif %}
+                                                </td>
+                                                <td data-label="Why">{{ row.reason|capfirst }}</td>
+                                                <td data-label="Change">{{ row.override }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <h3>Options</h3>
+                    <div class="split-cutoff">
+                        <label for="{{ form.cutoff_days.id_for_label }}">{{ form.cutoff_days.label }}</label>
+                        {{ form.cutoff_days.errors }}
+                        {{ form.cutoff_days }}
+                    </div>
+                    <label>{{ form.move_image }} {{ form.move_image.label }}</label>
+                </details>
+
+                <div class="split-actions">
+                    <button type="submit" name="action" value="preview" class="button">
+                        {% if plan %}Update preview{% else %}Preview{% endif %}
+                    </button>
+                    {% if plan and plan.is_valid %}
+                        <button type="submit" name="action" value="split" class="button alert">Split</button>
+                    {% endif %}
+                    <a href="{{ person.get_absolute_url }}" class="button secondary">Cancel</a>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

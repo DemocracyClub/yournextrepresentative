@@ -42,6 +42,15 @@ class TestPersonUpdate(PersonViewSharedTestsMixin):
         self.person.record_version(get_change_metadata(None, "Nothing changed"))
         self.assertEqual(len(self.person.versions), 2)
 
+    def test_forced_version_is_recorded_when_nothing_changed(self):
+        self.person.record_version(get_change_metadata(None, "First update"))
+        metadata = get_change_metadata(None, "Nothing changed, but needed")
+        self.person.record_version(metadata, force=True)
+        self.assertEqual(len(self.person.versions), 2)
+        self.assertEqual(
+            self.person.versions[0]["version_id"], metadata["version_id"]
+        )
+
     def test_set_birth_date_invalid_date(self):
         """
         Regression for
