@@ -273,7 +273,7 @@ class BaseBallotSOPN(TimeStampedModel):
         in which case this may be the string 'all'
 
         Related to an ElectionSOPN
-        in which case this must be a comma seperated list of sequential pages
+        in which case this must be a comma separated list of sequential pages
         3,4,5 is valid
         but 3,4,6 or 3,5,4 is not valid
         We can't deal with that
