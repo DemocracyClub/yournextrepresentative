@@ -27,7 +27,7 @@ from .models import (
     BallotSOPN,
     ElectionSOPN,
     PageMatchingMethods,
-    add_ballot_sopns,
+    add_ballot_sopn,
 )
 from .notifications import send_ballot_sopn_update_notification
 
@@ -83,7 +83,7 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
             source_url=form.cleaned_data["source_url"],
             replacement_reason=form.cleaned_data.get("replacement_reason"),
         )
-        self.object = add_ballot_sopns([ballot_sopn])[0]
+        self.object = add_ballot_sopn(ballot_sopn)
         if replacement:
             send_ballot_sopn_update_notification(self.object, self.request)
 

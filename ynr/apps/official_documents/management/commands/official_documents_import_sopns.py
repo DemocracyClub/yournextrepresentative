@@ -19,7 +19,7 @@ from elections.models import Election
 from official_documents.models import (
     BallotSOPN,
     ElectionSOPN,
-    add_ballot_sopns,
+    add_ballot_sopn,
 )
 from wreq import Emulation
 from wreq.blocking import Client
@@ -117,7 +117,7 @@ class Command(BaseCommand):
                     ),
                     source_url=source_url,
                 )
-                return add_ballot_sopns([ballot_sopn])[0]
+                return add_ballot_sopn(ballot_sopn)
 
         # This is an ElectionSOPN
         downloaded_filename, extension = self.get_file_path_from_source_url(

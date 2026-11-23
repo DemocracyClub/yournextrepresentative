@@ -396,3 +396,7 @@ def add_ballot_sopns(ballot_sopns: list[BallotSOPN], parse=True):
         for ballot_sopn in created:
             ballot_sopn.parse()
     return created
+
+
+def add_ballot_sopn(ballot, parse=True):
+    return add_ballot_sopns([ballot], parse)[0]
