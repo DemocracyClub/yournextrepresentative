@@ -106,7 +106,6 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
             ip_address=get_client_ip(self.request),
             source=self.object.source_url,
         )
-        self.object.parse()
         return HttpResponseRedirect(self.get_success_url())
 
     def is_general_election(self):
