@@ -376,7 +376,7 @@ def add_ballot_sopns(ballot_sopns: list[BallotSOPN], parse=True):
 
     history = [
         BallotSOPNHistory(
-            ballot_id=ballot_sopn.ballot_id,
+            ballot=ballot_sopn.ballot,
             relevant_pages=ballot_sopn.relevant_pages,
             uploaded_file=ballot_sopn.uploaded_file,
             source_url=ballot_sopn.source_url,

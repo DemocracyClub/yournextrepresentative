@@ -42,6 +42,15 @@ class ElectionSOPNPageSplitter:
                 election_sopn_id=self.election_sopn.pk
             ).delete()
 
+        ballots = Ballot.objects.in_bulk(
+            [
+                ballot_paper_id
+                for ballot_paper_id, matched_pages in self.ballot_to_pages.items()
+                if matched_pages
+            ],
+            field_name="ballot_paper_id",
+        )
+
         ballot_sopns = []
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             if not matched_pages:
@@ -68,7 +77,12 @@ class ElectionSOPNPageSplitter:
                     f"Page matching error: {self.election_sopn.uploaded_file.url} matched to pages: {relevant_pages}"
                 )
 
-            ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
+            try:
+                ballot = ballots[ballot_paper_id]
+            except KeyError:
+                raise Ballot.DoesNotExist(
+                    f"Ballot matching {ballot_paper_id!r} does not exist"
+                )
 
             ballot_sopns.append(
                 BallotSOPN(

@@ -1,6 +1,7 @@
 from io import BytesIO
 from unittest.mock import patch
 
+from candidates.models import Ballot
 from candidates.tests.factories import (
     BallotPaperFactory,
     ElectionFactory,
@@ -8,7 +9,9 @@ from candidates.tests.factories import (
 )
 from candidates.tests.uk_examples import UK2015ExamplesMixin
 from django.core.files.base import ContentFile
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from official_documents.extract_pages import (
     ElectionSOPNPageSplitter,
     PDFProcessingError,
@@ -74,6 +77,28 @@ class ElectionSOPNPageSplitterTestCase(UK2015ExamplesMixin, TestCase):
             self.assertRaises(PDFProcessingError),
         ):
             splitter.split()
+
+    def test_unknown_ballot_raises_does_not_exist(self):
+        splitter = ElectionSOPNPageSplitter(
+            self.election_sopn, {"ballot1": [0], "nope": [1]}
+        )
+        with self.assertRaises(Ballot.DoesNotExist):
+            splitter.split()
+        self.assertFalse(BallotSOPN.objects.exists())
+
+    def test_split_fetches_ballots_in_one_query(self):
+        splitter = ElectionSOPNPageSplitter(
+            self.election_sopn, {"ballot1": [0], "ballot2": [1, 2]}
+        )
+        with CaptureQueriesContext(connection) as queries:
+            splitter.split(parse_ballots=False)
+        ballot_queries = [
+            q
+            for q in queries.captured_queries
+            if 'FROM "candidates_ballot"' in q["sql"]
+            and "ballot_paper_id" in q["sql"]
+        ]
+        self.assertEqual(len(ballot_queries), 1)
 
     def test_split_pages(self):
         ballot_to_pages = {
