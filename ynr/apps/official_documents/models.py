@@ -3,10 +3,8 @@ import os
 from pathlib import Path
 from typing import List
 
-from candidates.models import Ballot
-from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models import JSONField
 from django.urls import reverse
 from django.utils import timezone
@@ -309,6 +307,10 @@ class BaseBallotSOPN(TimeStampedModel):
         return ", ".join([str(i + 1) for i in self.page_number_list])
 
     def save(self, *args, **kwargs):
+        # note: If you are adding anything here
+        # it may be necessary to duplicate it in
+        # add_ballot_sopns() because django's
+        # bulk_methods don't call .save()
         self.validate_relevant_pages()
         return super().save(*args, **kwargs)
 
@@ -357,39 +359,40 @@ class BallotSOPNHistory(BaseBallotSOPN):
     )
 
 
-def add_ballot_sopn(
-    ballot: Ballot,
-    pdf_content: ContentFile,
-    source_url: str,
-    relevant_pages: str = "all",
-    replacement_reason=None,
-    election_sopn=None,
-    parse=True,
-):
+def add_ballot_sopns(ballot_sopns: list[BallotSOPN], parse=True):
     """
-    Manage creating BallotSOPNs with history
+    Manage creating BallotSOPNs with history.
+
+    Takes a list of unsaved BallotSOPN objects, replacing any existing
+    BallotSOPN for each ballot and recording a BallotSOPNHistory for each.
     """
-    if not replacement_reason:
-        replacement_reason = ""
 
-    BallotSOPNHistory.objects.create(
-        ballot=ballot,
-        relevant_pages=relevant_pages,
-        uploaded_file=pdf_content,
-        source_url=source_url,
-        replacement_reason=replacement_reason,
-    )
+    # bulk_create doesn't call .save()
+    # so validate everything up front
+    # before touching the database
+    for ballot_sopn in ballot_sopns:
+        ballot_sopn.replacement_reason = ballot_sopn.replacement_reason or ""
+        ballot_sopn.validate_relevant_pages()
 
-    BallotSOPN.objects.filter(ballot=ballot).delete()
+    history = [
+        BallotSOPNHistory(
+            ballot_id=ballot_sopn.ballot_id,
+            relevant_pages=ballot_sopn.relevant_pages,
+            uploaded_file=ballot_sopn.uploaded_file,
+            source_url=ballot_sopn.source_url,
+            replacement_reason=ballot_sopn.replacement_reason,
+        )
+        for ballot_sopn in ballot_sopns
+    ]
 
-    ballot_sopn: BallotSOPN = BallotSOPN.objects.create(
-        ballot=ballot,
-        relevant_pages=relevant_pages,
-        uploaded_file=pdf_content,
-        source_url=source_url,
-        replacement_reason=replacement_reason,
-        election_sopn=election_sopn,
-    )
+    with transaction.atomic():
+        BallotSOPNHistory.objects.bulk_create(history)
+        BallotSOPN.objects.filter(
+            ballot_id__in=[b.ballot_id for b in ballot_sopns]
+        ).delete()
+        created = BallotSOPN.objects.bulk_create(ballot_sopns)
+
     if parse:
-        ballot_sopn.parse()
-    return ballot_sopn
+        for ballot_sopn in created:
+            ballot_sopn.parse()
+    return created

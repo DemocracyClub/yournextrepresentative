@@ -27,7 +27,7 @@ from .models import (
     BallotSOPN,
     ElectionSOPN,
     PageMatchingMethods,
-    add_ballot_sopn,
+    add_ballot_sopns,
 )
 from .notifications import send_ballot_sopn_update_notification
 
@@ -74,15 +74,16 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         replacement = False
         if self.object.pk:
             replacement = True
-        self.object = add_ballot_sopn(
+        ballot_sopn = BallotSOPN(
             ballot=form.cleaned_data["ballot"],
-            pdf_content=ContentFile(
+            uploaded_file=ContentFile(
                 form.cleaned_data["uploaded_file"].read(),
                 form.cleaned_data["uploaded_file"].name,
             ),
             source_url=form.cleaned_data["source_url"],
             replacement_reason=form.cleaned_data.get("replacement_reason"),
         )
+        self.object = add_ballot_sopns([ballot_sopn])[0]
         if replacement:
             send_ballot_sopn_update_notification(self.object, self.request)
 

@@ -8,7 +8,7 @@ from official_documents.models import (
     BallotSOPN,
     ElectionSOPN,
     PageMatchingMethods,
-    add_ballot_sopn,
+    add_ballot_sopns,
 )
 from pypdf import PdfReader, PdfWriter
 from pypdf.errors import DependencyError, PdfReadError
@@ -42,6 +42,7 @@ class ElectionSOPNPageSplitter:
                 election_sopn_id=self.election_sopn.pk
             ).delete()
 
+        ballot_sopns = []
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             if not matched_pages:
                 continue
@@ -69,14 +70,17 @@ class ElectionSOPNPageSplitter:
 
             ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
 
-            add_ballot_sopn(
-                ballot,
-                pdf_content,
-                self.election_sopn.source_url,
-                relevant_pages,
-                election_sopn=self.election_sopn,
-                parse=parse_ballots,
+            ballot_sopns.append(
+                BallotSOPN(
+                    ballot=ballot,
+                    uploaded_file=pdf_content,
+                    source_url=self.election_sopn.source_url,
+                    relevant_pages=relevant_pages,
+                    election_sopn=self.election_sopn,
+                )
             )
 
+        if ballot_sopns:
+            add_ballot_sopns(ballot_sopns, parse=parse_ballots)
             self.election_sopn.page_matching_method = method
             self.election_sopn.save()
