@@ -738,12 +738,32 @@ class YnrStack(Stack):
             cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
             compress=True,
         )
+
+        """
+        Serve images (and documents) from /media with a
+        `X-Robots-Tag: noindex` header. This should stop
+        person images from appearing in google image search etc
+        """
+        media_response_headers_policy = cloudfront.ResponseHeadersPolicy(
+            self,
+            "media_noindex_response_headers",
+            custom_headers_behavior=cloudfront.ResponseCustomHeadersBehavior(
+                custom_headers=[
+                    cloudfront.ResponseCustomHeader(
+                        header="X-Robots-Tag",
+                        value="noindex",
+                        override=True,
+                    )
+                ]
+            ),
+        )
         self.cloudfront_dist.add_behavior(
             "/media/*",
             s3_media_origin,
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
             cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+            response_headers_policy=media_response_headers_policy,
             compress=True,
         )
 
