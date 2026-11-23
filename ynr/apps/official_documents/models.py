@@ -9,6 +9,7 @@ from django.db.models import JSONField
 from django.urls import reverse
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
+from django_q.tasks import async_task
 from sopn_parsing.models import AWSTextractParsedSOPN
 
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
@@ -315,6 +316,21 @@ class BaseBallotSOPN(TimeStampedModel):
         return super().save(*args, **kwargs)
 
 
+def parse(ballot_sopn):
+    from sopn_parsing.helpers.textract_helpers import (
+        NotUsingAWSException,
+        TextractSOPNHelper,
+    )
+
+    # AWS Textract
+    # No-Op if we're not on AWS
+    with contextlib.suppress(NotUsingAWSException):
+        textract_helper = TextractSOPNHelper(ballot_sopn)
+        # Start detection isn't going to populate anything for a while.
+        # There's a cron job that should pick up the result and carry on parsing later.
+        textract_helper.start_detection()
+
+
 class BallotSOPN(BaseBallotSOPN):
     def get_absolute_url(self):
         return reverse(
@@ -334,21 +350,13 @@ class BallotSOPN(BaseBallotSOPN):
         the front door.
 
         """
-
-        from sopn_parsing.helpers.textract_helpers import (
-            NotUsingAWSException,
-            TextractSOPNHelper,
+        return async_task(
+            parse,
+            # parse args
+            self,
+            # django q2 args
+            timeout=15,
         )
-
-        # Pull out the tables from PDFs
-
-        # AWS Textract
-        # Don't break if we're not on AWS
-        with contextlib.suppress(NotUsingAWSException):
-            textract_helper = TextractSOPNHelper(self)
-            # Start detection isn't going to populate anything for a while.
-            # There's a cron job that should pick up the result and carry on parsing later.
-            textract_helper.start_detection()
 
 
 class BallotSOPNHistory(BaseBallotSOPN):

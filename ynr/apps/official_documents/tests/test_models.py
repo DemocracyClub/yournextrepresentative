@@ -146,10 +146,31 @@ class TestAddBallotSOPNs(TestCase):
         )
         self.assertEqual(BallotSOPN.objects.get().replacement_reason, "")
 
-    def test_parse_false(self):
-        with patch.object(BallotSOPN, "parse") as parse:
+    def test_parse_runs_textract_helper(self):
+        # mock the whole of TextractSOPNHelper
+        # so it won't throw NotUsingAWSException
+        # Q_CLUSTER["sync"] is True in testing, so the task runs inline
+        with patch(
+            "sopn_parsing.helpers.textract_helpers.TextractSOPNHelper"
+        ) as helper:
+            result = add_ballot_sopns(
+                [self._sopn(b) for b in self.ballots[:2]], parse=True
+            )
+        self.assertEqual(
+            [call.args[0].pk for call in helper.call_args_list],
+            [s.pk for s in result],
+        )
+        self.assertEqual(helper.return_value.start_detection.call_count, 2)
+
+    def test_parse_false_does_not_run_textract_helper(self):
+        # mock the whole of TextractSOPNHelper
+        # so it won't throw NotUsingAWSException
+        # Q_CLUSTER["sync"] is True in testing, so the task runs inline
+        with patch(
+            "sopn_parsing.helpers.textract_helpers.TextractSOPNHelper"
+        ) as helper:
             add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
-        parse.assert_not_called()
+        helper.assert_not_called()
 
     def test_replaces_existing_sopn_and_keeps_history(self):
         add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
