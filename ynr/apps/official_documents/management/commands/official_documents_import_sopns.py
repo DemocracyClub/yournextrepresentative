@@ -17,6 +17,7 @@ from django.core.files.storage import DefaultStorage
 from django.core.management.base import BaseCommand
 from elections.models import Election
 from official_documents.models import (
+    BallotSOPN,
     ElectionSOPN,
     add_ballot_sopn,
 )
@@ -109,11 +110,14 @@ class Command(BaseCommand):
             # TODO: convert to PDF here if we need to (e.g docx files)
             upload_filename = f"{ballot.ballot_paper_id}-sopn{extension}"
             with downloaded_filename.open("rb") as sopn_file:
-                return add_ballot_sopn(
-                    ballot,
-                    ContentFile(sopn_file.read(), upload_filename),
+                ballot_sopn = BallotSOPN(
+                    ballot=ballot,
+                    uploaded_file=ContentFile(
+                        sopn_file.read(), upload_filename
+                    ),
                     source_url=source_url,
                 )
+                return add_ballot_sopn(ballot_sopn)
 
         # This is an ElectionSOPN
         downloaded_filename, extension = self.get_file_path_from_source_url(

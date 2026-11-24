@@ -74,15 +74,16 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
         replacement = False
         if self.object.pk:
             replacement = True
-        self.object = add_ballot_sopn(
+        ballot_sopn = BallotSOPN(
             ballot=form.cleaned_data["ballot"],
-            pdf_content=ContentFile(
+            uploaded_file=ContentFile(
                 form.cleaned_data["uploaded_file"].read(),
                 form.cleaned_data["uploaded_file"].name,
             ),
             source_url=form.cleaned_data["source_url"],
             replacement_reason=form.cleaned_data.get("replacement_reason"),
         )
+        self.object = add_ballot_sopn(ballot_sopn)
         if replacement:
             send_ballot_sopn_update_notification(self.object, self.request)
 
@@ -105,7 +106,6 @@ class CreateOrUpdateBallotSOPNView(GroupRequiredMixin, UpdateView):
             ip_address=get_client_ip(self.request),
             source=self.object.source_url,
         )
-        self.object.parse()
         return HttpResponseRedirect(self.get_success_url())
 
     def is_general_election(self):

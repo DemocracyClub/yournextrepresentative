@@ -8,7 +8,7 @@ from official_documents.models import (
     BallotSOPN,
     ElectionSOPN,
     PageMatchingMethods,
-    add_ballot_sopn,
+    add_ballot_sopns,
 )
 from pypdf import PdfReader, PdfWriter
 from pypdf.errors import DependencyError, PdfReadError
@@ -34,14 +34,22 @@ class ElectionSOPNPageSplitter:
         self.reader = PdfReader(self.election_sopn.uploaded_file.open())
 
     @transaction.atomic()
-    def split(
-        self, method=PageMatchingMethods.MANUAL_MATCHED, parse_ballots=True
-    ):
+    def split(self, method=PageMatchingMethods.MANUAL_MATCHED):
         if self.election_sopn.pk is not None:
             BallotSOPN.objects.filter(
                 election_sopn_id=self.election_sopn.pk
             ).delete()
 
+        ballots = Ballot.objects.in_bulk(
+            [
+                ballot_paper_id
+                for ballot_paper_id, matched_pages in self.ballot_to_pages.items()
+                if matched_pages
+            ],
+            field_name="ballot_paper_id",
+        )
+
+        ballot_sopns = []
         for ballot_paper_id, matched_pages in self.ballot_to_pages.items():
             if not matched_pages:
                 continue
@@ -67,16 +75,24 @@ class ElectionSOPNPageSplitter:
                     f"Page matching error: {self.election_sopn.uploaded_file.url} matched to pages: {relevant_pages}"
                 )
 
-            ballot = Ballot.objects.get(ballot_paper_id=ballot_paper_id)
+            try:
+                ballot = ballots[ballot_paper_id]
+            except KeyError:
+                raise Ballot.DoesNotExist(
+                    f"Ballot matching {ballot_paper_id!r} does not exist"
+                )
 
-            add_ballot_sopn(
-                ballot,
-                pdf_content,
-                self.election_sopn.source_url,
-                relevant_pages,
-                election_sopn=self.election_sopn,
-                parse=parse_ballots,
+            ballot_sopns.append(
+                BallotSOPN(
+                    ballot=ballot,
+                    uploaded_file=pdf_content,
+                    source_url=self.election_sopn.source_url,
+                    relevant_pages=relevant_pages,
+                    election_sopn=self.election_sopn,
+                )
             )
 
+        if ballot_sopns:
+            add_ballot_sopns(ballot_sopns)
             self.election_sopn.page_matching_method = method
             self.election_sopn.save()

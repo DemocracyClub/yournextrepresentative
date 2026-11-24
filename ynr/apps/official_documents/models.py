@@ -3,14 +3,13 @@ import os
 from pathlib import Path
 from typing import List
 
-from candidates.models import Ballot
-from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models import JSONField
 from django.urls import reverse
 from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
+from django_q.tasks import async_task
 from sopn_parsing.models import AWSTextractParsedSOPN
 
 DOCUMENT_UPLOADERS_GROUP_NAME = "Document Uploaders"
@@ -309,8 +308,27 @@ class BaseBallotSOPN(TimeStampedModel):
         return ", ".join([str(i + 1) for i in self.page_number_list])
 
     def save(self, *args, **kwargs):
+        # note: If you are adding anything here
+        # it may be necessary to duplicate it in
+        # add_ballot_sopns() because django's
+        # bulk_methods don't call .save()
         self.validate_relevant_pages()
         return super().save(*args, **kwargs)
+
+
+def parse(ballot_sopn):
+    from sopn_parsing.helpers.textract_helpers import (
+        NotUsingAWSException,
+        TextractSOPNHelper,
+    )
+
+    # AWS Textract
+    # No-Op if we're not on AWS
+    with contextlib.suppress(NotUsingAWSException):
+        textract_helper = TextractSOPNHelper(ballot_sopn)
+        # Start detection isn't going to populate anything for a while.
+        # There's a cron job that should pick up the result and carry on parsing later.
+        textract_helper.start_detection()
 
 
 class BallotSOPN(BaseBallotSOPN):
@@ -332,21 +350,13 @@ class BallotSOPN(BaseBallotSOPN):
         the front door.
 
         """
-
-        from sopn_parsing.helpers.textract_helpers import (
-            NotUsingAWSException,
-            TextractSOPNHelper,
+        return async_task(
+            parse,
+            # parse args
+            self,
+            # django q2 args
+            timeout=15,
         )
-
-        # Pull out the tables from PDFs
-
-        # AWS Textract
-        # Don't break if we're not on AWS
-        with contextlib.suppress(NotUsingAWSException):
-            textract_helper = TextractSOPNHelper(self)
-            # Start detection isn't going to populate anything for a while.
-            # There's a cron job that should pick up the result and carry on parsing later.
-            textract_helper.start_detection()
 
 
 class BallotSOPNHistory(BaseBallotSOPN):
@@ -357,39 +367,50 @@ class BallotSOPNHistory(BaseBallotSOPN):
     )
 
 
-def add_ballot_sopn(
-    ballot: Ballot,
-    pdf_content: ContentFile,
-    source_url: str,
-    relevant_pages: str = "all",
-    replacement_reason=None,
-    election_sopn=None,
-    parse=True,
-):
+def add_ballot_sopns(ballot_sopns: list[BallotSOPN]):
     """
-    Manage creating BallotSOPNs with history
+    Manage creating BallotSOPNs with history.
+
+    Takes a list of unsaved BallotSOPN objects, replacing any existing
+    BallotSOPN for each ballot and recording a BallotSOPNHistory for each.
     """
-    if not replacement_reason:
-        replacement_reason = ""
 
-    BallotSOPNHistory.objects.create(
-        ballot=ballot,
-        relevant_pages=relevant_pages,
-        uploaded_file=pdf_content,
-        source_url=source_url,
-        replacement_reason=replacement_reason,
-    )
+    # bulk_create doesn't call .save()
+    # so validate everything up front
+    # before touching the database
+    for ballot_sopn in ballot_sopns:
+        ballot_sopn.replacement_reason = ballot_sopn.replacement_reason or ""
+        ballot_sopn.validate_relevant_pages()
 
-    BallotSOPN.objects.filter(ballot=ballot).delete()
+    history = [
+        BallotSOPNHistory(
+            ballot=ballot_sopn.ballot,
+            relevant_pages=ballot_sopn.relevant_pages,
+            uploaded_file=ballot_sopn.uploaded_file,
+            source_url=ballot_sopn.source_url,
+            replacement_reason=ballot_sopn.replacement_reason,
+        )
+        for ballot_sopn in ballot_sopns
+    ]
 
-    ballot_sopn: BallotSOPN = BallotSOPN.objects.create(
-        ballot=ballot,
-        relevant_pages=relevant_pages,
-        uploaded_file=pdf_content,
-        source_url=source_url,
-        replacement_reason=replacement_reason,
-        election_sopn=election_sopn,
-    )
+    with transaction.atomic():
+        BallotSOPNHistory.objects.bulk_create(history)
+        BallotSOPN.objects.filter(
+            ballot_id__in=[b.ballot_id for b in ballot_sopns]
+        ).delete()
+        created = BallotSOPN.objects.bulk_create(ballot_sopns)
+
     if parse:
-        ballot_sopn.parse()
-    return ballot_sopn
+        for ballot_sopn in created:
+            ballot_sopn.parse()
+    return created
+
+
+def add_ballot_sopn(ballot):
+    """
+    Create a single BallotSOPNs with history.
+
+    If we are creating more than one, use add_ballot_sopns()
+    It is more efficient
+    """
+    return add_ballot_sopns([ballot])[0]
