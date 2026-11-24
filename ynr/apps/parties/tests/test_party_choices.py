@@ -273,3 +273,84 @@ class TestPartyChoices(
                 ),
             ],
         )
+
+    def test_inactive_descriptions_excluded_when_flag_set(self):
+        PartyDescriptionFactory(
+            party=self.ld_party, description="Scottish Liberal Democrats"
+        )
+        PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Liberal Democrat Focus Team",
+            active=False,
+        )
+        party_choices = dict(
+            Party.objects.register("GB").party_choices(
+                exclude_inactive_descriptions=True
+            )
+        )
+        self.assertEqual(
+            party_choices["Liberal Democrats"],
+            [
+                ("PP90", {"label": "Liberal Democrats", "register": "GB"}),
+                (
+                    "PP90",
+                    {"label": "Scottish Liberal Democrats", "register": "GB"},
+                ),
+            ],
+        )
+
+    def test_inactive_descriptions_included_by_default(self):
+        PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Liberal Democrat Focus Team",
+            active=False,
+        )
+        party_choices = dict(Party.objects.register("GB").party_choices())
+        self.assertEqual(
+            party_choices["Liberal Democrats"],
+            [
+                ("PP90", {"label": "Liberal Democrats", "register": "GB"}),
+                (
+                    "PP90",
+                    {"label": "Liberal Democrat Focus Team", "register": "GB"},
+                ),
+            ],
+        )
+
+    def test_party_with_only_inactive_descriptions_is_not_a_group(self):
+        PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Liberal Democrat Focus Team",
+            active=False,
+        )
+        party_choices = dict(
+            Party.objects.register("GB").party_choices(
+                exclude_inactive_descriptions=True
+            )
+        )
+        self.assertNotIn("Liberal Democrats", party_choices)
+        self.assertEqual(
+            party_choices[self.ld_party.ec_id],
+            {"label": "Liberal Democrats", "register": "GB"},
+        )
+
+    def _create_active_and_inactive_descriptions(self):
+        for party in (self.ld_party, self.labour_party, self.green_party):
+            PartyDescriptionFactory(party=party, description="Active")
+            PartyDescriptionFactory(
+                party=party, description="Inactive", active=False
+            )
+
+    def test_active_descriptions_fetched_in_constant_number_of_queries(self):
+        # One query for the parties and one for all of their descriptions,
+        # however many parties have descriptions.
+        self._create_active_and_inactive_descriptions()
+        with self.assertNumQueries(2):
+            Party.objects.register("GB").party_choices(
+                exclude_inactive_descriptions=True
+            )
+
+    def test_all_descriptions_fetched_in_constant_number_of_queries(self):
+        self._create_active_and_inactive_descriptions()
+        with self.assertNumQueries(2):
+            Party.objects.register("GB").party_choices()
