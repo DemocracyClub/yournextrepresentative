@@ -87,9 +87,9 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
         )
         call_command("update_data_export_view")
         resp = self.client.get("/data/")
-        self.assertFalse(resp.context["page_obj"].has_previous())
-        self.assertFalse(resp.context["page_obj"].has_next())
-        self.assertEqual(len(resp.context["page_obj"].object_list), 24)
+        self.assertEqual(resp.context["total_rows"], 24)
+        self.assertEqual(len(resp.context["preview_rows"]), 24)
+        self.assertContains(resp, "matched <strong>24</strong> rows")
         a_person = Person.objects.first()
         html_content = resp.content.decode("utf8")
         self.assertInHTML(
@@ -105,9 +105,22 @@ class TestMaterializedMemberships(UK2015ExamplesMixin, TestCase):
             Ballot.objects.exclude(membership=None).first().ballot_paper_id
         )
         resp = self.client.get("/data/")
-        self.assertEqual(len(resp.context["page_obj"].object_list), 24)
+        self.assertEqual(resp.context["total_rows"], 24)
         resp = self.client.get("/data/?ballot_paper_id=" + ballot_paper_id)
-        self.assertEqual(len(resp.context["page_obj"].object_list), 6)
+        self.assertEqual(resp.context["total_rows"], 6)
+        self.assertEqual(len(resp.context["preview_rows"]), 6)
+
+    def test_preview_limited_to_100_rows(self):
+        self.create_lots_of_candidates(
+            self.earlier_election,
+            ((self.labour_party, 1100), (self.ld_party, 100)),
+        )
+        call_command("update_data_export_view")
+        resp = self.client.get("/data/")
+        self.assertEqual(resp.context["total_rows"], 1200)
+        self.assertEqual(len(resp.context["preview_rows"]), 100)
+        self.assertContains(resp, "matched <strong>1,200</strong> rows")
+        self.assertContains(resp, "preview of the first 100")
 
     def test_data_call_template_tag(self):
         value = {"person_id": 12345, "party_name": None}

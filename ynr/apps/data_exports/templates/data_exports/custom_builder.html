@@ -2,6 +2,7 @@
 {% load get_query %}
 {% load data_field_value %}
 {% load static %}
+{% load humanize %}
 
 {% block hero %}
     <h2>Custom builder</h2>
@@ -132,6 +133,14 @@
 
 
     </form>
+    <p>
+        Your query matched <strong>{{ total_rows|intcomma }}</strong> row{{ total_rows|pluralize }}.
+        {% if total_rows > preview_size %}
+            Here's a preview of the first {{ preview_size|intcomma }}.
+            <a href="{% url "download_reason" %}{% query_string request.GET format='csv' %}">Download the CSV</a>
+            to see the full results.
+        {% endif %}
+    </p>
     <div style="overflow-x: scroll; max-width: 100%">
 
 
@@ -145,7 +154,7 @@
             </thead>
 
             <tbody>
-                {% for obj in page_obj %}
+                {% for obj in preview_rows %}
                     <tr>
                         {% for header in headers %}
                             <td>{% data_cell header obj %}</td>
@@ -155,25 +164,6 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination">
-        <p class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="{% query_string request.GET page=1 %}">&laquo; first</a>
-                <a href="{% query_string request.GET page=page_obj.previous_page_number %}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-            </span>
-
-            {% if page_obj.has_next %}
-
-                <a href="{% query_string request.GET page=page_obj.next_page_number %}">next</a>
-                <a href="{% query_string request.GET page=page_obj.paginator.num_pages %}">last &raquo;</a>
-            {% endif %}
-        </p>
-    </div>
-
     <p>
         <a class="button" href="{% url "download_reason" %}{% query_string request.GET format='csv' %}">Download CSV</a>
     </p>

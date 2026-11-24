@@ -3,7 +3,6 @@ from typing import Dict, List, Union
 from urllib.parse import urlencode
 
 from cached_counts.models import ElectionReport
-from django.core.paginator import Paginator
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
@@ -80,18 +79,16 @@ class DataCustomBuilderView(DataFilterMixin, TemplateView):
     """
 
     template_name = "data_exports/custom_builder.html"
+    PREVIEW_ROWS = 100
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context.update(self.get_filter_data())
 
-        paginator = Paginator(
-            context["objects"],
-            50,
-        )
-        page = paginator.get_page(self.request.GET.get("page", "1"))
-        context["page_obj"] = page
+        context["total_rows"] = context["objects"].count()
+        context["preview_rows"] = context["objects"][: self.PREVIEW_ROWS]
+        context["preview_size"] = self.PREVIEW_ROWS
 
         return context
 
