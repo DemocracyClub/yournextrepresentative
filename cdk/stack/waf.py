@@ -177,6 +177,30 @@ def _require_api_credentials_rule(priority):
     )
 
 
+def _block_api_auth_rule(priority):
+    """Block every request to /api-auth/*"""
+    return wafv2.CfnWebACL.RuleProperty(
+        name="BlockApiAuth",
+        priority=priority,
+        action=wafv2.CfnWebACL.RuleActionProperty(block={}),
+        statement=wafv2.CfnWebACL.StatementProperty(
+            byte_match_statement=wafv2.CfnWebACL.ByteMatchStatementProperty(
+                search_string="/api-auth/",
+                field_to_match=wafv2.CfnWebACL.FieldToMatchProperty(
+                    uri_path={}
+                ),
+                text_transformations=_no_transform(),
+                positional_constraint="STARTS_WITH",
+            )
+        ),
+        visibility_config=wafv2.CfnWebACL.VisibilityConfigProperty(
+            cloud_watch_metrics_enabled=True,
+            metric_name="BlockApiAuth",
+            sampled_requests_enabled=True,
+        ),
+    )
+
+
 class WafStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
@@ -283,6 +307,7 @@ class WafStack(Stack):
                         sampled_requests_enabled=True,
                     ),
                 ),
+                _block_api_auth_rule(priority=5),
                 _require_api_credentials_rule(priority=10),
                 wafv2.CfnWebACL.RuleProperty(
                     name="AWSCommonRuleSet",
