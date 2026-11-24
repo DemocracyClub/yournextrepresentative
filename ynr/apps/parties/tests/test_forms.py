@@ -11,10 +11,10 @@ from parties.forms import (
     PreviousPartyAffiliationsField,
 )
 from parties.models import Party
-from parties.tests.factories import PartyFactory
+from parties.tests.factories import PartyDescriptionFactory, PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from people.forms.fields import CurrentUnlockedBallotsField
-from people.forms.forms import PersonMembershipForm
+from people.forms.forms import NewPersonForm, PersonMembershipForm
 from people.tests.factories import PersonFactory
 from utils.widgets import ChoiceOptionWithContext
 
@@ -282,3 +282,55 @@ class TestPreviousPartyAffiliationsField(
         self.assertEqual(
             set(field.get_previous_party_affiliations_choices()), set(expected)
         )
+
+
+class TestNewPersonFormDescriptionChoices(UK2015ExamplesMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        PartyDescriptionFactory(
+            party=self.ld_party, description="Active description"
+        )
+        PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Inactive description",
+            active=False,
+        )
+
+    def party_select_html(self, form):
+        return str(form["party_identifier"])
+
+    def test_future_ballot_id_excludes_inactive_descriptions(self):
+        # The ballot page passes the ballot_paper_id string
+        form = NewPersonForm(
+            initial={
+                "ballot_paper_id": self.dulwich_post_ballot.ballot_paper_id
+            }
+        )
+        html = self.party_select_html(form)
+        self.assertIn("Active description", html)
+        self.assertNotIn("Inactive description", html)
+
+    def test_future_ballot_object_excludes_inactive_descriptions(self):
+        # NewPersonView passes a Ballot object
+        form = NewPersonForm(
+            initial={"ballot_paper_id": self.dulwich_post_ballot}
+        )
+        html = self.party_select_html(form)
+        self.assertIn("Active description", html)
+        self.assertNotIn("Inactive description", html)
+
+    def test_past_ballot_includes_inactive_descriptions(self):
+        form = NewPersonForm(
+            initial={
+                "ballot_paper_id": self.dulwich_post_ballot_earlier.ballot_paper_id
+            }
+        )
+        html = self.party_select_html(form)
+        self.assertIn("Active description", html)
+        self.assertIn("Inactive description", html)
+
+    def test_no_ballot_includes_inactive_descriptions(self):
+        form = NewPersonForm()
+        html = self.party_select_html(form)
+        self.assertIn("Active description", html)
+        self.assertIn("Inactive description", html)

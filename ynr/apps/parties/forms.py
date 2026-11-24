@@ -1,3 +1,4 @@
+from candidates.models import Ballot
 from django import forms
 from django.core.exceptions import ValidationError
 from parties.models import Party
@@ -137,9 +138,9 @@ class PartyIdentifierField(forms.MultiValueField):
 
         This is later used by JavaScript to filter the list parties a user can
         select for a given ballot.
-        
-        Django 5+ assumes that a dict should be converted to an optgroup, 
-        so we get around this by converting all labels into a 
+
+        Django 5+ assumes that a dict should be converted to an optgroup,
+        so we get around this by converting all labels into a
         `ChoiceOptionWithContext` object.
         """
         party_choice_options = choices_to_context_choices(choices)
@@ -164,8 +165,22 @@ class PopulatePartiesMixin:
         super().__init__(**kwargs)
         self.populate_parties()
 
+    def get_initial_ballot(self):
+        """
+        Return the Ballot from the `ballot_paper_id` initial value, or None.
+        """
+        value = self.initial.get("ballot_paper_id")
+        if not value:
+            return None
+        if isinstance(value, Ballot):
+            return value
+        return Ballot.objects.select_related("election").get(
+            ballot_paper_id=value
+        )
+
     def populate_parties(self):
         register = None
+        ballot = None
         for field_name, field_class in self.fields.items():
             if not isinstance(field_class.widget, BallotInputWidget):
                 continue
@@ -173,12 +188,22 @@ class PopulatePartiesMixin:
                 ballot = field_class.to_python(self.initial[field_name])
                 register = ballot.post.party_set.slug.upper()
 
+        if ballot is None:
+            ballot = self.get_initial_ballot()
+
+        exclude_inactive_descriptions = (
+            ballot is not None and not ballot.election.in_past
+        )
+
         # Populate the choices
         for field_name, field_class in self.fields.items():
             if not isinstance(field_class, PartyIdentifierField):
                 continue
 
-            choices_kwargs = {"include_description_ids": True}
+            choices_kwargs = {
+                "include_description_ids": True,
+                "exclude_inactive_descriptions": exclude_inactive_descriptions,
+            }
             if field_name in self.initial:
                 initial_for_field = self.initial[field_name]
                 if not isinstance(initial_for_field, (list, tuple)):
