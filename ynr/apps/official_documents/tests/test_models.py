@@ -141,9 +141,7 @@ class TestAddBallotSOPNs(TestCase):
         self.assertEqual(history.uploaded_file.read(), b"content")
 
     def test_none_replacement_reason_stored_as_empty_string(self):
-        add_ballot_sopns(
-            [self._sopn(self.ballots[0], replacement_reason=None)], parse=False
-        )
+        add_ballot_sopns([self._sopn(self.ballots[0], replacement_reason=None)])
         self.assertEqual(BallotSOPN.objects.get().replacement_reason, "")
 
     def test_parse_runs_textract_helper(self):
@@ -153,31 +151,18 @@ class TestAddBallotSOPNs(TestCase):
         with patch(
             "sopn_parsing.helpers.textract_helpers.TextractSOPNHelper"
         ) as helper:
-            result = add_ballot_sopns(
-                [self._sopn(b) for b in self.ballots[:2]], parse=True
-            )
+            result = add_ballot_sopns([self._sopn(b) for b in self.ballots[:2]])
         self.assertEqual(
             [call.args[0].pk for call in helper.call_args_list],
             [s.pk for s in result],
         )
         self.assertEqual(helper.return_value.start_detection.call_count, 2)
 
-    def test_parse_false_does_not_run_textract_helper(self):
-        # mock the whole of TextractSOPNHelper
-        # so it won't throw NotUsingAWSException
-        # Q_CLUSTER["sync"] is True in testing, so the task runs inline
-        with patch(
-            "sopn_parsing.helpers.textract_helpers.TextractSOPNHelper"
-        ) as helper:
-            add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
-        helper.assert_not_called()
-
     def test_replaces_existing_sopn_and_keeps_history(self):
-        add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
+        add_ballot_sopns([self._sopn(self.ballots[0])])
         first_pk = BallotSOPN.objects.get().pk
         add_ballot_sopns(
             [self._sopn(self.ballots[0], source_url="http://example.com/2")],
-            parse=False,
         )
         sopn = BallotSOPN.objects.get()
         self.assertNotEqual(sopn.pk, first_pk)
@@ -197,13 +182,12 @@ class TestAddBallotSOPNs(TestCase):
                     relevant_pages="1,2",
                 )
             ],
-            parse=False,
         )
         self.assertEqual(BallotSOPN.objects.get().election_sopn, election_sopn)
         self.assertEqual(BallotSOPNHistory.objects.get().relevant_pages, "1,2")
 
     def test_validates_everything_before_changing_the_database(self):
-        add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
+        add_ballot_sopns([self._sopn(self.ballots[0])])
         existing = BallotSOPN.objects.get()
         with self.assertRaisesRegex(ValueError, "sequential"):
             add_ballot_sopns(
@@ -211,13 +195,12 @@ class TestAddBallotSOPNs(TestCase):
                     self._sopn(self.ballots[0], relevant_pages="all"),
                     self._sopn(self.ballots[1], relevant_pages="3,5"),
                 ],
-                parse=False,
             )
         self.assertEqual(BallotSOPN.objects.get(), existing)
         self.assertEqual(BallotSOPNHistory.objects.count(), 1)
 
     def test_is_atomic(self):
-        add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
+        add_ballot_sopns([self._sopn(self.ballots[0])])
         existing = BallotSOPN.objects.get()
         with (
             patch.object(
@@ -227,6 +210,6 @@ class TestAddBallotSOPNs(TestCase):
             ),
             self.assertRaises(RuntimeError),
         ):
-            add_ballot_sopns([self._sopn(self.ballots[0])], parse=False)
+            add_ballot_sopns([self._sopn(self.ballots[0])])
         self.assertEqual(BallotSOPN.objects.get(), existing)
         self.assertEqual(BallotSOPNHistory.objects.count(), 1)

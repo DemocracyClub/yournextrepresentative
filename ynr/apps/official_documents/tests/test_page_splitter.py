@@ -91,7 +91,7 @@ class ElectionSOPNPageSplitterTestCase(UK2015ExamplesMixin, TestCase):
             self.election_sopn, {"ballot1": [0], "ballot2": [1, 2]}
         )
         with CaptureQueriesContext(connection) as queries:
-            splitter.split(parse_ballots=False)
+            splitter.split()
         ballot_queries = [
             q
             for q in queries.captured_queries

@@ -34,9 +34,7 @@ class ElectionSOPNPageSplitter:
         self.reader = PdfReader(self.election_sopn.uploaded_file.open())
 
     @transaction.atomic()
-    def split(
-        self, method=PageMatchingMethods.MANUAL_MATCHED, parse_ballots=True
-    ):
+    def split(self, method=PageMatchingMethods.MANUAL_MATCHED):
         if self.election_sopn.pk is not None:
             BallotSOPN.objects.filter(
                 election_sopn_id=self.election_sopn.pk
@@ -95,6 +93,6 @@ class ElectionSOPNPageSplitter:
             )
 
         if ballot_sopns:
-            add_ballot_sopns(ballot_sopns, parse=parse_ballots)
+            add_ballot_sopns(ballot_sopns)
             self.election_sopn.page_matching_method = method
             self.election_sopn.save()

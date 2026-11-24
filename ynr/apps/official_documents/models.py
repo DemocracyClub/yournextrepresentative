@@ -367,7 +367,7 @@ class BallotSOPNHistory(BaseBallotSOPN):
     )
 
 
-def add_ballot_sopns(ballot_sopns: list[BallotSOPN], parse=True):
+def add_ballot_sopns(ballot_sopns: list[BallotSOPN]):
     """
     Manage creating BallotSOPNs with history.
 
@@ -406,5 +406,5 @@ def add_ballot_sopns(ballot_sopns: list[BallotSOPN], parse=True):
     return created
 
 
-def add_ballot_sopn(ballot, parse=True):
-    return add_ballot_sopns([ballot], parse)[0]
+def add_ballot_sopn(ballot):
+    return add_ballot_sopns([ballot])[0]
