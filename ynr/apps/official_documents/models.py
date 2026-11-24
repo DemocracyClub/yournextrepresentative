@@ -407,4 +407,10 @@ def add_ballot_sopns(ballot_sopns: list[BallotSOPN]):
 
 
 def add_ballot_sopn(ballot):
+    """
+    Create a single BallotSOPNs with history.
+
+    If we are creating more than one, use add_ballot_sopns()
+    It is more efficient
+    """
     return add_ballot_sopns([ballot])[0]
