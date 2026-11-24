@@ -157,7 +157,12 @@ class PartyQuerySet(models.QuerySet):
             result.append(party_names)
         return result
 
-    def default_party_choices(self, register=None, extra_party_ids=None):
+    def default_party_choices(
+        self,
+        register=None,
+        extra_party_ids=None,
+        exclude_inactive_descriptions=False,
+    ):
         qs = self
         if register:
             qs = qs.register(register)
@@ -167,4 +172,5 @@ class PartyQuerySet(models.QuerySet):
             exclude_deregistered=True,
             include_description_ids=True,
             extra_party_ids=extra_party_ids,
+            exclude_inactive_descriptions=exclude_inactive_descriptions,
         )

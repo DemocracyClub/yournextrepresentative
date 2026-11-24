@@ -88,7 +88,10 @@ class BulkAddFormSet(BaseBulkAddFormSet):
         super().__init__(*args, **kwargs)
         self.parties = Party.objects.register(
             self.ballot.post.party_set.slug.upper()
-        ).default_party_choices(extra_party_ids=self.initial_party_ids)
+        ).default_party_choices(
+            extra_party_ids=self.initial_party_ids,
+            exclude_inactive_descriptions=not self.ballot.election.in_past,
+        )
         self.previous_party_affiliations_choices = (
             self.get_previous_party_affiliations_choices()
         )
