@@ -247,6 +247,10 @@ def get_description(description, sopn):
     party_description_qs = PartyDescription.objects.annotate(
         search_text=Lower(Replace("description", Value("&"), Value("and")))
     )
+
+    if not sopn.sopn.ballot.election.in_past:
+        party_description_qs = party_description_qs.filter(active=True)
+
     try:
         return party_description_qs.get(
             search_text=description_value, party__register=register
