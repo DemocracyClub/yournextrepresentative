@@ -68,7 +68,9 @@ class AllPartiesJSONView(View):
             ps = ps.register(register)
         ret = {"items": []}
         qs = ps.party_choices(
-            exclude_deregistered=True, include_description_ids=True
+            exclude_deregistered=True,
+            include_description_ids=True,
+            exclude_inactive_descriptions=True,
         )
 
         for party in qs:
