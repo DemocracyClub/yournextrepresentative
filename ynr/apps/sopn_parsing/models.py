@@ -3,6 +3,7 @@ from io import BytesIO
 
 from django.core.files.images import ImageFile
 from django.db import models
+from django.utils.functional import cached_property
 from model_utils.models import TimeStampedModel
 from pandas import concat
 from textractor.parsers import response_parser
@@ -138,5 +139,6 @@ class AWSTextractParsedSOPN(TimeStampedModel):
         )
         self.parsed_data = df.to_json()
 
+    @cached_property
     def as_textractor_document(self):
         return response_parser.parse(json.loads(self.raw_data))
