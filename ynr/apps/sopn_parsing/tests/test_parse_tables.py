@@ -10,7 +10,7 @@ from django.test import TestCase
 from official_documents.models import BallotSOPN
 from pandas import Index, Series
 from parties.models import Party, PartyDescription
-from parties.tests.factories import PartyFactory
+from parties.tests.factories import PartyDescriptionFactory, PartyFactory
 from parties.tests.fixtures import DefaultPartyFixtures
 from sopn_parsing.helpers import parse_tables
 from sopn_parsing.models import AWSTextractParsedSOPN
@@ -293,6 +293,56 @@ class TestSOPNHelpers(DefaultPartyFixtures, UK2015ExamplesMixin, TestCase):
                 ],
                 key=lambda x: x["name"],
             ),
+        )
+
+    def _create_ld_descriptions(self):
+        active = PartyDescriptionFactory(
+            party=self.ld_party, description="Scottish Liberal Democrats"
+        )
+        inactive = PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Liberal Democrat Focus Team",
+            active=False,
+        )
+        return active, inactive
+
+    def _ballot_with_sopn(self, ballot):
+        BallotSOPN.objects.create(ballot=ballot, source_url="example.com")
+        return ballot
+
+    def test_get_description_ignores_inactive_for_future_ballot(self):
+        _, inactive = self._create_ld_descriptions()
+        ballot = self._ballot_with_sopn(self.dulwich_post_ballot)
+        self.assertIsNone(
+            parse_tables.get_description(inactive.description, ballot)
+        )
+
+    def test_get_description_ignores_near_match_to_inactive_for_future_ballot(
+        self,
+    ):
+        self._create_ld_descriptions()
+        ballot = self._ballot_with_sopn(self.dulwich_post_ballot)
+        # One character away from the inactive description, so the
+        # Levenshtein lookup would match it if inactive descriptions
+        # weren't filtered out
+        self.assertIsNone(
+            parse_tables.get_description("Liberal Democrat Focus Teams", ballot)
+        )
+
+    def test_get_description_matches_inactive_for_past_ballot(self):
+        _, inactive = self._create_ld_descriptions()
+        ballot = self._ballot_with_sopn(self.dulwich_post_ballot_earlier)
+        self.assertEqual(
+            parse_tables.get_description(inactive.description, ballot),
+            inactive,
+        )
+
+    def test_get_description_matches_active_for_future_ballot(self):
+        active, _ = self._create_ld_descriptions()
+        ballot = self._ballot_with_sopn(self.dulwich_post_ballot)
+        self.assertEqual(
+            parse_tables.get_description(active.description, ballot),
+            active,
         )
 
 

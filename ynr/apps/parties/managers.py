@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django.db.models import Prefetch
 from django.utils import timezone
 
 from .constants import JOINT_DESCRIPTION_REGEX
@@ -60,6 +61,7 @@ class PartyQuerySet(models.QuerySet):
         include_description_ids=False,
         include_non_current=True,
         extra_party_ids=None,
+        exclude_inactive_descriptions=False,
     ):
         # For various reasons, we've found it's best to order the
         # parties by those that have the most candidates - this means
@@ -91,8 +93,19 @@ class PartyQuerySet(models.QuerySet):
         parties_current_qs = extra_qs | parties_current_qs
 
         if include_descriptions:
+            from .models import PartyDescription
+
+            descriptions_qs = PartyDescription.objects.all()
+
+            if exclude_inactive_descriptions:
+                descriptions_qs = descriptions_qs.filter(active=True)
+
             parties_current_qs = parties_current_qs.prefetch_related(
-                "descriptions"
+                Prefetch(
+                    "descriptions",
+                    queryset=descriptions_qs,
+                    to_attr="description_choices",
+                )
             )
 
         result = [("", "")]
@@ -104,7 +117,7 @@ class PartyQuerySet(models.QuerySet):
                 and exclude_deregistered
             ):
                 continue
-            if include_descriptions and party.descriptions.exists():
+            if include_descriptions and party.description_choices:
                 names = [
                     (
                         party.ec_id,
@@ -114,7 +127,7 @@ class PartyQuerySet(models.QuerySet):
                         },
                     )
                 ]
-                for description in party.descriptions.all():
+                for description in party.description_choices:
                     joint_text = re.compile(JOINT_DESCRIPTION_REGEX, re.I)
                     party_id_str = str(party.ec_id)
                     if include_description_ids:
@@ -144,7 +157,12 @@ class PartyQuerySet(models.QuerySet):
             result.append(party_names)
         return result
 
-    def default_party_choices(self, register=None, extra_party_ids=None):
+    def default_party_choices(
+        self,
+        register=None,
+        extra_party_ids=None,
+        exclude_inactive_descriptions=False,
+    ):
         qs = self
         if register:
             qs = qs.register(register)
@@ -154,4 +172,5 @@ class PartyQuerySet(models.QuerySet):
             exclude_deregistered=True,
             include_description_ids=True,
             extra_party_ids=extra_party_ids,
+            exclude_inactive_descriptions=exclude_inactive_descriptions,
         )

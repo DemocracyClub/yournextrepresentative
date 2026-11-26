@@ -23,6 +23,20 @@ from popolo.models import Membership
 from utils.testing_utils import FuzzyInt
 
 
+def party_choice_values(choices):
+    """
+    Flatten party choices (which group a party's descriptions under the
+    party name) into a list of the option values.
+    """
+    values = []
+    for value, label in choices:
+        if isinstance(label, list):
+            values.extend(option_value for option_value, _ in label)
+        else:
+            values.append(value)
+    return values
+
+
 class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
     def testNoFormIfNoSopn(self):
         response = self.app.get(
@@ -763,6 +777,35 @@ class TestBulkAdding(TestUserMixin, UK2015ExamplesMixin, WebTest):
             set(formset.get_previous_party_affiliations_choices()),
             set(expected),
         )
+
+    def _create_active_and_inactive_descriptions(self):
+        active = PartyDescriptionFactory(
+            party=self.ld_party, description="Active description"
+        )
+        inactive = PartyDescriptionFactory(
+            party=self.ld_party,
+            description="Inactive description",
+            active=False,
+        )
+        return active, inactive
+
+    def test_party_choices_exclude_inactive_descriptions_for_future_ballot(
+        self,
+    ):
+        active, inactive = self._create_active_and_inactive_descriptions()
+        formset = BulkAddFormSet(ballot=self.dulwich_post_ballot)
+        values = party_choice_values(formset.parties)
+        self.assertIn(f"PP90__{active.pk}", values)
+        self.assertNotIn(f"PP90__{inactive.pk}", values)
+
+    def test_party_choices_include_inactive_descriptions_for_past_ballot(
+        self,
+    ):
+        active, inactive = self._create_active_and_inactive_descriptions()
+        formset = BulkAddFormSet(ballot=self.dulwich_post_ballot_earlier)
+        values = party_choice_values(formset.parties)
+        self.assertIn(f"PP90__{active.pk}", values)
+        self.assertIn(f"PP90__{inactive.pk}", values)
 
     def test_delete_parsed_raw_people(self):
         """
